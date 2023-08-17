@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'comp5216.sydney.edu.au.learn'
+    namespace 'comp5703.sydney.edu.au.learn'
     compileSdk 33
 
     defaultConfig {
-        applicationId "comp5216.sydney.edu.au.learn"
+        applicationId 'comp5703.sydney.edu.au.learn'
         minSdk 29
         targetSdk 33
         versionCode 1
