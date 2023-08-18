@@ -8,10 +8,6 @@ server:
     max-file-size:
     max-request-size: -1
 spring:
-  # 设置根日志级别为INFO
-  logging:
-    level:
-      root: INFO
   # 文件上传
   servlet:
     multipart:
@@ -28,3 +24,13 @@ spring:
     dbcp2:
       max-total: 150
       max-idle: 10
+#by zhengkai.blog.csdn.net
+#mybatis-plus配置控制台打印完整带参数SQL语句
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# 设置根日志级别为debug
+logging:
+  level:
+    com.usyd.capstone: debug
