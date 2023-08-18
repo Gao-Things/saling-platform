@@ -66,7 +66,11 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.78</version>
         </dependency>
-
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.6.0</version>
+        </dependency>
 
 
     </dependencies>

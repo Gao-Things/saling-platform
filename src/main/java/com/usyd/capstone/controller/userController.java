@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.usyd.capstone.common.QueryPageParam;
 import com.usyd.capstone.common.Result;
 import com.usyd.capstone.entity.User;
+import com.usyd.capstone.entity.VO.UserLogin;
 import com.usyd.capstone.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,12 @@ public class userController {
     @Autowired
     private UserService userService;
 
+    @PostMapping("/login")
+    public Result userLogin(@RequestBody UserLogin userLogin){
+        System.out.println(userLogin);
+        return userService.verifyLogin(userLogin);
+
+    }
 
     @GetMapping("/List")
     public List<User> list(){
@@ -45,6 +52,7 @@ public class userController {
 
         return  Result.suc(userService.list(lambdaQueryWrapper));
     }
+
 
 
     @PostMapping("/lispage")

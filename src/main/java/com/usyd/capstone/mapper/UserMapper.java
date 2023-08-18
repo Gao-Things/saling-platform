@@ -19,4 +19,6 @@ public interface UserMapper extends BaseMapper<User> {
     IPage pageC(Page<User> page);
 
     IPage pageCC(Page<User> page, Wrapper ew);
+
+    User verifyByEmailAndPassword(String email, String password);
 }

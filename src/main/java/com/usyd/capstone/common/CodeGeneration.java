@@ -58,7 +58,7 @@ public class CodeGeneration {
         /**
          * 全局配置
          */
-        String projectPath = System.getProperty("user.dir") + "/capstone"; //获取项目路径
+        String projectPath = System.getProperty("user.dir"); //获取项目路径
         String filePath = projectPath + "/src/main/java";  //java下的文件路径
         GlobalConfig global = new GlobalConfig.Builder()
                 .outputDir(filePath)//生成的输出路径

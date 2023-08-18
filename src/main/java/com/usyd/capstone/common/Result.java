@@ -12,7 +12,9 @@ public class Result {
     public static Result fail(){
         return result(400, "fail", 0L, null);
     }
-
+    public static Result fail(Object data){
+        return result(400, "fail", 0L, data);
+    }
     public static Result suc(){
         return result(200, "successful", 0L, null);
     }
