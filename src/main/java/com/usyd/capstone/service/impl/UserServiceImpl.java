@@ -41,7 +41,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public Result verifyLogin(UserLogin userLogin) {
         if (StringUtils.isEmpty(userLogin.getPassword()) || StringUtils.isEmpty(userLogin.getEmail())){
-            return Result.fail();
+            return Result.fail("Empty Email or password");
         }
 
         // Verify user

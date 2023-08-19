@@ -90,15 +90,21 @@ public class userController {
 
         // Handle the response as needed
         if (response.getStatusCode() == HttpStatus.OK) {
-            String responseBody = response.getBody();
-            System.out.println("Response: " + responseBody);
+
+
+            String json =  response.getBody();
+
+            JSONObject jsonObject1 = JSONObject.parseObject(json);
+            JSONObject riskAnalysis = jsonObject1.getJSONObject("riskAnalysis");
+            double score = riskAnalysis.getDoubleValue("score");
+            System.out.println("Score: " + score);
+            return !(score <= 0.2);
+
         } else {
             System.out.println("Request failed with status: " + response.getStatusCode());
+            return false;
         }
-
-        return true;
     }
-
 
 
     @GetMapping("/List")
