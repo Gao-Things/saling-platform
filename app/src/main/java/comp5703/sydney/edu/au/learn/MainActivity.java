@@ -6,46 +6,34 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.CommonStatusCodes;
-import com.google.android.gms.safetynet.SafetyNet;
-import com.google.android.gms.safetynet.SafetyNetApi;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.recaptcha.Recaptcha;
 import com.google.android.recaptcha.RecaptchaAction;
 import com.google.android.recaptcha.RecaptchaTasksClient;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.IOException;
-import java.util.concurrent.Executor;
 
 import comp5703.sydney.edu.au.learn.VO.LoginParameter;
 import comp5703.sydney.edu.au.learn.VO.RecaptchaParameter;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
-import comp5703.sydney.edu.au.learn.util.toastUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
@@ -87,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         loginBtn.setOnClickListener(this::onClick);
 
         registerBtn.setOnClickListener(this::toRegisterClick);
+
     }
 
     private void fadeInLogo() {
@@ -110,30 +99,8 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(MainActivity.this, RegisterActivity.class));
     }
     private void onClick(View view){
-       String email = userName.getText().toString();
-       String passwordUse = password.getText().toString();
-        executeLoginAction();
-        LoginParameter loginParameter = new LoginParameter();
-        loginParameter.setEmail(email);
-        loginParameter.setPassword(passwordUse);
 
-        NetworkUtils.postJsonRequest(loginParameter, "/user/login", new Callback() {
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String responseBody = response.body().string();
-                    Log.d(TAG, "Response: " + responseBody);
-                } else {
-                    Log.d(TAG, "Response not successful");
-                }
-            }
-
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e(TAG, "Exception: " + e.getMessage());
-            }
-        });
-
+        verityLoginAction();
 
     }
 
@@ -163,8 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-    private void executeLoginAction() {
+    private void verityLoginAction() {
         assert recaptchaTasksClient != null;
         recaptchaTasksClient
                 .executeTask(RecaptchaAction.LOGIN)
@@ -183,17 +149,12 @@ public class MainActivity extends AppCompatActivity {
                                 NetworkUtils.postJsonRequest(recaptchaParameter, "/user/reCAPTCHA", new Callback() {
                                     @Override
                                     public void onResponse(Call call, Response response) throws IOException {
-                                        if (response.isSuccessful()) {
-                                            String responseBody = response.body().string();
-                                            Log.d(TAG, "Response: " + responseBody);
-                                        } else {
-                                            Log.d(TAG, "Response not successful");
-                                        }
+                                        handleVerityResponse(response);
                                     }
 
                                     @Override
                                     public void onFailure(Call call, IOException e) {
-                                        Log.e(TAG, "Exception: " + e.getMessage());
+                                        handleFailure(e);
                                     }
                                 });
 
@@ -208,7 +169,72 @@ public class MainActivity extends AppCompatActivity {
                                 // See "Handle communication errors" section
                             }
                         });
+
     }
+
+    private void handleVerityResponse(Response response) throws IOException {
+        String responseBody = response.body().string();
+        JSONObject jsonObject = JSONObject.parseObject(responseBody);
+        int code = jsonObject.getIntValue("code");
+        Object dataValue = jsonObject.get("data");
+        if (code == 200) {
+            Login();
+        } else {
+            showErrorDialog("Your are robot");
+        }
+    }
+
+    private void Login() {
+        String email = userName.getText().toString();
+        String passwordUse = password.getText().toString();
+        LoginParameter loginParameter = new LoginParameter();
+        loginParameter.setEmail(email);
+        loginParameter.setPassword(passwordUse);
+
+        NetworkUtils.postJsonRequest(loginParameter, "/user/login", new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                handleResponse(response);
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                handleFailure(e);
+            }
+        });
+    }
+
+    private void handleResponse(Response response) throws IOException {
+        String responseBody = response.body().string();
+        JSONObject jsonObject = JSONObject.parseObject(responseBody);
+        int code = jsonObject.getIntValue("code");
+        Object dataValue = jsonObject.get("data");
+
+        if (code == 200) {
+            String token = jsonObject.getString("token"); // 根据实际 JSON 键获取 Token
+            Log.d(TAG, "LoginToken: " + token);
+            startActivity(new Intent(MainActivity.this, Home.class));
+        } else {
+            showErrorDialog(dataValue.toString());
+        }
+    }
+
+    private void handleFailure(IOException e) {
+        Log.e(TAG, "Exception: " + e.getMessage());
+    }
+
+    private void showErrorDialog(String errorMessage) {
+        runOnUiThread(() -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle("Login failed");
+            builder.setMessage(errorMessage);
+            builder.setPositiveButton("OK", (dialog, which) -> {
+                // 处理确定按钮点击事件
+            });
+            builder.create().show();
+        });
+    }
+
 
 
 
