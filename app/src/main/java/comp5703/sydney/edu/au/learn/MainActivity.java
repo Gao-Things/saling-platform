@@ -6,12 +6,18 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,12 +47,14 @@ public class MainActivity extends AppCompatActivity {
     private RecaptchaTasksClient recaptchaTasksClient = null;
 
     private Button loginBtn;
-    private Button registerBtn;
     private EditText userName;
     private EditText password;
     private FirebaseAuth auth;
-    private LinearLayout login_container;
     private OkHttpClient client;
+    private TextView forgetText;
+    private TextView registerText;
+    private LinearLayout popContainer;
+    private TextView messageTextView;
 
     private View imageView;
     @Override
@@ -57,11 +65,38 @@ public class MainActivity extends AppCompatActivity {
         loginBtn = findViewById(R.id.btnLogin);
         userName = findViewById(R.id.etUsername);
         password = findViewById(R.id.etPassword);
-        login_container = findViewById(R.id.buttonView);
         imageView = findViewById(R.id.imageView);
-        registerBtn = findViewById(R.id.register);
-        // 初始化页面时，先隐藏表单内容
-        login_container.setVisibility(View.GONE);
+        registerText = findViewById(R.id.registerTextView);
+        forgetText = findViewById(R.id.forgetPassword);
+        popContainer = findViewById(R.id.popContainer);
+        messageTextView = findViewById(R.id.messageTextView);
+
+        String text = "Forget your password ?";
+        SpannableString spannableString = new SpannableString(text);
+
+        // 添加下划线
+        spannableString.setSpan(new UnderlineSpan(), 0, text.length(), 0);
+
+        // 添加蓝色字体颜色
+        spannableString.setSpan(new ForegroundColorSpan(Color.BLUE), 0, text.length(), 0);
+
+        // 将 SpannableString 设置到 TextView
+        forgetText.setText(spannableString);
+
+
+        String text1 = "Register now";
+        SpannableString spannableString1 = new SpannableString(text1);
+
+        // 添加下划线
+        spannableString1.setSpan(new UnderlineSpan(), 0, text1.length(), 0);
+
+        // 添加蓝色字体颜色
+        spannableString1.setSpan(new ForegroundColorSpan(Color.BLUE), 0, text1.length(), 0);
+
+        // 将 SpannableString 设置到 TextView
+        registerText.setText(spannableString1);
+
+
 
         // 启动动画
         fadeInLogo();
@@ -71,10 +106,12 @@ public class MainActivity extends AppCompatActivity {
         // 创建 OkHttpClient 实例
         client = new OkHttpClient();
         initializeRecaptchaClient();
+
+
         // 实现跳转
         loginBtn.setOnClickListener(this::onClick);
 
-        registerBtn.setOnClickListener(this::toRegisterClick);
+        registerText.setOnClickListener(this::toRegisterClick);
 
     }
 
@@ -83,14 +120,7 @@ public class MainActivity extends AppCompatActivity {
         ObjectAnimator fadeIn = ObjectAnimator.ofFloat(imageView, "alpha", 0f, 1f);
         fadeIn.setDuration(1000); // 动画持续时间
 
-        fadeIn.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                // 当动画结束后，显示登录表单
-                login_container.setVisibility(View.VISIBLE);
-                // 在此处可以添加表单内容的其他动画效果
-            }
-        });
+
 
         // 启动动画
         fadeIn.start();
@@ -225,13 +255,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void showErrorDialog(String errorMessage) {
         runOnUiThread(() -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            builder.setTitle("Login failed");
-            builder.setMessage(errorMessage);
-            builder.setPositiveButton("OK", (dialog, which) -> {
-                // 处理确定按钮点击事件
-            });
-            builder.create().show();
+            messageTextView.setText(errorMessage);
+            popContainer.setVisibility(View.VISIBLE); // 显示容器
+            new CountDownTimer(2000, 1000) { // 倒计时三秒，每秒执行一次
+                public void onTick(long millisUntilFinished) {
+                }
+
+                public void onFinish() {
+                    popContainer.setVisibility(View.GONE); // 隐藏容器
+                }
+            }.start();
         });
     }
 
