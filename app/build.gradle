@@ -55,6 +55,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'  //okhttp
     implementation 'com.alibaba:fastjson:1.2.56'     //阿里json处理
     implementation 'org.projectlombok:lombok:1.18.22' // lombok
+    implementation 'com.google.android.material:material:1.9.0'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
     implementation 'com.google.android.gms:play-services-safetynet:18.0.1'
 

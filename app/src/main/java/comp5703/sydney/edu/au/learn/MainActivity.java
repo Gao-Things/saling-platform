@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.alibaba.fastjson.JSONObject;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.recaptcha.Recaptcha;
 import com.google.android.recaptcha.RecaptchaAction;
 import com.google.android.recaptcha.RecaptchaTasksClient;
@@ -33,6 +34,7 @@ import java.io.IOException;
 
 import comp5703.sydney.edu.au.learn.VO.LoginParameter;
 import comp5703.sydney.edu.au.learn.VO.RecaptchaParameter;
+import comp5703.sydney.edu.au.learn.util.FormValidator;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -45,7 +47,13 @@ public class MainActivity extends AppCompatActivity {
 
     private Button loginBtn;
     private EditText userName;
+    public TextInputLayout inputLayoutEmail;
+
+
     private EditText password;
+    public TextInputLayout inputLayoutPassword;
+
+
     private FirebaseAuth auth;
     private OkHttpClient client;
     private TextView forgetText;
@@ -53,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout popContainer;
     private TextView messageTextView;
 
-    private View imageView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,8 +68,11 @@ public class MainActivity extends AppCompatActivity {
         // 找到控件
         loginBtn = findViewById(R.id.btnLogin);
         userName = findViewById(R.id.etUsername);
+        inputLayoutEmail = findViewById(R.id.inputLayoutEmail);
+
         password = findViewById(R.id.etPassword);
-        imageView = findViewById(R.id.imageView);
+        inputLayoutPassword = findViewById(R.id.inputLayoutPassword);
+
         registerText = findViewById(R.id.registerTextView);
         forgetText = findViewById(R.id.forgetPassword);
         popContainer = findViewById(R.id.popContainer);
@@ -94,9 +104,6 @@ public class MainActivity extends AppCompatActivity {
         registerText.setText(spannableString1);
 
 
-
-        // 启动动画
-        fadeInLogo();
         // 获取firebase的组件
         auth = FirebaseAuth.getInstance();
 
@@ -105,29 +112,24 @@ public class MainActivity extends AppCompatActivity {
         initializeRecaptchaClient();
 
 
-        // 实现跳转
         loginBtn.setOnClickListener(this::onClick);
 
         registerText.setOnClickListener(this::toRegisterClick);
 
     }
 
-    private void fadeInLogo() {
-        // 创建一个淡入动画
-        ObjectAnimator fadeIn = ObjectAnimator.ofFloat(imageView, "alpha", 0f, 1f);
-        fadeIn.setDuration(1000); // 动画持续时间
-
-
-
-        // 启动动画
-        fadeIn.start();
-    }
     private void toRegisterClick(View view){
         startActivity(new Intent(MainActivity.this, RegisterActivity.class));
     }
     private void onClick(View view){
+        boolean isValid = FormValidator.validateEmail(inputLayoutEmail, userName.getText().toString())
+                & FormValidator.validatePassword(inputLayoutPassword, password.getText().toString());
 
-        verityLoginAction();
+        if (isValid) {
+            // 执行提交逻辑
+            verityLoginAction();
+        }
+
 
     }
 
