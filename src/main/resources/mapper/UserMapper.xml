@@ -2,6 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.usyd.capstone.mapper.UserMapper">
+    <insert id="saveANewUser" parameterType="com.usyd.capstone.entity.User">
+        INSERT INTO User (email, password, activation_status, registration_timestamp)
+            VALUES (#{email}, #{password}, FALSE, #{registrationTimestamp})
+    </insert>
+    <update id="updateAnOledInactivatedUser" parameterType="com.usyd.capstone.entity.User">
+        UPDATE User
+            SET password = #{password}, registration_timestamp = #{registrationTimestamp}
+            WHERE 1=1 AND email = #{email}
+    </update>
 
     <select id="listAll" resultType="com.usyd.capstone.entity.User">
         select * from user;
@@ -13,6 +22,10 @@
         select * from user ${ew.customSqlSegment}
     </select>
     <select id="verifyByEmailAndPassword" resultType="com.usyd.capstone.entity.User">
-        select * from user where 1=1 and name = #{name} and email = #{email}
+        select * from user where 1=1 and name = #{name} and Email = #{email}
     </select>
+    <select id="findByEmail" resultType="com.usyd.capstone.entity.User" parameterType="java.lang.String">
+        SELECT * FROM user WHERE 1=1 AND Email = #{email}
+    </select>
+
 </mapper>

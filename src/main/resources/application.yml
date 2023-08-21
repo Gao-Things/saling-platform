@@ -17,13 +17,27 @@ spring:
       max-request-size: 2000MB
   datasource:
     #mysql
-    driverClassName: com.mysql.jdbc.Driver
+    driverClassName: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/capstone?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
     username: root
-    password: 123
+    password: 123456
     dbcp2:
       max-total: 150
       max-idle: 10
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: capstone.cs76.2@gmail.com
+    password: wmwjtombpniapgvb
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls.enable: true
+  security:
+    user:
+      password:
 #by zhengkai.blog.csdn.net
 #mybatis-plus配置控制台打印完整带参数SQL语句
 mybatis-plus:
@@ -34,3 +48,5 @@ mybatis-plus:
 logging:
   level:
     com.usyd.capstone: debug
+
+

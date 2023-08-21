@@ -21,4 +21,10 @@ public interface UserMapper extends BaseMapper<User> {
     IPage pageCC(Page<User> page, Wrapper ew);
 
     User verifyByEmailAndPassword(String email, String password);
+
+    User findByEmail(String email);
+
+    void saveANewUser(User user);
+
+    void updateAnOledInactivatedUser(User userOld);
 }

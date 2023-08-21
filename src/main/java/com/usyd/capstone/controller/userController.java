@@ -10,6 +10,7 @@ import com.usyd.capstone.entity.DTO.RecaptchaResponse;
 import com.usyd.capstone.entity.User;
 import com.usyd.capstone.entity.VO.Recaptcha;
 import com.usyd.capstone.entity.VO.UserLogin;
+import com.usyd.capstone.entity.VO.UserRegistration;
 import com.usyd.capstone.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,20 +28,16 @@ public class userController {
 
     @Value("${recaptcha.secretKey}")
     private String recaptchaSecretKey;
-    @GetMapping
+    @GetMapping("/hello")
     public String hello(){
+        int a = 1;
         return "hello";
     }
 
     @Autowired
     private UserService userService;
 
-    @PostMapping("/login")
-    public Result userLogin(@RequestBody UserLogin userLogin){
-        System.out.println(userLogin);
-        return userService.verifyLogin(userLogin);
 
-    }
 
     //The token will from the mobile
     @PostMapping("/reCAPTCHA")
@@ -182,6 +179,10 @@ public class userController {
         return Result.suc(result.getRecords(), result.getTotal());
     }
 
+    @PostMapping("/registration")
+    public Result register(@RequestBody UserRegistration userRegistration){
+        int a =1;
 
-
+        return userService.registration(userRegistration.getEmail(), userRegistration.getPassword());
+    }
 }
