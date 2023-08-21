@@ -38,7 +38,7 @@ public class SendEmail {
     }
 
     private static String getRegistEmailContent(String email, long registrationTimestamp, String passwordToken) {
-        String url = "http://localhost:8082/user/verifyRegistration?email=" + email + "&registrationTimeStamp=" +
+        String url = "http://localhost:8082/user/registrationVerification?email=" + email + "&registrationTimestamp=" +
                 registrationTimestamp + "&passwordToken=" + passwordToken;
         String emailContent = "<p>Dear user,</p>" +
                 "<p>Thank you for registering with us! To complete your registration, please click the link below to verify your email:</p>" +

@@ -24,6 +24,10 @@ public class Result {
     public static Result suc(Object data, Long total){
         return result(200, "successful", total, data);
     }
+
+    public static Result customize(int code, String msg, Long total, Object data){
+        return result(code, msg, total, data);
+    }
     private static Result result(int code, String msg, Long total, Object data){
 
         Result res = new Result();

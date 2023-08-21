@@ -22,5 +22,5 @@ public interface UserService extends IService<User> {
 
     Result registration(String email, String password);
 
-    Result verifyRegistration(String email, long registrationTimestamp, String passwordToken);
+    Result registrationVerification(String email, long registrationTimestamp, String passwordToken);
 }

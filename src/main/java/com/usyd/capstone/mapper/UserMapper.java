@@ -27,4 +27,8 @@ public interface UserMapper extends BaseMapper<User> {
     void saveANewUser(User user);
 
     void updateAnOledInactivatedUser(User userOld);
+
+    User findByEmailAndRegistrationTimestampAndPassword(String email, long registrationTimestamp, String password);
+
+    void activeAnAccount(User user);
 }

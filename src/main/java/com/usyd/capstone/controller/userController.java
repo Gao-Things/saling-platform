@@ -181,8 +181,12 @@ public class userController {
 
     @PostMapping("/registration")
     public Result register(@RequestBody UserRegistration userRegistration){
-        int a =1;
-
         return userService.registration(userRegistration.getEmail(), userRegistration.getPassword());
+    }
+
+    @GetMapping("/registrationVerification")
+    public Result registrationVerification(@RequestParam("email") String email, @RequestParam("registrationTimestamp")
+            long registrationTimestamp, @RequestParam("passwordToken") String passwordToken){
+        return userService.registrationVerification(email, registrationTimestamp, passwordToken);
     }
 }

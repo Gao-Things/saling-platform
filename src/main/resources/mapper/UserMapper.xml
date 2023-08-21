@@ -9,7 +9,12 @@
     <update id="updateAnOledInactivatedUser" parameterType="com.usyd.capstone.entity.User">
         UPDATE User
             SET password = #{password}, registration_timestamp = #{registrationTimestamp}
-            WHERE 1=1 AND email = #{email}
+            WHERE 1=1 AND id = #{id}
+    </update>
+    <update id="activeAnAccount" parameterType="com.usyd.capstone.entity.User">
+        UPDATE User
+            SET activation_status = TRUE
+            WHERE 1=1 AND id = #{id}
     </update>
 
     <select id="listAll" resultType="com.usyd.capstone.entity.User">
@@ -26,6 +31,10 @@
     </select>
     <select id="findByEmail" resultType="com.usyd.capstone.entity.User" parameterType="java.lang.String">
         SELECT * FROM user WHERE 1=1 AND Email = #{email}
+    </select>
+    <select id="findByEmailAndRegistrationTimestampAndPassword" resultType="com.usyd.capstone.entity.User">
+        SELECT * FROM user
+            WHERE 1=1 AND Email = #{email} AND registration_timestamp = #{registrationTimestamp} AND password = #{password}
     </select>
 
 </mapper>

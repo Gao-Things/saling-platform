@@ -3,6 +3,7 @@ package com.usyd.capstone.service.impl;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.usyd.capstone.common.Enums.PublicKey;
@@ -71,7 +72,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     //如果用户不存在->存一个新用户+发邮件+返回“已保存”
     //如果存在->如果已激活->报错“已激活”
     //如果存在->如果未激活->更新该用户+发邮件+返回“已更新”
-    @Async("taskExecutor")
+//    @Async("taskExecutor")
     public Result registration(String email, String password){
         long registrationTimeStamp = System.currentTimeMillis();
         String passwordToken = passwordEncoder.encode(email + password + PublicKey.firstKey.getValue());
@@ -84,29 +85,51 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             userNew.setPassword(passwordToken);
             sentEmail.sentRegistrationEmail(email, registrationTimeStamp, passwordToken);
             userMapper.saveANewUser(userNew);
+            return Result.customize(200, "Registration successful! The verification link will be " +
+                    "sent to your E-mail box.", 0L, null);
         }
         else
         {
             if(userOld.isActivationStatus())
             {
-                //reject
+                return Result.customize(409, "This email has been registered!", 0L, null);
             }
             else {
                 userOld.setRegistrationTimestamp(registrationTimeStamp);
                 userOld.setPassword(passwordToken);
                 sentEmail.sentRegistrationEmail(email, registrationTimeStamp, passwordToken);
                 userMapper.updateAnOledInactivatedUser(userOld);
+                return Result.customize(200, "Registration successful! The verification link will be " +
+                        "sent to your E-mail box.", 0L, null);
             }
         }
-
-        return null;
     }
 
 
 
     @Override
-    public Result verifyRegistration(String email, long registrationTimeStamp, String passwordToken) {
-        return null;
+    public Result registrationVerification(String email, long registrationTimestamp, String password) {
+        User user = userMapper.findByEmailAndRegistrationTimestampAndPassword(email, registrationTimestamp, password);
+        if(user == null)
+        {
+            return Result.customize(404, "The registration verification link is wrong!", 0L, null);
+        }
+        else
+        {
+            if(user.isActivationStatus())
+            {
+                return Result.customize(400, "This is an active account!", 0L, null);
+            }
+            else if(System.currentTimeMillis() - registrationTimestamp > 86400000L)
+            {
+                return Result.customize(410, "The registration verification link is out of date!", 0L, null);
+            }
+            else
+            {
+                userMapper.activeAnAccount(user);
+                return Result.customize(200, "Your account has been activated!", 0L, null);
+            }
+        }
     }
 
 
