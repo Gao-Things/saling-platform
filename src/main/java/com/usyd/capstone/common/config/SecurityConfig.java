@@ -20,7 +20,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
 //                    .antMatchers("/public/**").permitAll() // 公开访问的URL
-                .antMatchers("/user/registration").permitAll()
                     .antMatchers("/user/**").permitAll()
 //                   .antMatchers("/user/registration").permitAll()
                     .antMatchers("/admin/**").hasRole("ADMIN") // 需要ADMIN角色才能访问的URL
