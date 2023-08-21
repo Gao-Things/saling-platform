@@ -23,4 +23,12 @@
         <item name="android:padding">10dp</item>
         <item name="android:layout_margin">5dp</item>
     </style>
+
+    <style name="CustomCheckBoxStyle" parent="Theme.AppCompat.Light">
+        <item name="colorControlNormal">@color/darkGreen</item>
+        <item name="colorControlActivated">@color/darkGreen</item>
+        <!-- 更改文本颜色 -->
+        <item name="android:textColor">@color/darkGreen</item>
+    </style>
+
 </resources>

@@ -6,26 +6,26 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="16dp"
-        android:src="@drawable/ic_launcher_foreground" />
+<!--    <ImageView-->
+<!--        android:id="@+id/imageView"-->
+<!--        android:layout_width="100dp"-->
+<!--        android:layout_height="100dp"-->
+<!--        android:layout_gravity="center_horizontal"-->
+<!--        android:layout_marginBottom="16dp"-->
+<!--        android:src="@drawable/ic_launcher_foreground" />-->
 
     <TextView
+
+        android:layout_marginTop="50dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Login"
+
+        android:gravity="center"
+        android:text="Company name"
+        android:textColor="@color/darkGreen"
         android:textSize="30dp" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="35dp"
-        android:text="Please enter your login details below"
-        android:textSize="16dp" />
+
 
     <!-- 容器背景 -->
     <LinearLayout
@@ -74,21 +74,13 @@
             android:id="@+id/etUsername"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_toLeftOf="@id/emptyView"
-            android:background="#80989898"
+            android:background="@drawable/rounded_border"
             android:inputType="text"
             android:maxLines="1"
-            android:padding="5dp" />
+            android:padding="15dp"
+            android:hint="Enter your email"/>
 
-        <!-- 空的占位元素，宽度为24dp -->
-        <View
-            android:id="@+id/emptyView"
-            android:layout_width="24dp"
-            android:layout_height="0dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp" />
+
 
     </RelativeLayout>
 
@@ -108,22 +100,13 @@
             android:id="@+id/etPassword"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_toLeftOf="@id/passwordToggleIcon"
-            android:background="#80989898"
+            android:background="@drawable/rounded_border"
             android:inputType="textPassword"
+            android:drawableEnd="@drawable/ic_baseline_remove_red_eye_24"
             android:maxLines="1"
-            android:padding="5dp" />
+            android:padding="15dp" />
 
-        <ImageView
-            android:id="@+id/passwordToggleIcon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:contentDescription="Password Toggle Icon"
-            android:src="@drawable/ic_baseline_remove_red_eye_24" />
+
 
     </RelativeLayout>
 
@@ -132,6 +115,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:textColor="@color/darkGreen"
         android:text="Remember me" />
 
     <TextView
@@ -140,18 +124,19 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
         android:layout_marginTop="10dp"
-        android:text="Forget your password ?"
-        android:textColor="@android:color/black" />
+        android:text="Forgot password ?"
+        android:textColor="@color/darkGreen" />
 
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnLogin"
-        android:layout_width="200dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:background="@drawable/bg_1"
         android:layout_marginTop="30dp"
-        android:text="Login" />
+        android:text="Login"
+        android:textColor="@color/lightwhite"
+        android:background="@drawable/custom_button_background" />
 
 
 
@@ -173,6 +158,7 @@
             android:layout_height="wrap_content"
             android:text="or"
             android:textSize="18sp"
+            android:textColor="@color/darkGreen"
             android:paddingHorizontal="16dp" />
 
         <View
@@ -192,14 +178,16 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/darker_gray"
+            android:textColor="@color/lightGreen"
             android:text="Not a member ?"/>
 
         <TextView
             android:id="@+id/registerTextView"
             android:layout_marginLeft="20dp"
             android:layout_width="wrap_content"
+            android:textColor="@color/darkGreen"
             android:layout_height="wrap_content"
+            android:textStyle="bold"
             android:text="Register now"/>
     </LinearLayout>
 

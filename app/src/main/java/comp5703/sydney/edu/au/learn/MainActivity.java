@@ -1,9 +1,6 @@
 package comp5703.sydney.edu.au.learn;
 
 import static android.content.ContentValues.TAG;
-
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.graphics.Color;
@@ -78,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         spannableString.setSpan(new UnderlineSpan(), 0, text.length(), 0);
 
         // 添加蓝色字体颜色
-        spannableString.setSpan(new ForegroundColorSpan(Color.BLUE), 0, text.length(), 0);
+        spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#437D28")), 0, text.length(), 0);
 
         // 将 SpannableString 设置到 TextView
         forgetText.setText(spannableString);
@@ -91,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         spannableString1.setSpan(new UnderlineSpan(), 0, text1.length(), 0);
 
         // 添加蓝色字体颜色
-        spannableString1.setSpan(new ForegroundColorSpan(Color.BLUE), 0, text1.length(), 0);
+        spannableString1.setSpan(new ForegroundColorSpan(Color.parseColor("#437D28")), 0, text1.length(), 0);
 
         // 将 SpannableString 设置到 TextView
         registerText.setText(spannableString1);

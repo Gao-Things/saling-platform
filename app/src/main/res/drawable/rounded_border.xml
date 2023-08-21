@@ -1,0 +1,5 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#00000000" /> <!-- 设置透明背景 -->
+    <stroke android:color="@color/darkGreen" android:width="2dp" /> <!-- 设置绿色边框 -->
+    <corners android:radius="18dp" /> <!-- 设置圆角半径 -->
+</shape>

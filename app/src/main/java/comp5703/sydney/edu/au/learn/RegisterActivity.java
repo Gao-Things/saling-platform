@@ -3,10 +3,15 @@ package comp5703.sydney.edu.au.learn;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.UnderlineSpan;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
@@ -23,6 +28,8 @@ public class RegisterActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
 
+    private TextView loginTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,9 +38,24 @@ public class RegisterActivity extends AppCompatActivity {
         email = findViewById(R.id.etEmail);
         password = findViewById(R.id.etPassword);
         registerBtn = findViewById(R.id.registerBtn);
+        loginTextView = findViewById(R.id.loginTextView);
 
         registerBtn.setOnClickListener(this::registerClick);
         mAuth = FirebaseAuth.getInstance();
+
+
+
+        String text1 = "Login now";
+        SpannableString spannableString1 = new SpannableString(text1);
+
+        // 添加下划线
+        spannableString1.setSpan(new UnderlineSpan(), 0, text1.length(), 0);
+
+        // 添加蓝色字体颜色
+        spannableString1.setSpan(new ForegroundColorSpan(Color.parseColor("#006104")), 0, text1.length(), 0);
+
+        // 将 SpannableString 设置到 TextView
+        loginTextView.setText(spannableString1);
 
     }
 

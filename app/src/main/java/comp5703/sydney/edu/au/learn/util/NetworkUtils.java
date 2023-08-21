@@ -1,6 +1,5 @@
 package comp5703.sydney.edu.au.learn.util;
 
-import android.util.Log;
 import com.alibaba.fastjson.JSON;
 
 import okhttp3.*;
