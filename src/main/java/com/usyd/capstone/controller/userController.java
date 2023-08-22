@@ -2,12 +2,14 @@ package com.usyd.capstone.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.usyd.capstone.common.QueryPageParam;
 import com.usyd.capstone.common.Result;
 import com.usyd.capstone.entity.DTO.RecaptchaResponse;
 import com.usyd.capstone.entity.User;
+import com.usyd.capstone.entity.VO.EmailAddress;
 import com.usyd.capstone.entity.VO.Recaptcha;
 import com.usyd.capstone.entity.VO.UserLogin;
 import com.usyd.capstone.entity.VO.UserRegistration;
@@ -59,6 +61,26 @@ public class userController {
             return Result.fail("reCAPTCHA verification failed");
         }
     }
+
+    @PostMapping("/forgetPassword")
+    public Result forgetPassword(@RequestBody EmailAddress emailAddress){
+
+        return userService.forgetPassword(emailAddress);
+
+    }
+
+    @GetMapping("/forgetPasswordVerification")
+    public Result forgetPasswordVerification(@RequestParam("email") String email, @RequestParam("registrationTimestamp")
+    long registrationTimestamp){
+        return userService.forgetPasswordVerification(email, registrationTimestamp);
+    }
+
+    @GetMapping("/pollingResult")
+    public Result pollingResult(@RequestParam("email") String email){
+
+        return userService.pollingResult(email);
+    }
+
 
     private boolean validateRecaptcha( Recaptcha recaptcha) {
 

@@ -26,4 +26,7 @@ public class User {
 
     @TableField("activation_status")
     private boolean activationStatus;
+
+    @TableField("forget_password_verity")
+    private Long forgetPasswordVerity;
 }

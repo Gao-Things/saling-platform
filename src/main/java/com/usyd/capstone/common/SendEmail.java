@@ -49,4 +49,39 @@ public class SendEmail {
                 "<P>Thank you!</P>";
         return emailContent;
     }
+
+
+
+    @Async("taskExecutor")
+    public void sentForgetEmail(String email, long forgetTimestamp){
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+
+            helper.setTo(email);
+            helper.setSubject("Welcome to our platform! Please verify your email");
+
+            String emailContent = getForgetEmailContent(email, forgetTimestamp);
+            helper.setText(emailContent, true); // Use true to enable HTML content
+
+            mailSender.send(mimeMessage);
+        } catch (MessagingException | MailException e) {
+            // Handle the exception here
+            e.printStackTrace();
+            // You can log the exception or take other appropriate actions
+        }
+    }
+
+    private static String getForgetEmailContent(String email, long registrationTimestamp) {
+        String url = "http://localhost:8082/user/forgetPasswordVerification?email=" + email + "&registrationTimestamp=" +
+                registrationTimestamp;
+        String emailContent2 = "<p>Dear user,</p>" +
+                "<p>Thank you for registering with us! Please click the link below to verify your email:</p>" +
+                "<P>Verification Link: <a href=\"" + url + "\">" + url +"</a></P>" +
+                "<P>If you're unable to click the link, please copy and paste the link into your browser's address bar.</P>" +
+                "<P>This link will be valid for the next 24 hours. If you don't verify within this time frame, your account won't be activated.</P>" +
+                "<P>If you didn't register for our platform, please disregard this email.</P>" +
+                "<P>Thank you!</P>";
+        return emailContent2;
+    }
 }

@@ -11,6 +11,7 @@ import com.usyd.capstone.common.Result;
 import com.usyd.capstone.common.SendEmail;
 import com.usyd.capstone.common.utils.TokenUtils;
 import com.usyd.capstone.entity.User;
+import com.usyd.capstone.entity.VO.EmailAddress;
 import com.usyd.capstone.entity.VO.UserLogin;
 import com.usyd.capstone.mapper.UserMapper;
 import com.usyd.capstone.service.UserService;
@@ -145,6 +146,56 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 userMapper.activeAnAccount(user);
                 return Result.customize(200, "Your account has been activated!", 0L, null);
             }
+        }
+    }
+
+    @Override
+    public Result forgetPassword(EmailAddress emailAddress) {
+
+        long forgetTimeStamp = System.currentTimeMillis();
+       User user = userMapper.selectOne(new QueryWrapper<User>().eq("email", emailAddress.getEmailAddress()));
+       if (user == null){
+           return Result.fail("your email address is wrong");
+       }
+
+        if (!user.isActivationStatus()){
+            return Result.fail("your account is not activation");
+        }
+
+       // send verify email
+        sentEmail.sentForgetEmail( emailAddress.getEmailAddress(), forgetTimeStamp);
+
+        return Result.suc("The verity email has been sent");
+    }
+
+    @Override
+    public Result forgetPasswordVerification(String email, long registrationTimestamp) {
+
+        User user = userMapper.selectOne(new QueryWrapper<User>().eq("email", email));
+        if (user == null){
+            return Result.fail("invalid link");
+        }
+        if (System.currentTimeMillis() - registrationTimestamp > 86400000L){
+            return Result.fail("The registration verification link is out of date!");
+        }
+        user.setForgetPasswordVerity(1L);
+        userMapper.updateById(user);
+        return Result.suc("Verify successful");
+    }
+
+    @Override
+    public Result pollingResult(String email) {
+
+        User user = userMapper.selectOne(new QueryWrapper<User>().eq("email", email));
+
+        if (user == null){
+            return Result.fail("error, the user not exit");
+        }
+
+        if (user.getForgetPasswordVerity() == 1L){
+           return Result.suc("Email verity successful");
+        }else {
+            return Result.fail("Email still not verity");
         }
     }
 
