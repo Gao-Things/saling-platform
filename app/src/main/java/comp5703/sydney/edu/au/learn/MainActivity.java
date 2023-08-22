@@ -254,16 +254,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void showErrorDialog(String errorMessage) {
         runOnUiThread(() -> {
-            messageTextView.setText(errorMessage);
-            popContainer.setVisibility(View.VISIBLE); // 显示容器
-            new CountDownTimer(2000, 1000) { // 倒计时三秒，每秒执行一次
-                public void onTick(long millisUntilFinished) {
-                }
-
-                public void onFinish() {
-                    popContainer.setVisibility(View.GONE); // 隐藏容器
-                }
-            }.start();
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle("Login failed");
+            builder.setMessage(errorMessage);
+            builder.setPositiveButton("OK", (dialog, which) -> {
+                // 处理确定按钮点击事件
+            });
+            builder.create().show();
         });
     }
 
