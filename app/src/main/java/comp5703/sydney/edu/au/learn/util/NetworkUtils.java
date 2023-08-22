@@ -2,13 +2,15 @@ package comp5703.sydney.edu.au.learn.util;
 
 import com.alibaba.fastjson.JSON;
 
+import java.util.Map;
+
 import okhttp3.*;
 
 public class NetworkUtils {
 
     private static final String TAG = "NetworkUtils";
     // replace with your computer ip address
-    public static final String apiURL = "http://172.16.31.14:8082";
+    public static final String apiURL = "http://172.16.31.194:8082";
     private static OkHttpClient client = new OkHttpClient();
 
     public static void postJsonRequest(Object object, String url, Callback callback) {
@@ -31,6 +33,26 @@ public class NetworkUtils {
 
         client.newCall(request).enqueue(callback);
     }
+
+    public static void getWithParamsRequest( Map<String, String> queryParams, String url, Callback callback) {
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(apiURL + url).newBuilder();
+
+        // 添加查询参数
+        if (queryParams != null) {
+            for (Map.Entry<String, String> entry : queryParams.entrySet()) {
+                urlBuilder.addQueryParameter(entry.getKey(), entry.getValue());
+            }
+        }
+
+        String useUrl = urlBuilder.build().toString();
+
+        Request request = new Request.Builder()
+                .url(useUrl)
+                .build();
+
+        client.newCall(request).enqueue(callback);
+    }
+
 
     public static void postRequest(String url, Callback callback) {
         Request request = new Request.Builder()

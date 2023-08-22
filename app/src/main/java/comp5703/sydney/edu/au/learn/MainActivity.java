@@ -111,13 +111,15 @@ public class MainActivity extends AppCompatActivity {
         client = new OkHttpClient();
         initializeRecaptchaClient();
 
-
+        forgetText.setOnClickListener(this::toForgetClick);
         loginBtn.setOnClickListener(this::onClick);
-
         registerText.setOnClickListener(this::toRegisterClick);
 
     }
 
+    private void toForgetClick(View view){
+        startActivity(new Intent(MainActivity.this, forgotPassword.class));
+    }
     private void toRegisterClick(View view){
         startActivity(new Intent(MainActivity.this, RegisterActivity.class));
     }

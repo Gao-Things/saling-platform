@@ -28,9 +28,22 @@ public class FormValidator {
         }
     }
 
+
+
     public static boolean validatePassword(TextInputLayout inputLayout, String password) {
         if (!isStrongPassword(password)) {
             inputLayout.setError("password is invalid");
+            return false;
+        } else {
+            inputLayout.setError(null);
+            return true;
+        }
+    }
+
+
+    public static boolean validateRepeatPassword(TextInputLayout inputLayout, String password, String password2) {
+        if (!password.equals(password2)) {
+            inputLayout.setError("two password is not same");
             return false;
         } else {
             inputLayout.setError(null);

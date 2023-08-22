@@ -16,4 +16,6 @@
     <string name="menu_video">Video</string>
     <string name="your_email">your email</string>
     <string name="email_send">An verification email hasbeen sentPlease click the linkincluded to verifv vouremail address</string>
+    <string name="opps_it_happens_to_the_best_of_us_input_your_email_address_to_fix_the_issue">Opps, it happens to the best of us input your email address to fix the issue</string>
+    <string name="setNewPassword">Enter your new password below and check the hint while setting it</string>
 </resources>
