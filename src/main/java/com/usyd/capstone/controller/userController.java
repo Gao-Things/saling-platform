@@ -9,10 +9,7 @@ import com.usyd.capstone.common.QueryPageParam;
 import com.usyd.capstone.common.Result;
 import com.usyd.capstone.entity.DTO.RecaptchaResponse;
 import com.usyd.capstone.entity.User;
-import com.usyd.capstone.entity.VO.EmailAddress;
-import com.usyd.capstone.entity.VO.Recaptcha;
-import com.usyd.capstone.entity.VO.UserLogin;
-import com.usyd.capstone.entity.VO.UserRegistration;
+import com.usyd.capstone.entity.VO.*;
 import com.usyd.capstone.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +77,16 @@ public class userController {
 
         return userService.pollingResult(email);
     }
+
+
+    // 需要完善加个token
+    @PostMapping("/updatePassword")
+    public Result updatePassword(@RequestBody UpdatePasswordParameter updatePasswordParameter){
+
+        return userService.updatePassword(updatePasswordParameter);
+
+    }
+
 
 
     private boolean validateRecaptcha( Recaptcha recaptcha) {

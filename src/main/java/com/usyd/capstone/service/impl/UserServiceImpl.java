@@ -12,6 +12,7 @@ import com.usyd.capstone.common.SendEmail;
 import com.usyd.capstone.common.utils.TokenUtils;
 import com.usyd.capstone.entity.User;
 import com.usyd.capstone.entity.VO.EmailAddress;
+import com.usyd.capstone.entity.VO.UpdatePasswordParameter;
 import com.usyd.capstone.entity.VO.UserLogin;
 import com.usyd.capstone.mapper.UserMapper;
 import com.usyd.capstone.service.UserService;
@@ -197,6 +198,32 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }else {
             return Result.fail("Email still not verity");
         }
+    }
+
+    @Override
+    public Result updatePassword(UpdatePasswordParameter updatePasswordParameter) {
+
+        String email = updatePasswordParameter.getEmail();
+        String password = updatePasswordParameter.getPassword();
+        String passwordTwo = updatePasswordParameter.getPassword2();
+
+        User user = userMapper.selectOne(new QueryWrapper<User>().eq("email", email));
+        if (user == null){
+            return Result.fail("error, can`t find this user");
+        }
+        if (user.getForgetPasswordVerity() != 1){
+            return Result.fail("your email has not been verity");
+        }
+        if (!password.equals(passwordTwo)){
+            return Result.fail("your two password is not same ");
+        }
+        // encode password
+        String passwordToken = passwordEncoder.encode(email + password + PublicKey.firstKey.getValue());
+        user.setPassword(passwordToken);
+
+        userMapper.updateById(user);
+
+        return Result.suc("user password has been update");
     }
 
 

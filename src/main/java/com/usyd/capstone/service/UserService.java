@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.usyd.capstone.common.Result;
 import com.usyd.capstone.entity.User;
 import com.usyd.capstone.entity.VO.EmailAddress;
+import com.usyd.capstone.entity.VO.UpdatePasswordParameter;
 import com.usyd.capstone.entity.VO.UserLogin;
 
 import java.util.List;
@@ -30,4 +31,6 @@ public interface UserService extends IService<User> {
     Result forgetPasswordVerification(String email, long registrationTimestamp);
 
     Result pollingResult(String email);
+
+    Result updatePassword(UpdatePasswordParameter updatePasswordParameter);
 }
