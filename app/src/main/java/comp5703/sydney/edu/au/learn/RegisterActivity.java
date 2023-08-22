@@ -1,8 +1,11 @@
 package comp5703.sydney.edu.au.learn;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
@@ -10,12 +13,14 @@ import android.text.SpannableString;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.UnderlineSpan;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
@@ -23,7 +28,14 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.FirebaseAuth;
 
 
+import java.io.IOException;
+
+import comp5703.sydney.edu.au.learn.VO.RegisterParameter;
 import comp5703.sydney.edu.au.learn.util.FormValidator;
+import comp5703.sydney.edu.au.learn.util.NetworkUtils;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class RegisterActivity extends AppCompatActivity {
     public EditText email;
@@ -98,7 +110,7 @@ public class RegisterActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 // 文本发生变化后调用
 
-                if(inputLayoutEmail.getEditText().getText().toString().trim().length()>15){
+                if(inputLayoutEmail.getEditText().getText().toString().trim().length()>45){
                     inputLayoutEmail.setError("Username length exceeds limit");
                 }
                 else{
@@ -117,51 +129,83 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (isValid) {
             // 执行提交逻辑
+            registerUser(email.getText().toString(),
+                    password.getText().toString(),
+                    firstname.getText().toString(),
+                    lastname.getText().toString());
+
         }
 
     }
 
 
-    private void registerUser(String email, String password) {
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
+    private void registerUser(String email, String password, String firstname, String lastname) {
 
-                        FirebaseUser user = mAuth.getCurrentUser();
-                        sendVerificationEmail(user); // 发送验证邮件
+        RegisterParameter registerParameter = new RegisterParameter();
+        registerParameter.setEmail(email);
+        registerParameter.setPassword(password);
+        registerParameter.setFirstname(firstname);
+        registerParameter.setLastname(lastname);
 
-                    } else {
-                        // 注册失败
-                        if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                            Toast.makeText(RegisterActivity.this, "此邮箱已被注册", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(RegisterActivity.this, "注册失败，请重试", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+
+        NetworkUtils.postJsonRequest(registerParameter, "/user/registration", new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                handleResponse(response);
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                handleFailure(e);
+            }
+        });
+
     }
 
 
-    private void sendVerificationEmail(FirebaseUser user) {
-        if (user != null) {
-            user.sendEmailVerification()
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
+    private void handleResponse(Response response) throws IOException {
+        String responseBody = response.body().string();
+        JSONObject jsonObject = JSONObject.parseObject(responseBody);
+        int code = jsonObject.getIntValue("code");
+        Object dataValue = jsonObject.get("data");
 
-                            AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
-                            builder.setTitle("Successful !!")
-                                    .setMessage("The vertified Email has been send")
-                                    .setPositiveButton("Back", (dialogInterface, i) -> {
-
-                                    });
-
-                            builder.create().show();
-                        } else {
-                            Toast.makeText(RegisterActivity.this, "无法发送验证邮件，请稍后再试", Toast.LENGTH_LONG).show();
-                        }
-                    });
+        if (code == 200) {
+            String msg = jsonObject.getString("msg"); // 根据实际 JSON 键获取 Token
+            Log.d(TAG, "info: " + msg);
+            startActivity(new Intent(RegisterActivity.this, vertifyEmailShow.class));
+        } else {
+            System.out.println("wdffffffffffffffffffffffffffffffffffff");
         }
     }
+
+    private void handleFailure(IOException e) {
+        Log.e(TAG, "Exception: " + e.getMessage());
+    }
+
+
+
+// firebase send email service
+
+//    private void sendVerificationEmail(FirebaseUser user) {
+//        if (user != null) {
+//            user.sendEmailVerification()
+//                    .addOnCompleteListener(task -> {
+//                        if (task.isSuccessful()) {
+//
+//                            AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
+//                            builder.setTitle("Successful !!")
+//                                    .setMessage("The vertified Email has been send")
+//                                    .setPositiveButton("Back", (dialogInterface, i) -> {
+//
+//                                    });
+//
+//                            builder.create().show();
+//                        } else {
+//                            Toast.makeText(RegisterActivity.this, "无法发送验证邮件，请稍后再试", Toast.LENGTH_LONG).show();
+//                        }
+//                    });
+//        }
+//    }
 
 
 }

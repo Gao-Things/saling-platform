@@ -15,4 +15,5 @@
     <string name="title_activity_home">Home</string>
     <string name="menu_video">Video</string>
     <string name="your_email">your email</string>
+    <string name="email_send">An verification email hasbeen sentPlease click the linkincluded to verifv vouremail address</string>
 </resources>
