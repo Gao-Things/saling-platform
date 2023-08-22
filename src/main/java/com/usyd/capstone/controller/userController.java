@@ -181,7 +181,7 @@ public class userController {
 
     @PostMapping("/registration")
     public Result register(@RequestBody UserRegistration userRegistration){
-        return userService.registration(userRegistration.getEmail(), userRegistration.getPassword());
+        return userService.registration(userRegistration.getEmail(), userRegistration.getPassword(), userRegistration.getFirstname(), userRegistration.getLastname());
     }
 
     @GetMapping("/registrationVerification")

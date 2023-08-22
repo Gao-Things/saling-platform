@@ -20,7 +20,7 @@ public interface UserService extends IService<User> {
 
     Result verifyLogin(UserLogin userLogin);
 
-    Result registration(String email, String password);
+    Result registration(String email, String password, String firstname, String lastname);
 
     Result registrationVerification(String email, long registrationTimestamp, String passwordToken);
 }

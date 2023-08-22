@@ -13,4 +13,10 @@ public class UserRegistration {
     @JsonProperty("password")
     private String password;
 
+    @JsonProperty("firstname")
+    private String firstname;
+
+    @JsonProperty("lastname")
+    private String lastname;
+
 }

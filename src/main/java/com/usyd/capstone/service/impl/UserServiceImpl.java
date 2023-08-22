@@ -73,7 +73,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     //如果存在->如果已激活->报错“已激活”
     //如果存在->如果未激活->更新该用户+发邮件+返回“已更新”
 //    @Async("taskExecutor")
-    public Result registration(String email, String password){
+    public Result registration(String email, String password, String firstname, String lastname){
         long registrationTimeStamp = System.currentTimeMillis();
         String passwordToken = passwordEncoder.encode(email + password + PublicKey.firstKey.getValue());
         User userOld = userMapper.findByEmail(email);
@@ -81,10 +81,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         {
             User userNew = new User();
             userNew.setEmail(email);
+            userNew.setName(firstname +' '+ lastname);
             userNew.setRegistrationTimestamp(registrationTimeStamp);
             userNew.setPassword(passwordToken);
+            userNew.setActivationStatus(false);
             sentEmail.sentRegistrationEmail(email, registrationTimeStamp, passwordToken);
-            userMapper.saveANewUser(userNew);
+//            userMapper.saveANewUser(userNew);
+
+            // 可以直接调用mybatisplus的insert方法
+            userMapper.insert(userNew);
+
             return Result.customize(200, "Registration successful! The verification link will be " +
                     "sent to your E-mail box.", 0L, null);
         }
