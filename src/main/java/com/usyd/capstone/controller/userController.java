@@ -39,6 +39,12 @@ public class userController {
 
 
 
+    @PostMapping("/login")
+    public Result userLogin(@RequestBody UserLogin userLogin){
+        System.out.println(userLogin);
+        return userService.verifyLogin(userLogin);
+
+    }
     //The token will from the mobile
     @PostMapping("/reCAPTCHA")
     public Result submitForm(@RequestBody Recaptcha recaptcha) {

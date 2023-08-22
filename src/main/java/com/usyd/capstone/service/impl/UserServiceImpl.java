@@ -59,8 +59,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         // Verify user
         User dbUser = userMapper.selectOne(new QueryWrapper<User>().eq("email", userLogin.getEmail()));
-        if (dbUser == null || !dbUser.getPassword().equals(userLogin.getPassword())) {
+        if (dbUser == null) {
             return Result.fail("Wrong email or password");
+        }
+
+        String machUse = userLogin.getEmail() + userLogin.getPassword() + PublicKey.firstKey.getValue();
+
+        if (!passwordEncoder.matches(machUse, dbUser.getPassword())){
+            return Result.fail("Wrong email or password");
+        }
+
+        if (!dbUser.isActivationStatus()){
+            return Result.fail("your account has not been activation");
         }
 
         String token =  TokenUtils.generateToken(dbUser.getPassword());
