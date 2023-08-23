@@ -7,10 +7,16 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import javax.persistence.*;
+import java.io.Serializable;
+
 @Data
+@Entity
 @TableName("user")
-public class User {
-    @TableId(type = IdType.AUTO) // 使用自增主键
+public class User implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     private Long id;
     private String no;
     private String name;
