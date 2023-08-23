@@ -1,9 +1,21 @@
 import Vue from 'vue'
 import App from './App.vue'
-import router from './routers'
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
+import './assets/global.css';
+import axios from "axios";
+// 引入
+import router from './router'
+import VueRouter from 'vue-router'
+Vue.prototype.$axios = axios;
+Vue.prototype.$httpurl = 'http://localhost:8082'
 
+Vue.config.productionTip = false;
+Vue.use(ElementUI);
+Vue.use(VueRouter) // router plugin
 
 new Vue({
-  router,
   render: h => h(App),
-}).$mount('#app');
+  //注册
+  router
+}).$mount('#app')
