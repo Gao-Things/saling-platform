@@ -22,11 +22,14 @@ public class User {
     @TableField("registration_timestamp")
     private long registrationTimestamp;
 
+    @TableField("resetting_password_timestamp")
+    private long resettingPasswordTimestamp;
+
     private String email;
 
     @TableField("activation_status")
     private boolean activationStatus;
 
     @TableField("forget_password_verity")
-    private Long forgetPasswordVerity;
+    private boolean forgetPasswordVerity;
 }

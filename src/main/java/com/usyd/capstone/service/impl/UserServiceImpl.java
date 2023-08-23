@@ -3,7 +3,6 @@ package com.usyd.capstone.service.impl;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.usyd.capstone.common.Enums.PublicKey;
@@ -18,7 +17,6 @@ import com.usyd.capstone.mapper.UserMapper;
 import com.usyd.capstone.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -153,35 +151,42 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public Result forgetPassword(EmailAddress emailAddress) {
 
-        long forgetTimeStamp = System.currentTimeMillis();
-       User user = userMapper.selectOne(new QueryWrapper<User>().eq("email", emailAddress.getEmailAddress()));
-       if (user == null){
-           return Result.fail("your email address is wrong");
-       }
+
+        User user = userMapper.selectOne(new QueryWrapper<User>().eq("email", emailAddress.getEmailAddress()));
+        if (user == null){
+            return Result.fail("your email address is wrong");
+        }
+       user.setResettingPasswordTimestamp(System.currentTimeMillis());
 
         if (!user.isActivationStatus()){
-            return Result.fail("your account is not activation");
+            return Result.fail("your account is not active");
         }
 
        // send verify email
-        sentEmail.sentForgetEmail( emailAddress.getEmailAddress(), forgetTimeStamp);
-
-        return Result.suc("The verity email has been sent");
+        sentEmail.sentForgetEmail( emailAddress.getEmailAddress(), user.getResettingPasswordTimestamp());
+        userMapper.updateById(user);
+        return Result.suc("The verification link has been sent to your email box");
     }
 
     @Override
-    public Result forgetPasswordVerification(String email, long registrationTimestamp) {
+    public Result forgetPasswordVerification(String email, long resettingPasswordTimestamp) {
 
         User user = userMapper.selectOne(new QueryWrapper<User>().eq("email", email));
         if (user == null){
-            return Result.fail("invalid link");
+            return Result.fail("invalid verification link");
         }
-        if (System.currentTimeMillis() - registrationTimestamp > 86400000L){
-            return Result.fail("The registration verification link is out of date!");
+        if(user.getResettingPasswordTimestamp() != resettingPasswordTimestamp)
+        {
+            return Result.fail("invalid verification link");
         }
-        user.setForgetPasswordVerity(1L);
+        if (System.currentTimeMillis() - resettingPasswordTimestamp > 86400000L){
+            return Result.fail("The resetting password verification link is out of date!");
+        }
+        user.setResettingPasswordTimestamp(System.currentTimeMillis());
+        user.setForgetPasswordVerity(true);
         userMapper.updateById(user);
-        return Result.suc("Verify successful");
+        return Result.suc("The resetting password verification has been verified successfully!" +
+                "You will have 30 minutes to set a new password");
     }
 
     @Override
@@ -190,16 +195,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         User user = userMapper.selectOne(new QueryWrapper<User>().eq("email", email));
 
         if (user == null){
-            return Result.fail("error, the user not exit");
+            return Result.fail("error, the user doesn't exit");
         }
 
-        if (user.getForgetPasswordVerity() == 1L){
+        if (user.isForgetPasswordVerity()){
            return Result.suc("Email verity successful");
         }else {
             return Result.fail("Email still not verity");
         }
     }
 
+    //TODO 检测两个密码是否一致的功能移到前端（？）
     @Override
     public Result updatePassword(UpdatePasswordParameter updatePasswordParameter) {
 
@@ -211,8 +217,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (user == null){
             return Result.fail("error, can`t find this user");
         }
-        if (user.getForgetPasswordVerity() != 1){
-            return Result.fail("your email has not been verity");
+        if (!user.isForgetPasswordVerity()){
+            return Result.fail("your resetting password request hasn't been verity by email");
+        }
+        if (System.currentTimeMillis() - user.getResettingPasswordTimestamp() > 1800000L)
+        {
+            user.setForgetPasswordVerity(false);
+            userMapper.updateById(user);
+            return Result.fail("resetting password permission has been out of date.");
         }
         if (!password.equals(passwordTwo)){
             return Result.fail("your two password is not same ");
@@ -220,6 +232,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // encode password
         String passwordToken = passwordEncoder.encode(email + password + PublicKey.firstKey.getValue());
         user.setPassword(passwordToken);
+        user.setForgetPasswordVerity(false);
 
         userMapper.updateById(user);
 
