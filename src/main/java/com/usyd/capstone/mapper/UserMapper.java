@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.usyd.capstone.entity.Role;
 import com.usyd.capstone.entity.User;
 import org.apache.coyote.Constants;
 import org.apache.ibatis.annotations.Mapper;
@@ -31,4 +32,6 @@ public interface UserMapper extends BaseMapper<User> {
     User findByEmailAndRegistrationTimestampAndPassword(String email, long registrationTimestamp, String password);
 
     void activeAnAccount(User user);
+
+    List<Role> findRoles(Long id);
 }

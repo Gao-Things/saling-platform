@@ -22,8 +22,7 @@ public class User implements Serializable {
     private String name;
     private String password;
     private int sex;
-    @TableField("role_id")
-    private int roleId;
+
     private String phone;
     @TableField("registration_timestamp")
     private long registrationTimestamp;

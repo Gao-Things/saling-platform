@@ -9,6 +9,8 @@ import com.usyd.capstone.common.Enums.PublicKey;
 import com.usyd.capstone.common.Result;
 import com.usyd.capstone.common.SendEmail;
 import com.usyd.capstone.common.utils.TokenUtils;
+import com.usyd.capstone.entity.Role;
+import com.usyd.capstone.entity.Token;
 import com.usyd.capstone.entity.User;
 import com.usyd.capstone.entity.VO.EmailAddress;
 import com.usyd.capstone.entity.VO.UpdatePasswordParameter;
@@ -21,7 +23,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -73,7 +79,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return Result.fail("your account has not been activation");
         }
 
-        String token =  TokenUtils.generateToken(dbUser.getPassword());
+        // find roles of user
+        List<Role> roles= userMapper.findRoles(dbUser.getId());
+
+        List RolesResult = new ArrayList();
+
+        for (Role role : roles){
+            RolesResult.add(role.getRoleName());
+        }
+
+        String commaSeparated = (String) RolesResult.stream().collect(Collectors.joining(","));
+
+        Map<String, String> param = new HashMap<>();
+        param.put("userId", dbUser.getId().toString());
+        param.put("roles", commaSeparated);
+        Token token = TokenUtils.createJwt(param, 100000L);
+
 
         return Result.suc(token);
     }

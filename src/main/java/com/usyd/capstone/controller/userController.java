@@ -36,8 +36,6 @@ public class userController {
     @Autowired
     private UserService userService;
 
-
-
     @PostMapping("/login")
     public Result userLogin(@RequestBody UserLogin userLogin){
         System.out.println(userLogin);
