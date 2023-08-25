@@ -1,4 +1,4 @@
-package com.usyd.capstone.common;
+package com.usyd.capstone.common.CurrentUselessFiles;
 
 import lombok.Data;
 

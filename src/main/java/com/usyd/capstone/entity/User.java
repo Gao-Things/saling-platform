@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import org.springframework.context.annotation.Role;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -21,7 +22,7 @@ public class User implements Serializable {
     private String no;
     private String name;
     private String password;
-    private int sex;
+    private int gender;
 
     private String phone;
     @TableField("registration_timestamp")

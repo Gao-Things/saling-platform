@@ -1,4 +1,4 @@
-package com.usyd.capstone.common;
+package com.usyd.capstone.common.compents;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

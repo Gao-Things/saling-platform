@@ -1,11 +1,12 @@
 package com.usyd.capstone.common.Enums;
 
-public enum PublicKey {
-    firstKey("CS76-2");
+public enum ROLE {
+    ROLE_USER("ROLE_USER"),
+    ROLE_ADMIN("ROLE_ADMIN");
 
     private final String value;
 
-    PublicKey(String value) {
+    ROLE(String value) {
         this.value = value;
     }
 

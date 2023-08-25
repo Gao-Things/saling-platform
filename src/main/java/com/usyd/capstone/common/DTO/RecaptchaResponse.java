@@ -1,4 +1,4 @@
-package com.usyd.capstone.entity.DTO;
+package com.usyd.capstone.common.DTO;
 
 import lombok.Data;
 

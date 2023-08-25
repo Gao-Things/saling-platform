@@ -1,4 +1,4 @@
-package com.usyd.capstone.entity.VO;
+package com.usyd.capstone.common.VO;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
