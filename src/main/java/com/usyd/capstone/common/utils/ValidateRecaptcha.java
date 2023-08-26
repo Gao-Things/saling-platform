@@ -1,7 +1,7 @@
 package com.usyd.capstone.common.utils;
 
 import com.alibaba.fastjson.JSONObject;
-import com.usyd.capstone.common.Enums.SystemSecretKey;
+import com.usyd.capstone.common.Enums.SYSTEM_SECURITY_KEY;
 import com.usyd.capstone.common.VO.Recaptcha;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,7 @@ public class ValidateRecaptcha {
         // 创建一个JSON对象
         JSONObject eventObject = new JSONObject();
         eventObject.put("token", recaptcha.getToken());
-        eventObject.put("siteKey", SystemSecretKey.RECAPTCHA_SECRET_KEY.getValue());
+        eventObject.put("siteKey", SYSTEM_SECURITY_KEY.RECAPTCHA_SECRET_KEY.getValue());
         eventObject.put("expectedAction", recaptcha.getExpectedAction());
 
         // 将JSON对象添加到包含"event"字段的外部对象

@@ -1,8 +1,10 @@
 package com.usyd.capstone.common.Enums;
 
 public enum ROLE {
-    ROLE_USER("ROLE_USER"),
-    ROLE_ADMIN("ROLE_ADMIN");
+    ROLE_NORMAL("ROLE_NORMAL"),
+    ROLE_ADMIN("ROLE_ADMIN"),
+
+    ROLE_SUPER("ROLE_SUPER");
 
     private final String value;
 

@@ -18,7 +18,7 @@ public class SendEmail {
     private JavaMailSender mailSender;
 
     @Async("taskExecutor")
-    public void sentRegistrationEmail(String email, long registrationTimestamp, String passwordToken){
+    public void sentRegistrationEmail(String email, long registrationTimestamp, String passwordToken, int userType){
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
@@ -26,7 +26,7 @@ public class SendEmail {
             helper.setTo(email);
             helper.setSubject("Welcome to our platform! Please verify your email");
 
-            String emailContent = getRegistEmailContent(email, registrationTimestamp, passwordToken);
+            String emailContent = getRegistEmailContent(email, registrationTimestamp, passwordToken, userType);
             helper.setText(emailContent, true); // Use true to enable HTML content
 
             mailSender.send(mimeMessage);
@@ -37,9 +37,9 @@ public class SendEmail {
         }
     }
 
-    private static String getRegistEmailContent(String email, long registrationTimestamp, String passwordToken) {
+    private static String getRegistEmailContent(String email, long registrationTimestamp, String passwordToken, int userType) {
         String url = "http://localhost:8082/user/registrationVerification?email=" + email + "&registrationTimestamp=" +
-                registrationTimestamp + "&passwordToken=" + passwordToken;
+                registrationTimestamp + "&passwordToken=" + passwordToken + "&userType=" + userType;
         String emailContent = "<p>Dear user,</p>" +
                 "<p>Thank you for registering with us! To complete your registration, please click the link below to verify your email:</p>" +
                 "<P>Verification Link: <a href=\"" + url + "\">" + url +"</a></P>" +

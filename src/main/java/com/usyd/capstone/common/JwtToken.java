@@ -1,6 +1,6 @@
 package com.usyd.capstone.common;
 import com.usyd.capstone.common.Enums.ROLE;
-import com.usyd.capstone.common.Enums.SystemSecretKey;
+import com.usyd.capstone.common.Enums.SYSTEM_SECURITY_KEY;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -31,7 +31,7 @@ public class JwtToken extends OncePerRequestFilter {
                 .claim("role", role.getValue())
                 .setIssuedAt(now)
                 .setExpiration(expiration)
-                .signWith(SignatureAlgorithm.HS256, SystemSecretKey.JWT_SECRET_KEY.getValue())
+                .signWith(SignatureAlgorithm.HS256, SYSTEM_SECURITY_KEY.JWT_SECRET_KEY.getValue())
                 .compact();
 
         //未测试，但是留个思路在这
@@ -59,7 +59,7 @@ public class JwtToken extends OncePerRequestFilter {
 
             try {
                 Claims claims = Jwts.parser()
-                        .setSigningKey(SystemSecretKey.JWT_SECRET_KEY.getValue())
+                        .setSigningKey(SYSTEM_SECURITY_KEY.JWT_SECRET_KEY.getValue())
                         .parseClaimsJws(token)
                         .getBody();
 
