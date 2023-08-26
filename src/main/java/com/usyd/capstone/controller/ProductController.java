@@ -44,14 +44,14 @@ public class ProductController {
     public Result getProductsWithPrices(@RequestParam(required = false) String targetCurrency) {
         Map<String, Object> resultMap = new HashMap<>();
         if (targetCurrency==null){
-            resultMap.put("CurrencyUnit:", "USD");
-            resultMap.put("ProductList:", productService.list());
+            resultMap.put("CurrencyUnit", "USD");
+            resultMap.put("ProductList", productService.list());
            return Result.suc(resultMap);
         }
 
         List<Product> productList =  productService.getProductListByCurrency(targetCurrency);
-        resultMap.put("CurrencyUnit:", targetCurrency);
-        resultMap.put("ProductList:", productList);
+        resultMap.put("CurrencyUnit", targetCurrency);
+        resultMap.put("ProductList", productList);
         return Result.suc(resultMap);
     }
 
