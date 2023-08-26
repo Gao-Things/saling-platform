@@ -6,7 +6,7 @@ import com.usyd.capstone.common.Enums.ROLE;
 import com.usyd.capstone.common.Enums.SystemSecretKey;
 import com.usyd.capstone.common.JwtToken;
 import com.usyd.capstone.common.DTO.Result;
-import com.usyd.capstone.common.compents.SendEmail;
+import com.usyd.capstone.common.utils.SendEmail;
 import com.usyd.capstone.entity.User;
 import com.usyd.capstone.common.VO.EmailAddress;
 import com.usyd.capstone.common.VO.UpdatePasswordParameter;

@@ -1,4 +1,4 @@
-package com.usyd.capstone.common.compents;
+package com.usyd.capstone.common.utils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.usyd.capstone.common.Enums.SystemSecretKey;

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.usyd.capstone.mapper.ProductMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.usyd.capstone.entity.Product">
+        <id column="id" property="id" />
+        <result column="product_name" property="productName" />
+        <result column="product_price" property="productPrice" />
+        <result column="product_Imafe" property="productImage" />
+        <result column="product_create_time" property="productCreateTime" />
+        <result column="product_update_time" property="productUpdateTime" />
+        <result column="product_description" property="productDescription" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, product_name, product_price, product_Imafe, product_create_time, product_update_time, product_description
+    </sql>
+
+</mapper>

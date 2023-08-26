@@ -23,7 +23,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(new JwtToken(), UsernamePasswordAuthenticationFilter.class)
                 .csrf().disable()
                 .authorizeRequests()
-//                    .antMatchers("/public/**").permitAll() // 公开访问的URL
+                .antMatchers("/public/**").permitAll() // 公开访问的API
                 .antMatchers("/user/**").permitAll()
 //                   .antMatchers("/user/registration").permitAll()
                 .antMatchers("/admin/**").hasRole("USER") // 需要ADMIN角色才能访问的URL

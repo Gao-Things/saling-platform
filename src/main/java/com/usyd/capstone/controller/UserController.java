@@ -2,9 +2,8 @@ package com.usyd.capstone.controller;
 
 import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.common.VO.*;
-import com.usyd.capstone.common.compents.ValidateRecaptcha;
+import com.usyd.capstone.common.utils.ValidateRecaptcha;
 import com.usyd.capstone.entity.User;
-import com.usyd.capstone.entity.VO.*;
 import com.usyd.capstone.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
