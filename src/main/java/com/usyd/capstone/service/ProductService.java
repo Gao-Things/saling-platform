@@ -1,5 +1,7 @@
 package com.usyd.capstone.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.usyd.capstone.entity.Product;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -16,5 +18,5 @@ import java.util.List;
 public interface ProductService extends IService<Product> {
 
 
-    List<Product> getProductListByCurrency(String targetCurrency);
+    IPage<Product> getProductListByCurrency(String targetCurrency, Page<Product> page);
 }
