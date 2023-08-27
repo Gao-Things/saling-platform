@@ -8,7 +8,7 @@ export default {
     data(){
         return {
             isCollapse:false,
-            aside_width:'200px',
+            aside_width:'230px',
             icon:'el-icon-s-fold'
         }
     },

@@ -1,31 +1,71 @@
 <template>
-  <el-menu background-color="black"
-           text-color="#fff"
-           active-text-color="#ffd04b"
-           default-active="/Home"
-           style="height: 100vh; background-color: black"
-           :collapse="isCollapse"
-           :collapse-transition="false"
-            router>
-    <el-menu-item index="/Home">
-      <i class="el-icon-s-home"></i>
-      <span slot="title">Main</span>
-    </el-menu-item>
+    <div class="big-container">
+        <div class="logo-container">
+            <img src="../../assets/aside_logo.png" alt="Logo" class="logo">
+            <h2 style="margin-top: 20px">ADMIN</h2>
+        </div>
 
-    <el-menu-item index="/fun">
-      <i class="el-icon-s-home"></i>
-      <span slot="title">fun</span>
-    </el-menu-item>
+        <el-menu
+                text-color="#fff"
+                active-text-color="#ffd04b"
+                default-active="/Home"
+                class="custom-menu"
+                :collapse="isCollapse"
+                :collapse-transition="false"
+                router>
+            <el-menu-item index="/Home">
+                <i class="el-icon-s-home"></i>
+                <span slot="title">Main</span>
+            </el-menu-item>
 
-    <el-menu-item index="/customer">
-      <i class="el-icon-s-home"></i>
-      <span slot="title">customer</span>
-    </el-menu-item>
-  </el-menu>
+            <el-menu-item index="/fun">
+                <i class="el-icon-s-home"></i>
+                <span slot="title">fun</span>
+            </el-menu-item>
+
+            <el-menu-item index="/customer">
+                <i class="el-icon-s-home"></i>
+                <span slot="title">customer</span>
+            </el-menu-item>
+        </el-menu>
+    </div>
 </template>
 
 <script src="./aside.js"></script>
 
 <style scoped>
+.logo-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    height: 200px; /* 调整 Logo 容器的高度 */
+    padding: 10px;
+    margin-top: 50px;
+    background-color: transparent
+}
+.big-container{
+    display: flex;
+    flex-direction: column; /* 添加此行以垂直排列子元素 */
+    align-items: center; /* 居中对齐子元素 */
+    height: 100vh;
+    background-color: rgba(7, 7, 7, 0.6);
+
+
+}
+
+.custom-menu {
+    padding: 0; /* 移除内边距 */
+    border: none; /* 移除边框 */
+    height: 100vh;
+    margin-top: 30px;
+    background-color: transparent;
+    font-size: 36px
+}
+.logo {
+    padding: 10px;
+    width: 100px; /* 调整 Logo 的宽度 */
+    height: 100px; /* 调整 Logo 的高度 */
+}
 
 </style>

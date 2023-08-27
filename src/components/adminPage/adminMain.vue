@@ -1,20 +1,20 @@
 <template>
     <div class="admin-Main">
         <el-table :data="tableData"
-                  :cell-style ="{background:'#000000', color: '#ffffff',textAlign: 'center'}"
+                  :cell-style="{background:'#000000',padding: '0', color: '#ffffff',textAlign: 'center'}"
                   style="font-size: 18px"
                   :header-row-style="{height:'80px'}"
                   :header-cell-style="{background:'#000000', color: '#ffffff', fontSize:'19px',textAlign: 'center', fontweight:700}"
 
         >
-            <el-table-column prop="id"  width="180">
+            <el-table-column prop="id" width="180">
                 <img src="@/assets/img_1.png" alt="Logo" class="logo">
             </el-table-column>
             <el-table-column prop="productName" label="Item Name" width="180">
             </el-table-column>
             <el-table-column prop="productPrice" label="price($)" width="180">
             </el-table-column>
-            <el-table-column prop="phone"  width="180">
+            <el-table-column prop="phone" width="180">
                 <img src="@/assets/img_2.png" alt="Logo" class="logo">
             </el-table-column>
 
@@ -37,10 +37,14 @@
 
         </el-table>
         <el-pagination
-                @size-ch
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
                 background
                 layout="prev, pager, next"
-                :total="1000">
+                :total="totalItems"
+                :page-size="pageSize"
+                :current-page="currentPage"
+        >
         </el-pagination>
     </div>
 
@@ -53,6 +57,7 @@
     width: 80px;
     height: 80px;
 }
+
 .button-container {
     display: flex;
 }
@@ -61,9 +66,10 @@
     margin-right: 5px; /* 调整按钮之间的间距 */
 }
 
-.admin-Main{
+.admin-Main {
     background-color: black;
 }
+
 .el-table td.el-table__cell {
     border: 0;
 }

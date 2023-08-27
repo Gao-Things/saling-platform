@@ -1,5 +1,5 @@
 
-import lineChart from "../lineChart/lineChart.vue";
+import lineChart from "@/components/Chart/lineChart.vue";
 export default {
     name: "adminMain.vue",
     components: {lineChart},
@@ -7,15 +7,21 @@ export default {
         return {
             currencyUnit: '',
             tableData: [],
+            totalItems: 1000, // 总记录数
+            pageSize: 5, // 每页显示条数
+            currentPage: 1, // 当前页码
         }
     },
     methods: {
-        loadGet() {
-            this.$axios.get(this.$httpurl + '/public/product/productList').then(res => res.data).then(res => {
+        loadGet(queryParams) {
+            this.$axios.get(this.$httpurl + '/public/product/productList', { params: queryParams }).then(res => res.data).then(res => {
 
                 if (res.code === 200) {
+                    console.log(res.data)
+                    this.totalItems = res.data.ProductList.total
+                    console.log(res.data.total)
                     // 将数据加载到组件的数据属性中
-                    this.tableData = res.data.ProductList.map(item => {
+                    this.tableData = res.data.ProductList.records.map(item => {
                         const isoDateString = item.productUpdateTime; // 假设时间戳字段名为 timestamp
                         const isoDate = new Date(isoDateString);
                         const year = isoDate.getFullYear();
@@ -40,9 +46,20 @@ export default {
             })
         },
 
+        handleSizeChange(newSize) {
+            this.pageSize = newSize;
+            // 重新获取数据
+            this.loadGet({ pageNum: this.currentPage, pageSize: this.pageSize});
+        },
+        handleCurrentChange(newPage) {
+            this.currentPage = newPage;
+            // 重新获取数据
+            this.loadGet({ pageNum: this.currentPage, pageSize: this.pageSize});
+        },
+
     },
     beforeMount() {
-        this.loadGet();
+        this.loadGet({ pageNum: this.currentPage, pageSize: this.pageSize});
     },
 
 
