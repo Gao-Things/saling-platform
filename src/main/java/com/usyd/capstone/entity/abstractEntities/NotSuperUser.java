@@ -19,8 +19,6 @@ public class NotSuperUser extends User {
     @TableField("resetting_password_timestamp")
     private long resettingPasswordTimestamp;
 
-    private String email;
-
     @TableField("forget_password_verity")
     private boolean forgetPasswordVerity;
 }

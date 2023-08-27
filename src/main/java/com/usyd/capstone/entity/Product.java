@@ -1,18 +1,14 @@
 package com.usyd.capstone.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.Set;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 
@@ -35,7 +31,7 @@ public class Product implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @TableField("product_name")
     private String productName;
@@ -47,12 +43,18 @@ public class Product implements Serializable {
     private String productImage;
 
     @TableField("product_create_time")
-    private LocalDateTime productCreateTime;
+    private long productCreateTime;
 
     @TableField("product_update_time")
-    private LocalDateTime productUpdateTime;
+    private long productUpdateTime;
 
     @TableField("product_description")
     private String productDescription;
+
+    @TableField("current_turn_of_record")
+    private int currentTurnOfRecord;
+
+    @OneToMany(mappedBy = "product")
+    private Set<AdminUserProduct> studentCourses = new HashSet<>();
 
 }

@@ -1,4 +1,4 @@
-package com.usyd.capstone.common.utils;
+package com.usyd.capstone.common.compents;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -18,7 +18,7 @@ public class SendEmail {
     private JavaMailSender mailSender;
 
     @Async("taskExecutor")
-    public void sentRegistrationEmail(String email, long registrationTimestamp, String passwordToken, int userType){
+    public void sentRegistrationEmail(String email, long registrationTimestamp, String passwordToken, int userRole){
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
@@ -26,7 +26,7 @@ public class SendEmail {
             helper.setTo(email);
             helper.setSubject("Welcome to our platform! Please verify your email");
 
-            String emailContent = getRegistEmailContent(email, registrationTimestamp, passwordToken, userType);
+            String emailContent = getRegistEmailContent(email, registrationTimestamp, passwordToken, userRole);
             helper.setText(emailContent, true); // Use true to enable HTML content
 
             mailSender.send(mimeMessage);
@@ -37,9 +37,9 @@ public class SendEmail {
         }
     }
 
-    private static String getRegistEmailContent(String email, long registrationTimestamp, String passwordToken, int userType) {
+    private static String getRegistEmailContent(String email, long registrationTimestamp, String passwordToken, int userRole) {
         String url = "http://localhost:8082/user/registrationVerification?email=" + email + "&registrationTimestamp=" +
-                registrationTimestamp + "&passwordToken=" + passwordToken + "&userType=" + userType;
+                registrationTimestamp + "&passwordToken=" + passwordToken + "&userRole=" + userRole;
         String emailContent = "<p>Dear user,</p>" +
                 "<p>Thank you for registering with us! To complete your registration, please click the link below to verify your email:</p>" +
                 "<P>Verification Link: <a href=\"" + url + "\">" + url +"</a></P>" +

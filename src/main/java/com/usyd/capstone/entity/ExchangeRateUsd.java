@@ -30,7 +30,7 @@ public class ExchangeRateUsd implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @TableField("exchange_name")
     private String exchangeName;

@@ -156,7 +156,7 @@ public class PublicController {
 
     @GetMapping("/registrationVerification")
     public Result registrationVerification(@RequestParam("email") String email, @RequestParam("registrationTimestamp")
-            long registrationTimestamp, @RequestParam("passwordToken") String passwordToken, @RequestParam("userType") int userType){
-        return publicService.registrationVerification(email, registrationTimestamp, passwordToken, userType);
+            long registrationTimestamp, @RequestParam("passwordToken") String passwordToken, @RequestParam("userRole") int userRole){
+        return publicService.registrationVerification(email, registrationTimestamp, passwordToken, userRole);
     }
 }

@@ -3,11 +3,12 @@ package com.usyd.capstone.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.usyd.capstone.common.DTO.LoginResponse;
 import com.usyd.capstone.common.Enums.ROLE;
 import com.usyd.capstone.common.Enums.SYSTEM_SECURITY_KEY;
-import com.usyd.capstone.common.JwtToken;
+import com.usyd.capstone.common.compents.JwtToken;
 import com.usyd.capstone.common.DTO.Result;
-import com.usyd.capstone.common.utils.SendEmail;
+import com.usyd.capstone.common.compents.SendEmail;
 import com.usyd.capstone.entity.AdminUser;
 import com.usyd.capstone.entity.NormalUser;
 import com.usyd.capstone.common.VO.EmailAddress;
@@ -68,12 +69,12 @@ public class PublicServiceImpl extends ServiceImpl<NormalUserMapper, NormalUser>
         User user;
         BaseMapper mapper;
         ROLE role;
-        if(userLogin.getUserType() == 1)
+        if(userLogin.getUserRole() == 1)
         {
             mapper = normalUserMapper;
             role = ROLE.ROLE_NORMAL;
         }
-        else if (userLogin.getUserType() == 2)
+        else if (userLogin.getUserRole() == 2)
         {
             mapper = adminUserMapper;
             role = ROLE.ROLE_ADMIN;
@@ -101,10 +102,13 @@ public class PublicServiceImpl extends ServiceImpl<NormalUserMapper, NormalUser>
             return Result.fail("your account has not been activation");
         }
 
-        String token = JwtToken.generateToken(userLogin.getEmail(), role);
+        String token = JwtToken.generateToken(user.getId(), userLogin.getEmail(), role);
 
-
-        return new Result(200, "Login successfully!", 0L, null, token);
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setId(user.getId());
+        loginResponse.setRole(userLogin.getUserRole());
+//        loginResponse.setEmail(userLogin.getEmail());
+        return new Result(200, "Login successfully!", 0L, loginResponse, token);
     }
 
     @Override
@@ -112,14 +116,14 @@ public class PublicServiceImpl extends ServiceImpl<NormalUserMapper, NormalUser>
     //如果存在->如果已激活->报错“已激活”
     //如果存在->如果未激活->更新该用户+发邮件+返回“已更新”
     //admin用默认密码或者空密码注册，之后可以修改密码
-    public Result registration(String email, String password, String firstname, String lastname, int userType){
+    public Result registration(String email, String password, String firstname, String lastname, int userRole){
         long registrationTimeStamp = System.currentTimeMillis();
         String passwordToken = passwordEncoder.encode(email + password + SYSTEM_SECURITY_KEY.PASSWORD_SECRET_KEY.getValue());
         String name = firstname +' '+ lastname;
         NotSuperUser notSuperUserOld;
         BaseMapper mapper;
         String text;
-        if(userType == 1)
+        if(userRole == 1)
         {
             mapper = normalUserMapper;
             text = "your";
@@ -134,7 +138,7 @@ public class PublicServiceImpl extends ServiceImpl<NormalUserMapper, NormalUser>
         if(notSuperUserOld == null)
         {
             NotSuperUser notSuperUserNew;
-            if(userType == 1)
+            if(userRole == 1)
             {
                 notSuperUserNew = new NormalUser();
             }
@@ -147,7 +151,7 @@ public class PublicServiceImpl extends ServiceImpl<NormalUserMapper, NormalUser>
             notSuperUserNew.setRegistrationTimestamp(registrationTimeStamp);
             notSuperUserNew.setPassword(passwordToken);
             notSuperUserNew.setActivationStatus(false);
-            sentEmail.sentRegistrationEmail(email, registrationTimeStamp, passwordToken, userType);
+            sentEmail.sentRegistrationEmail(email, registrationTimeStamp, passwordToken, userRole);
 
             // 可以直接调用mybatisplus的insert方法
             mapper.insert(notSuperUserNew);
@@ -164,7 +168,7 @@ public class PublicServiceImpl extends ServiceImpl<NormalUserMapper, NormalUser>
             else {
                 notSuperUserOld.setRegistrationTimestamp(registrationTimeStamp);
                 notSuperUserOld.setPassword(passwordToken);
-                sentEmail.sentRegistrationEmail(email, registrationTimeStamp, passwordToken, userType);
+                sentEmail.sentRegistrationEmail(email, registrationTimeStamp, passwordToken, userRole);
                 mapper.updateById(notSuperUserOld);
                 return new Result(200, "Registration successful! The verification link will be " +
                         "sent to " + text + " E-mail box.", 0L, null, null);
@@ -175,10 +179,10 @@ public class PublicServiceImpl extends ServiceImpl<NormalUserMapper, NormalUser>
 
 
     @Override
-    public Result registrationVerification(String email, long registrationTimestamp, String password, int userType) {
+    public Result registrationVerification(String email, long registrationTimestamp, String password, int userRole) {
         NotSuperUser notSuperUser;
         BaseMapper mapper;
-        if(userType == 1)
+        if(userRole == 1)
         {
             mapper = normalUserMapper;
         }

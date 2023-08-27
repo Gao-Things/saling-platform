@@ -18,9 +18,9 @@ public interface PublicService extends IService<NormalUser> {
 
     Result verifyLogin(UserLogin userLogin);
 
-    Result registration(String email, String password, String firstname, String lastname, int userType);
+    Result registration(String email, String password, String firstname, String lastname, int userRole);
 
-    Result registrationVerification(String email, long registrationTimestamp, String passwordToken, int userType);
+    Result registrationVerification(String email, long registrationTimestamp, String passwordToken, int userRole);
 
     Result forgetPassword(EmailAddress emailAddress);
 

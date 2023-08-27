@@ -1,12 +1,15 @@
-package com.usyd.capstone.common;
+package com.usyd.capstone.common.compents;
 import com.usyd.capstone.common.Enums.ROLE;
 import com.usyd.capstone.common.Enums.SYSTEM_SECURITY_KEY;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -18,16 +21,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Component
 public class JwtToken extends OncePerRequestFilter {
 
     private static final long EXPIRATION_TIME = 86400000; // 24小时，单位为毫秒
 
-    public static String generateToken(String email, ROLE role) {
+    public static String generateToken(Long id, String email, ROLE role) {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + EXPIRATION_TIME);
 
         String token = Jwts.builder()
                 .setSubject(email)
+                .setId(id.toString())
                 .claim("role", role.getValue())
                 .setIssuedAt(now)
                 .setExpiration(expiration)
@@ -47,9 +52,29 @@ public class JwtToken extends OncePerRequestFilter {
         return token;
     }
 
+    private static Claims parser(String token) {
+        return Jwts.parser()
+                .setSigningKey(SYSTEM_SECURITY_KEY.JWT_SECRET_KEY.getValue())
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+
+
+    public Long getId(String token)
+    {
+        try {
+            Claims claims = parser(token);
+            return Long.parseLong(claims.getId());
+        } catch (Exception e){
+            System.out.println(e);
+            return -1L;
+        }
+    }
+
+
     private static final String TOKEN_PREFIX = "Bearer ";
     private static final String HEADER_STRING = "Authorization";
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         String header = request.getHeader(HEADER_STRING);
@@ -58,10 +83,7 @@ public class JwtToken extends OncePerRequestFilter {
             String token = header.replace(TOKEN_PREFIX, "");
 
             try {
-                Claims claims = Jwts.parser()
-                        .setSigningKey(SYSTEM_SECURITY_KEY.JWT_SECRET_KEY.getValue())
-                        .parseClaimsJws(token)
-                        .getBody();
+                Claims claims = parser(token);
 
                 String username = claims.getSubject();
                 @SuppressWarnings("unchecked")

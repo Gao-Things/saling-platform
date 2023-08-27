@@ -11,6 +11,6 @@ public class UserLogin {
 
     private String password;
 
-    private int userType;
+    private int userRole; //1 = normal user 2 = admin user 3 = super user
 }
 

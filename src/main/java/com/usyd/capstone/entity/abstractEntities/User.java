@@ -12,8 +12,10 @@ public abstract class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-    private String no;
+//    private String no;
     private String name;
+
+    private String email;
     private String password;
 
     @TableField("activation_status")
