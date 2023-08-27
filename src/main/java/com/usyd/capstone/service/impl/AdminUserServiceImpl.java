@@ -14,11 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
 public class AdminUserServiceImpl implements AdminUserService {
+
+    private final int requiredAdminUserNumForChangeAProductPrice = 3;
 
     @Autowired
     private JwtToken jwtToken;
@@ -58,6 +60,15 @@ public class AdminUserServiceImpl implements AdminUserService {
             adminUserProductMapper.updateById(adminUserProductOld);
         }
 
+        AdminUserProduct adminUserProduct = createANewChangingPriceRecord(adminUser,product,
+                productPrice, currentTurnOfRecord);
+
+        checkIfProductPriceShouldBeUpdate(product, currentTurnOfRecord);
+        return null;
+    }
+
+    private AdminUserProduct createANewChangingPriceRecord(AdminUser adminUser, Product product,
+                                                           double productPrice, int currentTurnOfRecord){
         AdminUserProduct adminUserProduct = new AdminUserProduct();
         adminUserProduct.setAdminUser(adminUser);
         adminUserProduct.setProduct(product);
@@ -65,16 +76,29 @@ public class AdminUserServiceImpl implements AdminUserService {
         adminUserProduct.setRecordTimestamp(System.currentTimeMillis());
         adminUserProduct.setTurnOfRecord(currentTurnOfRecord);
         adminUserProduct.setValid(true);
-        adminUserProductMapper.updateById(adminUserProduct);
+        return adminUserProduct;
+    }
 
+    private void checkIfProductPriceShouldBeUpdate(Product product, int currentTurnOfRecord){
         List<AdminUserProduct> tempList = adminUserProductMapper.selectList(new QueryWrapper<AdminUserProduct>()
-                .eq("product_id", productId)
+                .eq("product_id", product.getId())
                 .eq("turn_of_record", currentTurnOfRecord));
 
-        if(tempList.size() >= 5)
+        if(tempList.size() >= requiredAdminUserNumForChangeAProductPrice)
         {
-            product.setProductPrice(productPrice);
+            HashMap<Double, Integer> productNewPriceMap = new HashMap<>();
+            tempList.forEach(adminUserProduct->{
+                productNewPriceMap.merge(adminUserProduct.getProductPrice(), 1, Integer::sum);
+            });
+            if(productNewPriceMap.size() == 1)
+            {
+                product.setProductPrice(tempList.get(0).getProductPrice());
+                productMapper.updateById(product);
+            }
+            else
+            {
+
+            }
         }
-        return null;
     }
 }

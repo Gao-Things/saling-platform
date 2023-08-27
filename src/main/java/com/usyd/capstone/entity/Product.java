@@ -3,8 +3,6 @@ package com.usyd.capstone.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
-import java.sql.Timestamp;
-import java.util.HashSet;
 import java.util.Set;
 
 import lombok.Getter;
@@ -55,6 +53,6 @@ public class Product implements Serializable {
     private int currentTurnOfRecord;
 
     @OneToMany(mappedBy = "product")
-    private Set<AdminUserProduct> studentCourses = new HashSet<>();
+    private Set<AdminUserProduct> adminUserProducts;
 
 }
