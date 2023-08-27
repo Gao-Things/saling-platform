@@ -1,0 +1,49 @@
+
+import lineChart from "../lineChart/lineChart.vue";
+export default {
+    name: "adminMain.vue",
+    components: {lineChart},
+    data() {
+        return {
+            currencyUnit: '',
+            tableData: [],
+        }
+    },
+    methods: {
+        loadGet() {
+            this.$axios.get(this.$httpurl + '/public/product/productList').then(res => res.data).then(res => {
+
+                if (res.code === 200) {
+                    // 将数据加载到组件的数据属性中
+                    this.tableData = res.data.ProductList.map(item => {
+                        const isoDateString = item.productUpdateTime; // 假设时间戳字段名为 timestamp
+                        const isoDate = new Date(isoDateString);
+                        const year = isoDate.getFullYear();
+                        const month = String(isoDate.getMonth() + 1).padStart(2, "0");
+                        const day = String(isoDate.getDate()).padStart(2, "0");
+                        const hours = String(isoDate.getHours()).padStart(2, "0");
+                        const minutes = String(isoDate.getMinutes()).padStart(2, "0");
+                        const seconds = String(isoDate.getSeconds()).padStart(2, "0");
+
+                        const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+                        return {
+                            ...item,
+                            formattedTimestamp: formattedDate // 将格式化后的时间添加到数据项中
+                        };
+                    });
+
+                    console.log(this.tableData);
+                } else {
+                    alert("failed to get the data")
+                }
+            })
+        },
+
+    },
+    beforeMount() {
+        this.loadGet();
+    },
+
+
+}

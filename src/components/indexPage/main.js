@@ -1,5 +1,4 @@
 export default {
-    name: "Main.vue",
     data() {
         return {
             tableData: []
@@ -24,6 +23,6 @@ export default {
         },
     },
     beforeMount() {
-        this.loadPost();
+        // this.loadPost();
     }
 }

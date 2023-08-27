@@ -1,9 +1,9 @@
 <template>
-  <el-menu background-color="#545c64"
+  <el-menu background-color="black"
            text-color="#fff"
            active-text-color="#ffd04b"
            default-active="/Home"
-           style="height: 100vh;"
+           style="height: 100vh; background-color: black"
            :collapse="isCollapse"
            :collapse-transition="false"
             router>

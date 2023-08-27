@@ -1,14 +1,9 @@
 <template>
   <el-container style="height: 100%; border: 1px solid #eee">
-    <el-aside :width="aside_width" style="background-color: rgb(238, 241, 246); height: 100%; margin-left: -1px">
-     <Aside :isCollapse = "isCollapse"></Aside>
-    </el-aside>
-
     <el-container style="height: 100%">
       <el-header style="text-align: right; font-size: 12px; height: 100%; border-bottom: rgba(169,169,169,0.35) 2px solid">
           <Header @doCollapse = "doCollapse" :icon = "icon"></Header>
       </el-header>
-
       <el-main style="height: 100%">
           <Main></Main>
       </el-main>
@@ -17,12 +12,11 @@
 </template>
 
 <script>
-import Aside from "../aside/Aside.vue"
 import Header from "../header/Header.vue"
 import Main from "./Main.vue"
 export default {
   name: "Index",
-  components: {Aside, Header, Main},
+  components: { Header, Main},
   data(){
     return {
       isCollapse:false,

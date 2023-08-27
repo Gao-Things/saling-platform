@@ -1,5 +1,7 @@
 import VueRouter from 'vue-router'
-import index from '../components/indexPage'
+import index from '../components/indexPage/index.vue'
+import login from "../components/login/login.vue";
+import adminPage from "../components/adminPage/admin.vue"
 
 
 const router = new VueRouter({
@@ -9,6 +11,16 @@ const router = new VueRouter({
             path: '/',
             name: 'index',
             component: index
+        },
+        {
+            path: '/login',
+            name: 'login',
+            component: login
+        },
+        {
+            path: '/admin',
+            name: 'admin',
+            component: adminPage
         }
     ]
 })
