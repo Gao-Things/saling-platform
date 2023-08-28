@@ -1,7 +1,7 @@
 package com.usyd.capstone.common.compents;
 
+import com.usyd.capstone.entity.AdminUserProduct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -89,4 +89,36 @@ public class SendEmail {
 
         return emailContent;
     }
+
+    @Async("taskExecutor")
+    public void sentResettingPriceWarning(AdminUserProduct adminUserProduct){
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+
+            helper.setTo(adminUserProduct.getAdminUser().getEmail());
+            helper.setSubject("Password Reset Request");
+
+            String emailContent = getResettingPriceWarningContext(adminUserProduct);
+            helper.setText(emailContent, true); // Use true to enable HTML content
+
+            mailSender.send(mimeMessage);
+        } catch (MessagingException | MailException e) {
+            // Handle the exception here
+            e.printStackTrace();
+            // You can log the exception or take other appropriate actions
+        }
+    }
+
+    private static String getResettingPriceWarningContext(AdminUserProduct adminUserProduct) {
+        String emailContent = "<p>Dear " + adminUserProduct.getAdminUser().getName() + ",</p>" +
+                "<p>We noticed that you recently reset the price of" + adminUserProduct.getProduct().getProductName() + ".</p>" +
+                "<p>However, the system just found few other admin agree with your quotation, and it has just been set as an invalid price.</p>" +
+                "<P>Please verify the price of the merchandise once again and then re-submit your quotation.</P>" +
+                "<P>Best regards,</P>" +
+                "<P>System assistant</P>";
+
+        return emailContent;
+    }
+
 }

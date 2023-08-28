@@ -1,18 +1,21 @@
 package com.usyd.capstone.entity.abstractEntities;
 
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.usyd.capstone.entity.abstractEntities.User;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Data
 @MappedSuperclass
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class NotSuperUser extends User {
+public class NotSuperUser extends User implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    @TableId(value = "id")
+    private Long id;
+
     @TableField("registration_timestamp")
     private long registrationTimestamp;
 

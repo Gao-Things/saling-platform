@@ -1,13 +1,14 @@
 package com.usyd.capstone.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Set;
 
+import com.github.dreamyoung.mprelation.Lazy;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.builder.ToStringExclude;
 
 import javax.persistence.*;
 
@@ -30,6 +31,7 @@ public class Product implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
+    @TableId(value = "id")
     private Long id;
 
     @TableField("product_name")
@@ -61,6 +63,9 @@ public class Product implements Serializable {
 
     @OneToMany(mappedBy = "product")
     @TableField(exist = false)
+    @com.github.dreamyoung.mprelation.OneToMany
+    @com.github.dreamyoung.mprelation.JoinColumn(name = "id", referencedColumnName = "product_id")
+//    @Lazy(false) //false向下查找一层，@OneToMany默认是true
     private Set<AdminUserProduct> adminUserProducts;
 
 }
