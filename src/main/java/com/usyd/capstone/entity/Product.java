@@ -7,6 +7,7 @@ import java.util.Set;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.builder.ToStringExclude;
 
 import javax.persistence.*;
 
@@ -49,10 +50,14 @@ public class Product implements Serializable {
     @TableField("product_description")
     private String productDescription;
 
+    //初始化为0，super修改后+1，admin一致后+1
+    //  这是定价的轮次
+    //  报价的轮次=定价的轮次+1
     @TableField("current_turn_of_record")
     private int currentTurnOfRecord;
 
     @OneToMany(mappedBy = "product")
+    @TableField(exist = false)
     private Set<AdminUserProduct> adminUserProducts;
 
 }

@@ -1,5 +1,6 @@
 package com.usyd.capstone.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.usyd.capstone.entity.abstractEntities.NotSuperUser;
 import lombok.Data;
@@ -22,6 +23,7 @@ public class AdminUser extends NotSuperUser implements Serializable {
 //    private AdminUser adminUser;
 //    这里对AdminUser的属性命名为adminUser
 /*------------------------------------------------------------------*/
+    @TableField(exist = false)
     private Set<AdminUserProduct> adminUserProducts;
 
 }

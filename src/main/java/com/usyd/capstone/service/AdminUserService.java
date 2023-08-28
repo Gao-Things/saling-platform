@@ -4,5 +4,5 @@ import com.usyd.capstone.common.DTO.Result;
 
 public interface AdminUserService {
 
-    public Result modifyProductPrice(String token, Long productId, double productPrice);
+    public Result updateProductPrice(String token, Long productId, double productPrice, int turnOfRecord);
 }
