@@ -1,61 +1,85 @@
 <template>
-  <div>
-    <el-table :data="tableData"
-              :header-cell-style="{background:'#cae6ff', color: '#727070'}"
-              border
-    >
-      <el-table-column prop="id" label="ID" width="180">
-      </el-table-column>
-      <el-table-column prop="name" label="NAME" width="180">
-      </el-table-column>
-      <el-table-column prop="no" label="ACCOUNT" width="180">
-      </el-table-column>
-      <el-table-column prop="phone" label="PHONE" width="200">
-      </el-table-column>
-      <el-table-column prop="sex" label="SEX" width="80">
-        <template slot-scope="scope">
-          <el-tag
-              :type="scope.row.sex === 1 ? 'success' : 'primary'"
-              disable-transitions>{{ scope.row.sex === 1 ? 'male' : 'female' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="roleId" label="ROLE" width="180">
-        <template slot-scope="scope">
-          <el-tag
-              :type="scope.row.roleId === 0 ? 'danger' : (scope.row.roleId === 1 ? 'success' : 'primary') "
-              disable-transitions>{{ scope.row.roleId === 0 ? 'super administer' : (scope.row.roleId === 1 ? 'administer' : 'user') }}
-          </el-tag>
-        </template>
-      </el-table-column>
+    <div class="Main">
+        <el-table :data="tableData"
+                  :cell-style="{background:'#000000',padding: '0', color: '#ffffff',textAlign: 'center'}"
+                  style="font-size: 18px; width: max-content; min-width: 105%;"
+                  :header-row-style="{height:'80px'}"
+                  :row-style ="{height:'130px'}"
+                  :header-cell-style="{background:'#000000', color: '#ffffff', fontSize:'19px',textAlign: 'center', fontweight:700}"
+
+        >
+            <el-table-column prop="id" width="250">
+                <img src="@/assets/img_1.png" alt="Logo" class="logo">
+            </el-table-column>
+            <el-table-column prop="productName" label="Item Name" >
+            </el-table-column>
+            <el-table-column prop="productPrice" label="price($)" >
+            </el-table-column>
+            <el-table-column prop="phone">
+                <img src="@/assets/img_2.png" alt="Logo" class="logo">
+            </el-table-column>
+
+            <el-table-column prop="productExchangePrice" label="Converted price" >
+            </el-table-column>
+
+            <el-table-column prop="formattedTimestamp" label="update time" >
+            </el-table-column>
+
+            <el-table-column prop="formattedTimestamp" label="Growth" >
+                <img src="@/assets/arrow.png" alt="Logo" class="arrow">
+            </el-table-column>
 
 
-      <el-table-column prop="operation" label="OPERATE" width="170">
-        <div class="button-container">
-          <el-button class="button-spacing" size="small" type="success">EDIT</el-button>
-          <el-button class="button-spacing" size="small" type="danger">DELETE</el-button>
-        </div>
-      </el-table-column>
-
-    </el-table>
-    <el-pagination
-        @size-ch
-        background
-        layout="prev, pager, next"
-        :total="1000">
-    </el-pagination>
-  </div>
+        </el-table>
+        <el-pagination
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                background
+                layout="prev, pager, next"
+                :total="totalItems"
+                :page-size="pageSize"
+                :current-page="currentPage"
+        >
+        </el-pagination>
+    </div>
 
 </template>
 
-<script src="./main.js"></script>
+<script src="./main.js">
+import lineChart from "@/components/chart/lineChart.vue";
 
-<style scoped>
+export default {
+    components: {lineChart}
+}
+</script>
+
+<style>
+.logo {
+    width: 80px;
+    height: 80px;
+}
+.arrow{
+    width: 20px;
+    height: 20px;
+}
 .button-container {
-  display: flex;
+    display: flex;
 }
 
 .button-spacing {
-  margin-right: 5px; /* 调整按钮之间的间距 */
+    margin-right: 5px; /* 调整按钮之间的间距 */
+}
+
+.Main {
+    background-color: black;
+}
+
+.el-table td.el-table__cell {
+    border: 0;
+}
+
+.echarts-container {
+    width: 100%;
 }
 </style>
+

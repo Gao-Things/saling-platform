@@ -9,7 +9,8 @@ export default {
         return {
             isCollapse:false,
             aside_width:'230px',
-            icon:'el-icon-s-fold'
+            icon:'el-icon-s-fold',
+            exchangeValue:""
         }
     },
     methods:{
@@ -23,6 +24,10 @@ export default {
                 this.aside_width = '64px'
                 this.icon = 'el-icon-s-unfold'
             }
+        },
+        selectedValue(exchangeValue){
+            console.log(exchangeValue)
+            this.exchangeValue = exchangeValue
         }
     }
 };

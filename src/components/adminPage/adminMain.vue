@@ -18,7 +18,7 @@
                 <img src="@/assets/img_2.png" alt="Logo" class="logo">
             </el-table-column>
 
-            <el-table-column prop="productPrice" label="Converted price($)" width="180">
+            <el-table-column prop="productExchangePrice" label="Converted price" width="180">
             </el-table-column>
 
             <el-table-column prop="formattedTimestamp" label="update time" width="200">

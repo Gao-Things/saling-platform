@@ -1,15 +1,26 @@
 
-import lineChart from "@/components/Chart/lineChart.vue";
+import lineChart from "@/components/chart/lineChart.vue";
 export default {
     name: "adminMain.vue",
     components: {lineChart},
     data() {
         return {
-            currencyUnit: '',
             tableData: [],
             totalItems: 1000, // 总记录数
             pageSize: 5, // 每页显示条数
             currentPage: 1, // 当前页码
+            useValue:""
+        }
+    },
+    props:{
+        exchangeValue:String
+    },
+    watch: {
+        exchangeValue(newValue) {
+            // 在属性值变化时执行的逻辑
+            this.exchangeValue = newValue
+            console.log( this.exchangeValue)
+            this.loadGet({ pageNum: this.currentPage, pageSize: this.pageSize, targetCurrency:  this.exchangeValue});
         }
     },
     methods: {
@@ -19,7 +30,6 @@ export default {
                 if (res.code === 200) {
                     console.log(res.data)
                     this.totalItems = res.data.ProductList.total
-                    console.log(res.data.total)
                     // 将数据加载到组件的数据属性中
                     this.tableData = res.data.ProductList.records.map(item => {
                         const isoDateString = item.productUpdateTime; // 假设时间戳字段名为 timestamp
@@ -46,20 +56,21 @@ export default {
             })
         },
 
+
         handleSizeChange(newSize) {
             this.pageSize = newSize;
             // 重新获取数据
-            this.loadGet({ pageNum: this.currentPage, pageSize: this.pageSize});
+            this.loadGet({ pageNum: this.currentPage, pageSize: this.pageSize, targetCurrency:this.exchangeValue});
         },
         handleCurrentChange(newPage) {
             this.currentPage = newPage;
             // 重新获取数据
-            this.loadGet({ pageNum: this.currentPage, pageSize: this.pageSize});
+            this.loadGet({ pageNum: this.currentPage, pageSize: this.pageSize, targetCurrency:this.exchangeValue});
         },
 
     },
     beforeMount() {
-        this.loadGet({ pageNum: this.currentPage, pageSize: this.pageSize});
+        this.loadGet({ pageNum: this.currentPage, pageSize: this.pageSize, targetCurrency:this.exchangeValue});
     },
 
 

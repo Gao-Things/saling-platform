@@ -1,6 +1,6 @@
 <template>
     <div class="header-container">
-        <div class="header-item">
+        <div class="header-item" v-if="isLoggedIn">
             <i :class="icon" style="font-size: 20px" @click="collapse"></i>
         </div>
         <div class="header-item">
@@ -10,22 +10,33 @@
             <span class="title">CS COMPANY</span>
         </div>
         <el-select class="header-item custom-select" v-model="selectedValue" @change="handleSelectChange">
-
-            <el-option label="AUD" value="personal"></el-option>
-            <el-option label="USD" value="logout"></el-option>
+            <el-option
+                v-for="option in options"
+                :key="option.id"
+                :label="option.exchangeName"
+                :value="option.exchangeName"
+            ></el-option>
         </el-select>
 
         <div class="header-item" style="padding: 10px">
             <img src="../../assets/img_2.png" width="100px">
         </div>
-        <el-dropdown class="header-item" style="margin-left: 10%">
-            <span style="color: #eeeeee">ADMIN USER</span>
-            <i class="el-icon-arrow-down" style="margin-left: 5px"></i>
-            <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item @click.native="toUser">personal central</el-dropdown-item>
-                <el-dropdown-item>login out</el-dropdown-item>
-            </el-dropdown-menu>
-        </el-dropdown>
+
+        <template v-if="isLoggedIn"> <!-- 根据登录状态进行条件渲染 -->
+            <el-dropdown class="header-item" style="margin-left: 15%">
+                <span style="color: #eeeeee">ADMIN USER</span>
+                <i class="el-icon-arrow-down" style="margin-left: 5px"></i>
+                <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item @click.native="toUser">personal central</el-dropdown-item>
+                    <el-dropdown-item @click.native="logoutAndRedirect">logout</el-dropdown-item>
+                </el-dropdown-menu>
+            </el-dropdown>
+        </template>
+        <template v-else>
+            <div class="header-item" style="margin-left: 25%">
+                <img src="../../assets/personal.png" width="100px" @click="toLogin">
+            </div>
+        </template>
     </div>
 </template>
 
@@ -52,7 +63,7 @@
 }
 
 .header-item .title {
-    font-size: 35px;
+    font-size: 30px;
 
 }
 

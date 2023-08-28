@@ -1,10 +1,10 @@
 <template>
-  <el-container style="height: 100%; border: 1px solid #eee">
+  <el-container style="height: 100%; border: 1px solid #000000; margin-left: -1px; background-color: black">
     <el-container style="height: 100%">
-      <el-header style="text-align: right; font-size: 12px; height: 100%; border-bottom: rgba(169,169,169,0.35) 2px solid">
+      <el-header style="text-align: right; font-size: 12px; width: 100%;height: 100%; border-bottom: rgba(169,169,169,0.35) 2px solid">
           <Header @doCollapse = "doCollapse" :icon = "icon"></Header>
       </el-header>
-      <el-main style="height: 100%">
+      <el-main style="height: 100%; width: 100%">
           <Main></Main>
       </el-main>
     </el-container>
@@ -13,7 +13,7 @@
 
 <script>
 import Header from "../header/Header.vue"
-import Main from "./Main.vue"
+import Main from "./Main.vue";
 export default {
   name: "Index",
   components: { Header, Main},

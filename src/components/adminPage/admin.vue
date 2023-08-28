@@ -1,16 +1,16 @@
 <template>
-    <el-container style="height: 100%; border: 1px solid #eee; background-color: black">
-        <el-aside :width="aside_width" style="background-color: rgba(255, 255, 255, 0.19); height: 100%;margin-left: -1px ">
+    <el-container style="height: 100%; border: 1px solid #000000; background-color: black">
+        <el-aside :width="aside_width" style="background-color: rgba(70,69,69,0.6);;margin-left: -1px ">
             <Aside :isCollapse = "isCollapse"></Aside>
         </el-aside>
 
         <el-container style="height: 100%;">
             <el-header style="text-align: right; font-size: 12px; height: 100%; border-bottom: rgb(255,255,255) 2px solid">
-                <Header @doCollapse = "doCollapse" :icon = "icon"></Header>
+                <Header @doCollapse = "doCollapse" @selectedValue="selectedValue"  :icon = "icon"></Header>
             </el-header>
 
             <el-main style="height: 100%;  background-color: black; margin-left: -1px">
-                <adminMain></adminMain>
+                <adminMain :exchangeValue="exchangeValue"></adminMain>
             </el-main>
         </el-container>
     </el-container>

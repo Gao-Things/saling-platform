@@ -1,8 +1,8 @@
 <template>
     <div class="big-container">
         <div class="logo-container">
-            <img src="../../assets/aside_logo.png" alt="Logo" class="logo">
-            <h2 style="margin-top: 20px">ADMIN</h2>
+            <img src="../../assets/aside_logo.png" alt="Logo" class="logo" v-if="!isCollapse">
+            <h2 style="margin-top: 20px" v-if="!isCollapse">ADMIN</h2>
         </div>
 
         <el-menu
@@ -19,12 +19,12 @@
             </el-menu-item>
 
             <el-menu-item index="/fun">
-                <i class="el-icon-s-home"></i>
+                <i class="el-icon-alarm-clock"></i>
                 <span slot="title">fun</span>
             </el-menu-item>
 
             <el-menu-item index="/customer">
-                <i class="el-icon-s-home"></i>
+                <i class="el-icon-aim"></i>
                 <span slot="title">customer</span>
             </el-menu-item>
         </el-menu>
@@ -42,22 +42,21 @@
     height: 200px; /* 调整 Logo 容器的高度 */
     padding: 10px;
     margin-top: 50px;
-    background-color: transparent
 }
 .big-container{
     display: flex;
     flex-direction: column; /* 添加此行以垂直排列子元素 */
     align-items: center; /* 居中对齐子元素 */
     height: 100vh;
-    background-color: rgba(7, 7, 7, 0.6);
-
 
 }
 
 .custom-menu {
     padding: 0; /* 移除内边距 */
     border: none; /* 移除边框 */
-    height: 100vh;
+    height: 100%;
+    /*width: 100%;*/
+
     margin-top: 30px;
     background-color: transparent;
     font-size: 36px
