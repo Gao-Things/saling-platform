@@ -51,7 +51,7 @@ public class ProductController {
         page.setCurrent(pageNum);
         page.setSize(pageSize);
         Map<String, Object> resultMap = new HashMap<>();
-        if (targetCurrency==null){
+        if (targetCurrency==null || targetCurrency.isEmpty()){
             LambdaQueryWrapper<Product> lambdaQueryWrapper = new LambdaQueryWrapper<>();
             IPage<Product> result = productService.page(page, lambdaQueryWrapper);
             resultMap.put("CurrencyUnit", "USD");
