@@ -12,6 +12,8 @@ import com.usyd.capstone.service.ProductService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.text.DecimalFormat;
 import java.util.List;
 
 /**
@@ -45,7 +47,10 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         List<Product> productList = productListPage.getRecords();
         for (Product pp : productList) {
             double originalPrice = pp.getProductPrice();
-            pp.setProductPrice(exchangeRateUsd.getExchangePrice() * originalPrice);
+            double exchangePrice = exchangeRateUsd.getExchangePrice() * originalPrice;
+            DecimalFormat decimalFormat = new DecimalFormat("#.####");
+            String formatted = decimalFormat.format(exchangePrice);
+            pp.setProductExchangePrice(Double.parseDouble(formatted));
         }
 
         return productListPage;

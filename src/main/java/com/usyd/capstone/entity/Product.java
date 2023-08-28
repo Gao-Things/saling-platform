@@ -50,6 +50,9 @@ public class Product implements Serializable {
     @TableField("product_description")
     private String productDescription;
 
+    @TableField(exist = false)
+    private double productExchangePrice;
+
     //初始化为0，super修改后+1，admin一致后+1
     //  这是定价的轮次
     //  报价的轮次=定价的轮次+1

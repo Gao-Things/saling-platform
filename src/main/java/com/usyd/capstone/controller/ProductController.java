@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,6 +55,14 @@ public class ProductController {
         if (targetCurrency==null || targetCurrency.isEmpty()){
             LambdaQueryWrapper<Product> lambdaQueryWrapper = new LambdaQueryWrapper<>();
             IPage<Product> result = productService.page(page, lambdaQueryWrapper);
+            // modify the price by exchanged rate
+            List<Product> productList = result.getRecords();
+            for (Product pp : productList) {
+                double originalPrice = pp.getProductPrice();
+                DecimalFormat decimalFormat = new DecimalFormat("#.####");
+                String formatted = decimalFormat.format(originalPrice);
+                pp.setProductExchangePrice(Double.parseDouble(formatted));
+            }
             resultMap.put("CurrencyUnit", "USD");
             resultMap.put("ProductList", result);
            return Result.suc(resultMap);
