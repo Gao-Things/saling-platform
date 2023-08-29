@@ -7,10 +7,12 @@ import com.usyd.capstone.common.compents.SendEmail;
 import com.usyd.capstone.entity.AdminUser;
 import com.usyd.capstone.entity.AdminUserProduct;
 import com.usyd.capstone.entity.Product;
+import com.usyd.capstone.entity.ProductPriceRecord;
 import com.usyd.capstone.service.AdminUserService;
 import com.usyd.capstone.service.base.AdminUserBaseService;
 import com.usyd.capstone.service.base.AdminUserProductBaseService;
 import com.usyd.capstone.service.base.ProductBaseService;
+import com.usyd.capstone.service.base.ProductPriceRecordBaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +38,9 @@ public class AdminUserServiceImpl implements AdminUserService {
     private AdminUserProductBaseService adminUserProductBaseService;
 
     @Autowired
+    private ProductPriceRecordBaseService productPriceRecordBaseService;
+
+    @Autowired
     private SendEmail mailSender;
 
     @Override
@@ -51,7 +56,6 @@ public class AdminUserServiceImpl implements AdminUserService {
             }
             Product product = productBaseService.getById(productId);
             AdminUser adminUser = adminUserBaseService.getById(adminId);
-            Set<AdminUserProduct> temp1 = product.getAdminUserProducts();
 
             if (adminUser == null || product == null) {
                 return Result.fail("Cannot find admin or product!");
@@ -76,6 +80,11 @@ public class AdminUserServiceImpl implements AdminUserService {
             AdminUserProduct adminUserProduct = createANewChangingPriceRecord(adminUser, product,
                     productPrice, turnOfRecord);
             adminUserProductBaseService.save(adminUserProduct);
+            if (product.isInResettingProcess() == false)
+            {
+                product.setInResettingProcess(true);
+                productBaseService.updateById(product);
+            }
 
             checkIfProductPriceShouldBeUpdate(product, turnOfRecord);
             return Result.suc("Your quotation has been record successfully");
@@ -111,9 +120,17 @@ public class AdminUserServiceImpl implements AdminUserService {
             int size = productNewPriceMap.size();
             if(size == 1)
             {
+                ProductPriceRecord productPriceRecord = new ProductPriceRecord();
+                productPriceRecord.setProductId(product.getId());
+                productPriceRecord.setProductPrice(product.getProductPrice());
+                productPriceRecord.setRecordTimestamp(product.getProductUpdateTime());
+                productPriceRecord.setTurnOfRecord(product.getCurrentTurnOfRecord());
+                productPriceRecordBaseService.save(productPriceRecord);
+
                 product.setProductPrice(tempList.get(0).getProductPrice());
                 product.setCurrentTurnOfRecord(product.getCurrentTurnOfRecord() + 1);
                 product.setProductUpdateTime(System.currentTimeMillis());
+                product.setInResettingProcess(false);
                 productBaseService.updateById(product);
             }
             else

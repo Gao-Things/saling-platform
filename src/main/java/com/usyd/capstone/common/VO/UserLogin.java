@@ -6,11 +6,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Data
 public class UserLogin {
-    // 变量名要小写
+    @JsonProperty("email")
     private String email;
 
+    @JsonProperty("password")
     private String password;
 
+    @JsonProperty("userRole")
     private int userRole; //1 = normal user 2 = admin user 3 = super user
 }
 

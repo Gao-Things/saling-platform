@@ -97,7 +97,7 @@ public class SendEmail {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 
             helper.setTo(adminUserProduct.getAdminUser().getEmail());
-            helper.setSubject("Password Reset Request");
+            helper.setSubject("Resetting Price Warning");
 
             String emailContent = getResettingPriceWarningContext(adminUserProduct);
             helper.setText(emailContent, true); // Use true to enable HTML content
@@ -112,7 +112,7 @@ public class SendEmail {
 
     private static String getResettingPriceWarningContext(AdminUserProduct adminUserProduct) {
         String emailContent = "<p>Dear " + adminUserProduct.getAdminUser().getName() + ",</p>" +
-                "<p>We noticed that you recently reset the price of" + adminUserProduct.getProduct().getProductName() + ".</p>" +
+                "<p>We noticed that you recently reset the price of " + adminUserProduct.getProduct().getProductName() + ".</p>" +
                 "<p>However, the system just found few other admin agree with your quotation, and it has just been set as an invalid price.</p>" +
                 "<P>Please verify the price of the merchandise once again and then re-submit your quotation.</P>" +
                 "<P>Best regards,</P>" +

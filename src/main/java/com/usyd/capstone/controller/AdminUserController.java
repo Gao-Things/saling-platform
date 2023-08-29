@@ -1,11 +1,11 @@
 package com.usyd.capstone.controller;
 
 import com.usyd.capstone.common.DTO.Result;
+import com.usyd.capstone.common.VO.AdminResetingPrice;
+import com.usyd.capstone.common.VO.UserLogin;
 import com.usyd.capstone.service.AdminUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin")
@@ -18,10 +18,11 @@ public class AdminUserController {
     @Autowired
     private AdminUserService adminUserService;
 
-    @GetMapping("/test")
-    public Result test(String token, Long productId, double productPrice, int turnOfRecord)
+    @PostMapping("/resettingSingleProductPrice")
+    public Result test(@RequestBody AdminResetingPrice adminResetingPrice)
     {
-        return adminUserService.updateProductPrice(token, productId, productPrice, turnOfRecord);
+        return adminUserService.updateProductPrice(adminResetingPrice.getToken(),
+                adminResetingPrice.getProductId(), adminResetingPrice.getProductPrice(), adminResetingPrice.getTurnOfRecord());
     }
 
 }

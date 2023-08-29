@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Set;
 
-import com.github.dreamyoung.mprelation.Lazy;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,8 +24,6 @@ import javax.persistence.*;
 @Entity
 @TableName("product")
 public class Product implements Serializable {
-
-    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,6 +52,9 @@ public class Product implements Serializable {
     @TableField(exist = false)
     private double productExchangePrice;
 
+    @TableField("is_in_resetting_process")
+    private boolean isInResettingProcess;
+
     //初始化为0，super修改后+1，admin一致后+1
     //  这是定价的轮次
     //  报价的轮次=定价的轮次+1
@@ -67,5 +67,11 @@ public class Product implements Serializable {
     @com.github.dreamyoung.mprelation.JoinColumn(name = "id", referencedColumnName = "product_id")
 //    @Lazy(false) //false向下查找一层，@OneToMany默认是true
     private Set<AdminUserProduct> adminUserProducts;
+
+    @OneToMany(mappedBy = "product")
+    @TableField(exist = false)
+    @com.github.dreamyoung.mprelation.OneToMany
+    @com.github.dreamyoung.mprelation.JoinColumn(name = "id", referencedColumnName = "product_id")
+    private Set<ProductPriceRecord> ProductPriceRecords;
 
 }
