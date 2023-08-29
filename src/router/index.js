@@ -66,10 +66,10 @@ router.beforeEach((to, from, next) => {
         next(); // 不需要验证权限的页面直接放行
     }
 
-    console.log('Logged In:', isLoggedIn);
-    console.log('Role:', role);
-    console.log('Allowed Roles:', rolePermissions[role]);
-    console.log('Target Path:', to.path);
+    // console.log('Logged In:', isLoggedIn);
+    // console.log('Role:', role);
+    // console.log('Allowed Roles:', rolePermissions[role]);
+    // console.log('Target Path:', to.path);
 
 
 });
