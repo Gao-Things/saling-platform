@@ -6,8 +6,9 @@ export default {
             loginForm: {
                 email: '',
                 password: '',
-                userRole: 2
-            }
+                userRole: 3
+            },
+            loginRole:""
         };
     },
     methods: {
@@ -19,7 +20,17 @@ export default {
                 .then(res => {
                     console.log(res);
                     if (res.code === 200) {
-                        this.login({ jwttoken: res.jwttoken, role: res.data.role }); // 使用映射的 action 方法
+                        if(res.data.role === 1){
+                            this.loginRole = "USER"
+                        }
+                        if (res.data.role === 2){
+                            this.loginRole = "ADMIN"
+                            this.login({ jwttoken: res.jwttoken, role:this.loginRole }); // 使用映射的 action 方法
+                        }
+                        if (res.data.role === 3){
+                            this.loginRole = "SUPERADMIN"
+                            this.login({ jwttoken: res.jwttoken, role:this.loginRole }); // 使用映射的 action 方法
+                        }
                         this.$router.push('/admin');
                         console.log('登录');
                     } else {

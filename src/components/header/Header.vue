@@ -24,7 +24,7 @@
 
         <template v-if="isLoggedIn"> <!-- 根据登录状态进行条件渲染 -->
             <el-dropdown class="header-item" style="margin-left: 15%">
-                <span style="color: #eeeeee">ADMIN USER</span>
+                <span style="color: #eeeeee">{{getRole}}</span>
                 <i class="el-icon-arrow-down" style="margin-left: 5px"></i>
                 <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item @click.native="toUser">personal central</el-dropdown-item>

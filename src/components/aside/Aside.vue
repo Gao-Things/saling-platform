@@ -2,7 +2,7 @@
     <div class="big-container">
         <div class="logo-container">
             <img src="../../assets/aside_logo.png" alt="Logo" class="logo" v-if="!isCollapse">
-            <h2 style="margin-top: 20px" v-if="!isCollapse">ADMIN</h2>
+            <h2 style="margin-top: 20px" v-if="!isCollapse">{{ getRole }}</h2>
         </div>
 
         <el-menu
@@ -13,20 +13,12 @@
                 :collapse="isCollapse"
                 :collapse-transition="false"
                 router>
-            <el-menu-item index="/Home">
-                <i class="el-icon-s-home"></i>
-                <span slot="title">Main</span>
+            <!-- 遍历从父组件获取到的aside item  -->
+            <el-menu-item v-for="link in links" :key="link.index" :index="link.index">
+                <i :class="link.icon"></i>
+                <span slot="title">{{ link.title }}</span>
             </el-menu-item>
 
-            <el-menu-item index="/fun">
-                <i class="el-icon-alarm-clock"></i>
-                <span slot="title">fun</span>
-            </el-menu-item>
-
-            <el-menu-item index="/customer">
-                <i class="el-icon-aim"></i>
-                <span slot="title">customer</span>
-            </el-menu-item>
         </el-menu>
     </div>
 </template>
@@ -43,7 +35,8 @@
     padding: 10px;
     margin-top: 50px;
 }
-.big-container{
+
+.big-container {
     display: flex;
     flex-direction: column; /* 添加此行以垂直排列子元素 */
     align-items: center; /* 居中对齐子元素 */
@@ -61,6 +54,7 @@
     background-color: transparent;
     font-size: 36px
 }
+
 .logo {
     padding: 10px;
     width: 100px; /* 调整 Logo 的宽度 */

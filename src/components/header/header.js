@@ -12,6 +12,7 @@ export default {
     },
     computed: {
         ...mapGetters(['isLoggedIn']),
+        ...mapGetters(['getRole'])
     },
     mounted() {
         this.loadCurrencyList(); // 在组件挂载后获取选项数据

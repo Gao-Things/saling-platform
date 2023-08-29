@@ -5,11 +5,24 @@ import createPersistedState from 'vuex-persistedstate';
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
-    plugins: [createPersistedState()], // 使用插件
+    plugins: [createPersistedState()], // 持久化插件，存入localstorage
     state: {
         token: null, // 初始时token为空
         isLoggedIn: false, // 是否登录的状态
-        Role: null
+        Role: null,
+        // 为admin和superAdmin的Aside分别赋值
+        adminSidebarLinks: [
+            { index: '/Home', icon: 'el-icon-s-home', title: 'Main' },
+            { index: '/fun', icon: 'el-icon-alarm-clock', title: 'fun' },
+            { index: '/customer', icon: 'el-icon-aim', title: 'customer' }
+        ],
+        superAdminSidebarLinks: [
+            { index: '/Home', icon: 'el-icon-s-home', title: 'Main' },
+            { index: '/fun', icon: 'el-icon-alarm-clock', title: 'fun'  },
+            { index: '/customer', icon: 'el-icon-aim', title: 'customer' },
+            { index: '/superadmin/setting', icon: 'el-icon-s-tools', title: 'Setting' },
+            { index: '/adminControl', icon: 'el-icon-s-custom', title: 'Admin Control' }
+        ]
     },
     mutations: {
         setToken(state, token) {
@@ -24,13 +37,11 @@ const store = new Vuex.Store({
     },
     actions: {
         login({ commit }, { token, role }) { // 使用对象参数
-            // 模拟登录操作，实际应用中需要向服务器发送登录请求
             commit('setToken', token);
             commit('setLoggedIn', true);
             commit('setRole', role);
         },
         logout({ commit }) {
-            // 模拟登出操作
             commit('setToken', null);
             commit('setRole', null);
             commit('setLoggedIn', false);
@@ -40,6 +51,9 @@ const store = new Vuex.Store({
         getToken: state => state.token,
         isLoggedIn: state => state.isLoggedIn,
         getRole: state => state.Role,
+        sidebarLinks(state) {
+            return state.Role === 'ADMIN' ? state.adminSidebarLinks : state.superAdminSidebarLinks;
+        }
     },
 });
 

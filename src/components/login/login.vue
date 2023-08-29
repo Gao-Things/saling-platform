@@ -33,6 +33,7 @@
     height: 160px;
     margin-bottom: 20px;
 }
+
 .login-form {
     width: 300px;
     background-color: rgba(255, 255, 255, 0.1);
