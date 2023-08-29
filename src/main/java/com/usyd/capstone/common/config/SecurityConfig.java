@@ -30,6 +30,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                  .antMatchers("/user/**").authenticated() // 需要登录才能访问的URL
                 .anyRequest().authenticated() // 其他URL需要登录才能访问
                 .and()
+                .cors()
+                .and()
                 .formLogin()
                 .loginPage("/login") // 登录页面的URL
                 .permitAll()
