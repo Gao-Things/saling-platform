@@ -8,10 +8,29 @@ import * as echarts from 'echarts';
 require('echarts/theme/shine');//引入主题
 
 export default {
+
     data() {
         return {
             chartLine: null
         }
+    },
+    props: {
+      categories: Array, // x轴数据
+      values: Array,      // y轴数据
+      color: String
+    },
+    watch: {
+      $props: {
+        deep: true,
+        immediate: true,
+        handler(newProps, oldProps) {
+          // Compare the newProps with oldProps to determine if the data has changed
+          if (!this.isEqual(newProps, oldProps)) {
+            // Update your chart data or trigger re-rendering logic here
+            this.updateChart(); // Call the function to update the chart
+          }
+        }
+      }
     },
     mounted() {
         this.$nextTick(() => {
@@ -21,6 +40,12 @@ export default {
     methods: {
         drawLineChart() {
             this.chartLine = echarts.init(this.$el,'shine');// 基于准备好的dom，初始化echarts实例
+
+          // Convert timestamp to formatted date string for x-axis labels
+            const formattedCategories = this.categories.map(timestamp => {
+              const date = new Date(timestamp * 1000);
+              return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+            });
             let option = {
                 tooltip : {
                     trigger: 'axis'
@@ -39,7 +64,7 @@ export default {
                         },
                         show: false,
                         axisLabel:{ interval:0 },
-                        data : ['8/7','2','3','4','5','6','7','8','9','10','11','12','13','14']
+                        data : formattedCategories
                     }
                 ],
                 yAxis : [
@@ -64,7 +89,11 @@ export default {
                 series : [
                     {
                         type:'line',
-                        data:[120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230, 210]
+                        data: this.values,
+                      // 修改折线颜色
+                      itemStyle: {
+                        color: this.color  // 在这里设置你想要的颜色
+                      }
                     },
 
                 ]

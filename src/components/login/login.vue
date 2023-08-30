@@ -8,6 +8,12 @@
             <el-form-item label="password">
                 <el-input type="password" v-model="loginForm.password" placeholder="enter password"></el-input>
             </el-form-item>
+          <el-form-item label="User Role">
+            <el-select v-model="loginForm.userRole" placeholder="Select user role">
+              <el-option label="Admin" value="2"></el-option>
+              <el-option label="Super Admin" value="3"></el-option>
+            </el-select>
+          </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="loginPress">Login</el-button>
             </el-form-item>

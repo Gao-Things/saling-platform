@@ -14,7 +14,9 @@ export default {
             useValue:"",
             dialogVisible: false,
             itemTurnOfRecord: null,
-            price: null
+            price: null,
+            // chartCategories: ['8/7', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14'],
+            // chartValues: [120, 132, 101, 134, 90, 230, 210, 120, 132, 101, 134, 90, 230, 210]
         }
     },
     props:{
@@ -56,7 +58,7 @@ export default {
                     'Authorization': `Bearer ${token}` // 添加 Bearer token 请求头
                 }
             };
-            this.$axios.post(this.$httpurl + '/public/resettingSingleProductPrice', resettingPriceForm, config)
+            this.$axios.post(this.$httpurl + '/admin/resettingSingleProductPrice', resettingPriceForm, config)
                 .then(res => res.data)
                 .then(res => {
                     console.log(res);
@@ -82,6 +84,7 @@ export default {
                 if (res.code === 200) {
 
                     this.totalItems = res.data.ProductList.total
+                    console.log(res.data.ProductList.records)
                     // 将数据加载到组件的数据属性中
                     this.tableData = res.data.ProductList.records.map(item => {
                         const isoDateString = item.productUpdateTime; // 假设时间戳字段名为 timestamp
@@ -101,7 +104,6 @@ export default {
                         };
                     });
 
-                    console.log(this.tableData);
                 } else {
                     alert("failed to get the data")
                 }
@@ -109,7 +111,7 @@ export default {
         },
 
         getRowClassName(row) {
-            if (row.row.inResettingProcess) {
+            if (row.row.product.inResettingProcess) {
                 return 'red-row'; // Apply "red-row" class to the row
             }
             return 'normal-row'; // Default class

@@ -9,7 +9,7 @@ export default {
             totalItems: 1000, // 总记录数
             pageSize: 5, // 每页显示条数
             currentPage: 1, // 当前页码
-            useValue:""
+            useValue:"",
         }
     },
     props:{
@@ -55,7 +55,6 @@ export default {
                 }
             })
         },
-
 
         handleSizeChange(newSize) {
             this.pageSize = newSize;

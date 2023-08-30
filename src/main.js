@@ -9,7 +9,7 @@ import store from './store'; // 引入 Vuex store
 import router from './router'
 import VueRouter from 'vue-router'
 Vue.prototype.$axios = axios;
-Vue.prototype.$httpurl = 'http://localhost:8082'
+Vue.prototype.$httpurl = 'http://localhost:8080/api'
 
 Vue.config.productionTip = false;
 Vue.use(ElementUI);

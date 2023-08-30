@@ -8,24 +8,25 @@
                   :header-cell-style="{background:'#000000', color: '#ffffff', fontSize:'19px',textAlign: 'center', fontweight:700}"
 
         >
-            <el-table-column prop="id" width="250">
+            <el-table-column prop="id">
                 <img src="@/assets/img_1.png" alt="Logo" class="logo">
             </el-table-column>
-            <el-table-column prop="productName" label="Item Name" >
+            <el-table-column prop="product.productName" label="Item Name" >
             </el-table-column>
-            <el-table-column prop="productPrice" label="price($)" >
+            <el-table-column prop="product.productPrice" label="price($)" >
             </el-table-column>
-            <el-table-column prop="phone">
+            <el-table-column prop="product.phone">
                 <img src="@/assets/img_2.png" alt="Logo" class="logo">
             </el-table-column>
 
-            <el-table-column prop="productExchangePrice" label="Converted price" >
+            <el-table-column prop="product.productExchangePrice" label="Converted price" >
             </el-table-column>
 
-            <el-table-column prop="formattedTimestamp" label="update time" >
+            <el-table-column prop="product.formattedTimestamp" label="update time" >
+              <span>2023-8-26 06:33:33</span>
             </el-table-column>
 
-            <el-table-column prop="formattedTimestamp" label="Growth" >
+            <el-table-column prop="product.formattedTimestamp" label="Growth" >
                 <img src="@/assets/arrow.png" alt="Logo" class="arrow">
             </el-table-column>
 

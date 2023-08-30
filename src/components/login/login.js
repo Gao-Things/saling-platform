@@ -6,7 +6,7 @@ export default {
             loginForm: {
                 email: '',
                 password: '',
-                userRole: 2
+                userRole: null
             },
             loginRole:""
         };
