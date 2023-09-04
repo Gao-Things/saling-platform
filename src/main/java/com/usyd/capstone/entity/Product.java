@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 import lombok.Getter;
@@ -68,10 +69,10 @@ public class Product implements Serializable {
 //    @Lazy(false) //false向下查找一层，@OneToMany默认是true
     private Set<AdminUserProduct> adminUserProducts;
 
-    @OneToMany(mappedBy = "product")
-    @TableField(exist = false)
-    @com.github.dreamyoung.mprelation.OneToMany
-    @com.github.dreamyoung.mprelation.JoinColumn(name = "id", referencedColumnName = "product_id")
-    private Set<ProductPriceRecord> ProductPriceRecords;
+//    @OneToMany(mappedBy = "product")
+//    @TableField(exist = false)
+//    @com.github.dreamyoung.mprelation.OneToMany
+//    @com.github.dreamyoung.mprelation.JoinColumn(name = "id", referencedColumnName = "product_id")
+//    private Set<ProductPriceRecord> ProductPriceRecords;
 
 }

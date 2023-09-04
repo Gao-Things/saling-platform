@@ -1,46 +1,44 @@
 package com.usyd.capstone.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.github.dreamyoung.mprelation.EntityMapper;
-import com.github.dreamyoung.mprelation.Lazy;
+import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
-import javax.persistence.*;
-import java.io.Serializable;
+/**
+ * <p>
+ * 
+ * </p>
+ *
+ * @author yyf
+ * @since 2023年08月30日
+ */
 @Getter
 @Setter
-@Entity
+@Accessors(chain = true)
 @TableName("product_price_record")
 public class ProductPriceRecord implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    @TableId(value = "id")
+    private static final long serialVersionUID = 1L;
+
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @TableField("product_id")
-    @Transient
-    private Long productId;
-
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    @TableField(exist = false)
-    @com.github.dreamyoung.mprelation.ManyToOne
-    @com.github.dreamyoung.mprelation.JoinColumn(name = "product_id", referencedColumnName = "id")
-    @EntityMapper
-    @Lazy
-    private Product product;
-
     @TableField("product_price")
-    private double productPrice;
+    private Double productPrice;
 
     @TableField("record_timestamp")
-    private long recordTimestamp;
+    private Long recordTimestamp;
 
     @TableField("turn_of_record")
-    private int turnOfRecord;
+    private Integer turnOfRecord;
+
+    @TableField("product_id")
+    private Long productId;
+
+
 }

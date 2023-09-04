@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.usyd.capstone.common.DTO.Result;
+import com.usyd.capstone.common.DTO.productAdmin;
 import com.usyd.capstone.entity.Product;
 import com.usyd.capstone.service.ExchangeRateUsdService;
 import com.usyd.capstone.service.ProductService;
@@ -48,28 +49,19 @@ public class ProductController {
                                         @RequestParam int pageSize,  @RequestParam int pageNum) {
 
 
-        Page<Product> page = new Page<>();
+        Page<productAdmin> page = new Page<>();
         page.setCurrent(pageNum);
         page.setSize(pageSize);
         Map<String, Object> resultMap = new HashMap<>();
+        String useCurrency;
         if (targetCurrency==null || targetCurrency.isEmpty()){
-            LambdaQueryWrapper<Product> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-            IPage<Product> result = productService.page(page, lambdaQueryWrapper);
-            // modify the price by exchanged rate
-            List<Product> productList = result.getRecords();
-            for (Product pp : productList) {
-                double originalPrice = pp.getProductPrice();
-                DecimalFormat decimalFormat = new DecimalFormat("#.####");
-                String formatted = decimalFormat.format(originalPrice);
-                pp.setProductExchangePrice(Double.parseDouble(formatted));
-            }
-            resultMap.put("CurrencyUnit", "USD");
-            resultMap.put("ProductList", result);
-           return Result.suc(resultMap);
+            useCurrency = "USD";
+        }else {
+            useCurrency = targetCurrency;
         }
 
 
-        IPage<Product> productList =  productService.getProductListByCurrency(targetCurrency, page);
+        IPage productList =  productService.getProductListByCurrency(useCurrency, pageNum, pageSize);
 
         resultMap.put("CurrencyUnit", targetCurrency);
         resultMap.put("ProductList", productList);

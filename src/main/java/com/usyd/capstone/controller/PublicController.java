@@ -3,6 +3,7 @@ package com.usyd.capstone.controller;
 import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.common.VO.*;
 import com.usyd.capstone.common.utils.ValidateRecaptcha;
+import com.usyd.capstone.service.AdminUserService;
 import com.usyd.capstone.service.PublicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -10,8 +11,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/public")
 public class PublicController {
-
-
     @GetMapping("/hello")
     public String hello(){
         int a = 1;
