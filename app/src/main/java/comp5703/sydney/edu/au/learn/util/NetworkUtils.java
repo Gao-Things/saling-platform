@@ -2,6 +2,8 @@ package comp5703.sydney.edu.au.learn.util;
 
 import com.alibaba.fastjson.JSON;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.Map;
 
 import okhttp3.*;
@@ -34,9 +36,11 @@ public class NetworkUtils {
         client.newCall(request).enqueue(callback);
     }
 
-    public static void getWithParamsRequest( Map<String, String> queryParams, String url, Callback callback) {
-        HttpUrl.Builder urlBuilder = HttpUrl.parse(apiURL + url).newBuilder();
+    public static void getWithParamsRequest( Object object, String url, Callback callback) {
 
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(apiURL + url).newBuilder();
+        // 拼接参数
+        Map<String, String> queryParams = convertObjectToMap(object);
         // 添加查询参数
         if (queryParams != null) {
             for (Map.Entry<String, String> entry : queryParams.entrySet()) {
@@ -61,5 +65,29 @@ public class NetworkUtils {
                 .build();
 
         client.newCall(request).enqueue(callback);
+    }
+
+    private static Map<String, String> convertObjectToMap(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+
+        Map<String, String> paramMap = new HashMap<>();
+        Field[] fields = obj.getClass().getDeclaredFields();
+
+        try {
+            for (Field field : fields) {
+                field.setAccessible(true);
+                String fieldName = field.getName();
+                Object fieldValue = field.get(obj);
+                if (fieldValue != null) {
+                    paramMap.put(fieldName, fieldValue.toString());
+                }
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        return paramMap;
     }
 }

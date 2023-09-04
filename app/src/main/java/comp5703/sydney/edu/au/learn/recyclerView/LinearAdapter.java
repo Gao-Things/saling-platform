@@ -31,7 +31,7 @@ public class LinearAdapter extends RecyclerView.Adapter<LinearAdapter.LinearView
 
     @Override
     public void onBindViewHolder(@NonNull LinearViewHolder holder, int position) {
-        holder.textView.setText("Hello, Hello");
+//        holder.textView.setText("Hello, Hello");
         holder.textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

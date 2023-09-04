@@ -1,7 +1,9 @@
 package comp5703.sydney.edu.au.learn;
 
 import static android.content.ContentValues.TAG;
+
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -32,8 +34,10 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.IOException;
 
+import comp5703.sydney.edu.au.learn.Home.HomeUseActivity;
 import comp5703.sydney.edu.au.learn.VO.LoginParameter;
 import comp5703.sydney.edu.au.learn.VO.RecaptchaParameter;
+import comp5703.sydney.edu.au.learn.fragment.ContainerActivity;
 import comp5703.sydney.edu.au.learn.util.FormValidator;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
 import okhttp3.Call;
@@ -117,13 +121,15 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void toForgetClick(View view){
+    private void toForgetClick(View view) {
         startActivity(new Intent(MainActivity.this, forgotPassword.class));
     }
-    private void toRegisterClick(View view){
+
+    private void toRegisterClick(View view) {
         startActivity(new Intent(MainActivity.this, RegisterActivity.class));
     }
-    private void onClick(View view){
+
+    private void onClick(View view) {
         boolean isValid = FormValidator.validateEmail(inputLayoutEmail, userName.getText().toString())
                 & FormValidator.validatePassword(inputLayoutPassword, password.getText().toString());
 
@@ -177,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                                 RecaptchaParameter recaptchaParameter = new RecaptchaParameter();
                                 recaptchaParameter.setExpectedAction("login");
                                 recaptchaParameter.setToken(token);
-                                NetworkUtils.postJsonRequest(recaptchaParameter, "/user/reCAPTCHA", new Callback() {
+                                NetworkUtils.postJsonRequest(recaptchaParameter, "/public/reCAPTCHA", new Callback() {
                                     @Override
                                     public void onResponse(Call call, Response response) throws IOException {
                                         handleVerityResponse(response);
@@ -211,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
         if (code == 200) {
             Login();
         } else {
-            showErrorDialog("Your are robot");
+            showErrorDialog("error","Your are robot", MainActivity.this);
         }
     }
 
@@ -221,8 +227,9 @@ public class MainActivity extends AppCompatActivity {
         LoginParameter loginParameter = new LoginParameter();
         loginParameter.setEmail(email);
         loginParameter.setPassword(passwordUse);
+        loginParameter.setUserRole(1);
 
-        NetworkUtils.postJsonRequest(loginParameter, "/user/login", new Callback() {
+        NetworkUtils.postJsonRequest(loginParameter, "/public/login", new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 handleResponse(response);
@@ -244,9 +251,9 @@ public class MainActivity extends AppCompatActivity {
         if (code == 200) {
             String token = jsonObject.getString("token"); // 根据实际 JSON 键获取 Token
             Log.d(TAG, "LoginToken: " + token);
-            startActivity(new Intent(MainActivity.this, Home.class));
+            startActivity(new Intent(MainActivity.this, HomeUseActivity.class));
         } else {
-            showErrorDialog(dataValue.toString());
+            showErrorDialog("Login failed", dataValue.toString(), MainActivity.this);
         }
     }
 
@@ -254,19 +261,17 @@ public class MainActivity extends AppCompatActivity {
         Log.e(TAG, "Exception: " + e.getMessage());
     }
 
-    private void showErrorDialog(String errorMessage) {
+    private void showErrorDialog(String title, String Message, Context context) {
         runOnUiThread(() -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            builder.setTitle("Login failed");
-            builder.setMessage(errorMessage);
+            builder.setTitle(title);
+            builder.setMessage(Message);
             builder.setPositiveButton("OK", (dialog, which) -> {
                 // 处理确定按钮点击事件
             });
             builder.create().show();
         });
     }
-
-
 
 
 }

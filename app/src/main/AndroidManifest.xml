@@ -17,6 +17,20 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".Home.HomeUseActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".fragment.ContainerActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".successfulUpdatePassword"
             android:exported="false">
             <meta-data
@@ -64,11 +78,6 @@
         <activity
             android:name=".ListView.childtest"
             android:exported="false" />
-        <activity
-            android:name=".Home"
-            android:exported="false"
-            android:label="@string/title_activity_home"
-            android:theme="@style/Theme.Learn.NoActionBar" />
         <activity
             android:name=".function"
             android:exported="false" />
