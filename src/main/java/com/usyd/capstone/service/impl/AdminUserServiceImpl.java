@@ -120,13 +120,21 @@ public class AdminUserServiceImpl implements AdminUserService {
             int size = productNewPriceMap.size();
             if(size == 1)
             {
+                double priceOld = product.getProductPrice();
                 ProductPriceRecord productPriceRecord = new ProductPriceRecord();
                 productPriceRecord.setProductId(product.getId());
-                productPriceRecord.setProductPrice(product.getProductPrice());
+                productPriceRecord.setProductPrice(priceOld);
                 productPriceRecord.setRecordTimestamp(product.getProductUpdateTime());
                 productPriceRecord.setTurnOfRecord(product.getCurrentTurnOfRecord());
                 productPriceRecordBaseService.save(productPriceRecord);
 
+                double priceNew = tempList.get(0).getProductPrice();
+                if(priceOld < priceNew)
+                    product.setPriceStatus(0);
+                else if(priceOld > priceNew)
+                    product.setPriceStatus(1);
+                else
+                    product.setPriceStatus(2);
                 product.setProductPrice(tempList.get(0).getProductPrice());
                 product.setCurrentTurnOfRecord(product.getCurrentTurnOfRecord() + 1);
                 product.setProductUpdateTime(System.currentTimeMillis());

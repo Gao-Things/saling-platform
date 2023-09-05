@@ -3,7 +3,9 @@ package com.usyd.capstone.common.compents;
 import com.usyd.capstone.common.DTO.CryptoCurrencyInfo;
 import com.usyd.capstone.common.Enums.SYSTEM_SECURITY_KEY;
 import com.usyd.capstone.entity.Product;
+import com.usyd.capstone.entity.ProductPriceRecord;
 import com.usyd.capstone.mapper.ProductMapper;
+import com.usyd.capstone.mapper.ProductPriceRecordMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -21,6 +23,9 @@ public class CryptoCurrencyPriceUpdateTask {
 
     @Autowired
     private ProductMapper productMapper;
+
+    @Autowired
+    private ProductPriceRecordMapper productPriceRecordMapper;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -64,7 +69,16 @@ public class CryptoCurrencyPriceUpdateTask {
         for(CryptoCurrencyInfo cryptoCurrencyInfo : cryptoCurrencyInfoList)
         {
             Product product = productMap.get(cryptoCurrencyInfo.getName());
+            ProductPriceRecord productPriceRecord = new ProductPriceRecord();
+
             double priceOld = product.getProductPrice();
+
+            productPriceRecord.setProductId(product.getId());
+            productPriceRecord.setProductPrice(priceOld);
+            productPriceRecord.setTurnOfRecord(product.getCurrentTurnOfRecord());
+            productPriceRecord.setRecordTimestamp(product.getProductUpdateTime());
+            productPriceRecordMapper.insert(productPriceRecord);
+
             double priceNew = cryptoCurrencyInfo.getPrice();
             if(priceOld < priceNew)
                 product.setPriceStatus(0);
