@@ -1,9 +1,8 @@
-package com.usyd.capstone.common.config;
+package com.usyd.capstone.common.compents;
 
 import com.usyd.capstone.common.DTO.ExchangeRateResponse;
 import com.usyd.capstone.entity.ExchangeRateUsd;
 import com.usyd.capstone.mapper.ExchangeRateUsdMapper;
-import com.usyd.capstone.service.ExchangeRateUsdService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

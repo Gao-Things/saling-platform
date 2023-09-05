@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 public class PublicController {
     @GetMapping("/hello")
     public String hello(){
-        int a = 1;
         return "hello";
     }
 

@@ -62,6 +62,10 @@ public class Product implements Serializable {
     @TableField("current_turn_of_record")
     private int currentTurnOfRecord;
 
+    @TableField("price_status")
+    private int priceStatus; //0:涨 1：跌 2：平
+//    如果之后有修改/插入/删除记录的功能 本条记录的后一条要视情况修改这个字段的数值
+
     @OneToMany(mappedBy = "product")
     @TableField(exist = false)
     @com.github.dreamyoung.mprelation.OneToMany
@@ -69,10 +73,10 @@ public class Product implements Serializable {
 //    @Lazy(false) //false向下查找一层，@OneToMany默认是true
     private Set<AdminUserProduct> adminUserProducts;
 
-//    @OneToMany(mappedBy = "product")
-//    @TableField(exist = false)
-//    @com.github.dreamyoung.mprelation.OneToMany
-//    @com.github.dreamyoung.mprelation.JoinColumn(name = "id", referencedColumnName = "product_id")
-//    private Set<ProductPriceRecord> ProductPriceRecords;
+    @OneToMany(mappedBy = "product")
+    @TableField(exist = false)
+    @com.github.dreamyoung.mprelation.OneToMany
+    @com.github.dreamyoung.mprelation.JoinColumn(name = "id", referencedColumnName = "product_id")
+    private Set<ProductPriceRecord> ProductPriceRecords;
 
 }
