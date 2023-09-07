@@ -9,11 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.util.ImageUtils;
 
@@ -33,15 +31,12 @@ public class HeaderFragment extends Fragment {
         textView = view.findViewById(R.id.tv_title);
         ImageView imageView = view.findViewById(R.id.profileImage);
 
-// 获取要设置为圆形的图片资源
         Drawable originalDrawable = getResources().getDrawable(R.drawable.img_6);
 
-// 创建一个圆形的BitmapDrawable
         Bitmap originalBitmap = ((BitmapDrawable) originalDrawable).getBitmap();
         Bitmap circularBitmap = ImageUtils.getCircularBitmap(originalBitmap);
         Drawable circularDrawable = new BitmapDrawable(getResources(), circularBitmap);
 
-// 设置圆形图片
         imageView.setImageDrawable(circularDrawable);
 
     }

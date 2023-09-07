@@ -57,6 +57,10 @@
 
 
 
+    <style name="GreenCheckbox" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="colorControlNormal">@color/darkGreen</item>
+        <item name="colorControlActivated">@color/darkGreen</item>
+    </style>
 
 
 
