@@ -24,7 +24,7 @@ public class CurrencyRateUpdateTask {
     private String apiUrl = "http://api.currencylayer.com/live?access_key=c2823ae761b7da333b49c4a628786a0b&source=USD&currencies=";
     // 因为实时汇率接口高频率访问要收钱
     // 所以设置定时任务半小时一次同步进我们自己的数据库
-    @Scheduled(fixedRate = 1800000) // 每半小时执行一次，单位为毫秒
+//    @Scheduled(fixedRate = 1800000) // 每半小时执行一次，单位为毫秒
     public void updateCurrencyRates() {
 
         StringBuilder exchangeCurrency = new StringBuilder();

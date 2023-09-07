@@ -4,9 +4,9 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
 
+import com.usyd.capstone.common.Enums.CATEGORY;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -65,6 +65,31 @@ public class Product implements Serializable {
     @TableField("price_status")
     private int priceStatus; //0:涨 1：跌 2：平
 //    如果之后有修改/插入/删除记录的功能 本条记录的后一条要视情况修改这个字段的数值
+
+    @Column(name = "category")
+    @TableField(exist = false)
+    private int categoryValue;
+
+    @TableField("category")
+    @Transient
+    private CATEGORY category;
+
+    public void setCategory(int categoryValue) {
+        this.category = CATEGORY.findByValue(categoryValue);
+    }
+
+    public int getCategory() {
+        return category.getValue();
+    }
+
+    public CATEGORY getCategoryEnum() {
+        return category;
+    }
+
+    public String getCategoryName() {
+        return category.getName();
+    }
+
 
     @OneToMany(mappedBy = "product")
     @TableField(exist = false)

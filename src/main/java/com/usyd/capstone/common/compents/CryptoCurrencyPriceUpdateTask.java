@@ -1,10 +1,10 @@
 package com.usyd.capstone.common.compents;
 
 import com.usyd.capstone.common.DTO.CryptoCurrencyInfo;
+import com.usyd.capstone.common.Enums.CATEGORY;
 import com.usyd.capstone.common.Enums.SYSTEM_SECURITY_KEY;
 import com.usyd.capstone.entity.Product;
 import com.usyd.capstone.entity.ProductPriceRecord;
-import com.usyd.capstone.mapper.ProductMapper;
 import com.usyd.capstone.mapper.ProductPriceRecordMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -19,10 +19,7 @@ import javax.annotation.PostConstruct;
 import java.util.*;
 
 @Component
-public class CryptoCurrencyPriceUpdateTask {
-
-    @Autowired
-    private ProductMapper productMapper;
+public class CryptoCurrencyPriceUpdateTask extends BaseTask {
 
     @Autowired
     private ProductPriceRecordMapper productPriceRecordMapper;
@@ -32,14 +29,14 @@ public class CryptoCurrencyPriceUpdateTask {
 
     private String apiUrl = "https://data.mifengcha.com/api/v3/price?slug=";
 
-    private HashMap<String, Product> productMap = new HashMap<>();
     @PostConstruct
-    public void initProductMap()
+    public void CryptoCurrencyPriceUpdateTask()
     {
-        List<Product> tempList = productMapper.selectList(null);
-        for(Product temp : tempList)
-            productMap.put(temp.getProductName().toLowerCase(), temp);
+        category = CATEGORY.CRYPTOCURRENCY;
+        initProductMap();
     }
+
+
     @Scheduled(fixedRate = 1800000) // 每半小时执行一次，单位为毫秒
     public void updateCurrencyRates() {
 
