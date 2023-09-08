@@ -51,6 +51,7 @@ public class Product implements Serializable {
     private String productDescription;
 
     @TableField(exist = false)
+    @Transient
     private double productExchangePrice;
 
     @TableField("is_in_resetting_process")

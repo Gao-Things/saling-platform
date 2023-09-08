@@ -4,7 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum CATEGORY {
-    CRYPTOCURRENCY(1, "cryptocurrency");
+    CRYPTOCURRENCY(1, "cryptocurrency"),
+    RAREMETAL(2, "raremetal");
 
     private int value;
     private String name;
@@ -18,6 +19,9 @@ public enum CATEGORY {
         switch (value) {
             case 1:
                 return CRYPTOCURRENCY;
+            case 2:
+                return RAREMETAL;
+
         }
         return null;
     }

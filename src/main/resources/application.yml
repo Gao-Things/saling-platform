@@ -20,7 +20,7 @@ spring:
     driverClassName: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/capstone?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
     username: root
-    password: 123456
+    password: 123
     dbcp2:
       max-total: 150
       max-idle: 10
@@ -33,6 +33,11 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5Dialect
+#  async task pool, just for schedule task
+  task:
+    scheduling:
+      pool:
+        size: 10  # 指定线程池大小
   mail:
     host: smtp.gmail.com
     port: 587

@@ -28,22 +28,24 @@ public class RequestRateLimitInterceptor implements HandlerInterceptor {
                 firstRequestTimeInLastRequestInterval = temp.get(0);
         }
 
-        if (firstRequestTimeInLastRequestInterval == null || currentTime - firstRequestTimeInLastRequestInterval >= requestIntervalMillis) {
-            // 请求时间间隔超过限制，允许请求
-            temp = new ArrayList<>();
-            temp.add(currentTime);
-            ipRequestTimestamps.put(clientIp, temp);
-            return true;
-        } else if (temp.size() < maxRequestsPerMinute) {
-            // 请求速率未超限，允许请求
-            temp.add(currentTime);
-            return true;
-        } else {
-            // 请求速率超限，返回错误响应
-            response.setStatus(429);
-            response.getWriter().write("Too many requests from this IP. Please try again later.");
-            return false;
-        }
+        // 测试不方便注释一下
+        return true;
+//        if (firstRequestTimeInLastRequestInterval == null || currentTime - firstRequestTimeInLastRequestInterval >= requestIntervalMillis) {
+//            // 请求时间间隔超过限制，允许请求
+//            temp = new ArrayList<>();
+//            temp.add(currentTime);
+//            ipRequestTimestamps.put(clientIp, temp);
+//            return true;
+//        } else if (temp.size() < maxRequestsPerMinute) {
+//            // 请求速率未超限，允许请求
+//            temp.add(currentTime);
+//            return true;
+//        } else {
+//            // 请求速率超限，返回错误响应
+//            response.setStatus(429);
+//            response.getWriter().write("Too many requests from this IP. Please try again later.");
+//            return false;
+//        }
     }
 
     private String getClientIp(HttpServletRequest request) {

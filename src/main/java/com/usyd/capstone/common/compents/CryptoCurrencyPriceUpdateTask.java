@@ -2,6 +2,7 @@ package com.usyd.capstone.common.compents;
 
 import com.usyd.capstone.common.DTO.CryptoCurrencyInfo;
 import com.usyd.capstone.common.Enums.CATEGORY;
+import com.usyd.capstone.common.Enums.CryptoCurrency;
 import com.usyd.capstone.common.Enums.SYSTEM_SECURITY_KEY;
 import com.usyd.capstone.entity.Product;
 import com.usyd.capstone.entity.ProductPriceRecord;
@@ -11,6 +12,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -36,17 +39,26 @@ public class CryptoCurrencyPriceUpdateTask extends BaseTask {
         initProductMap();
     }
 
-
+    @Async
     @Scheduled(fixedRate = 1800000) // 每半小时执行一次，单位为毫秒
     public void updateCurrencyRates() {
 
-        StringBuilder exchangeCurrency = new StringBuilder();
-        for(Map.Entry<String, Product> entry : productMap.entrySet())
-        {
-            exchangeCurrency.append(entry.getKey() + ",");
+        StringBuilder cryptocurrency = new StringBuilder();
+        if (!productMap.isEmpty()){
+            for(Map.Entry<String, Product> entry : productMap.entrySet())
+            {
+                cryptocurrency.append(entry.getKey()).append(",");
+            }
+        }else {
+            // 枚举获得需要拉取的值
+            CryptoCurrency[] currencies = CryptoCurrency.values();
+            for (CryptoCurrency currency : currencies) {
+                cryptocurrency.append(currency).append(",");
+            }
         }
-        exchangeCurrency.deleteCharAt(exchangeCurrency.length() - 1);
-        String cryptoCurrencyPriceUrl = apiUrl + exchangeCurrency + "&api_key=" + SYSTEM_SECURITY_KEY.CRYPTO_CURRENCY_API_KEY.getValue();
+
+        cryptocurrency.deleteCharAt(cryptocurrency.length() - 1);
+        String cryptoCurrencyPriceUrl = apiUrl + cryptocurrency + "&api_key=" + SYSTEM_SECURITY_KEY.CRYPTO_CURRENCY_API_KEY.getValue();
         ResponseEntity<List<CryptoCurrencyInfo>> response = restTemplate.exchange(
                 cryptoCurrencyPriceUrl,
                 HttpMethod.GET,
@@ -65,28 +77,47 @@ public class CryptoCurrencyPriceUpdateTask extends BaseTask {
 
         for(CryptoCurrencyInfo cryptoCurrencyInfo : cryptoCurrencyInfoList)
         {
-            Product product = productMap.get(cryptoCurrencyInfo.getName());
-            ProductPriceRecord productPriceRecord = new ProductPriceRecord();
+            if (!productMap.isEmpty()){
+                Product product = productMap.get(cryptoCurrencyInfo.getName());
+                ProductPriceRecord productPriceRecord = new ProductPriceRecord();
 
-            double priceOld = product.getProductPrice();
+                double priceOld = product.getProductPrice();
+                productPriceRecord.setProductId(product.getId());
+                productPriceRecord.setProductPrice(priceOld);
+                productPriceRecord.setTurnOfRecord(product.getCurrentTurnOfRecord());
+                productPriceRecord.setRecordTimestamp(product.getProductUpdateTime());
+                productPriceRecordMapper.insert(productPriceRecord);
 
-            productPriceRecord.setProductId(product.getId());
-            productPriceRecord.setProductPrice(priceOld);
-            productPriceRecord.setTurnOfRecord(product.getCurrentTurnOfRecord());
-            productPriceRecord.setRecordTimestamp(product.getProductUpdateTime());
-            productPriceRecordMapper.insert(productPriceRecord);
-
-            double priceNew = cryptoCurrencyInfo.getPrice();
-            if(priceOld < priceNew)
-                product.setPriceStatus(0);
-            else if(priceOld > priceNew)
-                product.setPriceStatus(1);
-            else
+                double priceNew = cryptoCurrencyInfo.getPrice();
+                if(priceOld < priceNew)
+                    product.setPriceStatus(0);
+                else if(priceOld > priceNew)
+                    product.setPriceStatus(1);
+                else
+                    product.setPriceStatus(2);
+                product.setProductPrice(priceNew);
+                // 设置为当前的时间戳
+                product.setProductUpdateTime(System.currentTimeMillis());
+                product.setCurrentTurnOfRecord(product.getCurrentTurnOfRecord() + 1);
+                productMapper.updateById(product);
+            }else {
+                // insert new product record
+                double priceNew = cryptoCurrencyInfo.getPrice();
+                Product product = new Product();
+                product.setCategory(1);
+                product.setCurrentTurnOfRecord(0);
+                product.setInResettingProcess(false);
                 product.setPriceStatus(2);
-            product.setProductPrice(priceNew);
-            product.setProductUpdateTime(cryptoCurrencyInfo.getTimestamp());
-            product.setCurrentTurnOfRecord(product.getCurrentTurnOfRecord() + 1);
-            productMapper.updateById(product);
+                product.setProductCreateTime(cryptoCurrencyInfo.getTimestamp());
+                product.setProductDescription("This is " + cryptoCurrencyInfo.getName());
+                product.setProductName(cryptoCurrencyInfo.getName());
+                product.setProductPrice(priceNew);
+                product.setProductUpdateTime(cryptoCurrencyInfo.getTimestamp());
+
+                productMapper.insert(product);
+            }
+
+
         }
     }
 }
