@@ -4,6 +4,7 @@ import login from "../components/login/login.vue";
 import adminPage from "../components/adminPage/admin.vue"
 import settingPage from "../components/settingPage/setting.vue"
 import store from '../store'; // 导入Vuex store
+import emailPsw from '../components/emailPsw.vue';
 
 
 const router = new VueRouter({
@@ -31,6 +32,11 @@ const router = new VueRouter({
             component: settingPage,
             meta: { requiresAuth: true, allowedRoles: ['SUPERADMIN'] }
 
+        },
+        {
+            path: '/emailPsw',
+            name: 'emailPsw',
+            component: emailPsw
         }
     ]
 })

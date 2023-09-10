@@ -1,11 +1,11 @@
 <template>
     <div class="Main">
         <el-table :data="tableData"
-                  :cell-style="{background:'#000000',padding: '0', color: '#ffffff',textAlign: 'center'}"
+                  :cell-style="{background:'#ffffff',padding: '0', color: '#000000',textAlign: 'center'}"
                   style="font-size: 18px; width: max-content; min-width: 105%;"
                   :header-row-style="{height:'80px'}"
                   :row-style ="{height:'130px'}"
-                  :header-cell-style="{background:'#000000', color: '#ffffff', fontSize:'19px',textAlign: 'center', fontweight:700}"
+                  :header-cell-style="{background:'#ffffff', color: '#000000', fontSize:'19px',textAlign: 'center', fontweight:700}"
 
         >
             <el-table-column prop="id">
@@ -42,6 +42,7 @@
                 :current-page="currentPage"
         >
         </el-pagination>
+        
     </div>
 
 </template>
@@ -49,9 +50,9 @@
 <script src="./main.js">
 import lineChart from "@/components/chart/lineChart.vue";
 
-export default {
-    components: {lineChart}
-}
+// export default {
+//     components: {lineChart}
+// }
 </script>
 
 <style>
@@ -72,7 +73,7 @@ export default {
 }
 
 .Main {
-    background-color: black;
+    background-color: white;
 }
 
 .el-table td.el-table__cell {

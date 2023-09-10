@@ -47,9 +47,9 @@
 .header-container {
     display: flex; /* 使用 Flex 布局 */
     align-items: center; /* 垂直居中对齐 */
-    background-color: black;
+    background-color: white;
     flex-direction: row;
-    color: white;
+    color: black;
 }
 
 .header-item {
