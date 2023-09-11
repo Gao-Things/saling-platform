@@ -57,9 +57,6 @@ public class Product implements Serializable {
     @TableField("is_in_resetting_process")
     private boolean isInResettingProcess;
 
-    @TableField("price_status")
-    private Integer priceStatus;
-
     //初始化为0，super修改后+1，admin一致后+1
     //  这是定价的轮次
     //  报价的轮次=定价的轮次+1

@@ -26,7 +26,6 @@ import javax.persistence.*;
  */
 @Getter
 @Setter
-@Entity
 @Accessors(chain = true)
 @TableName("product_price_record")
 @Entity
