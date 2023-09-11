@@ -2,7 +2,6 @@ package comp5703.sydney.edu.au.learn.Home;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,16 +9,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.github.mikephil.charting.charts.LineChart;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import comp5703.sydney.edu.au.learn.DTO.Product;
 import comp5703.sydney.edu.au.learn.DTO.Record;
 import comp5703.sydney.edu.au.learn.R;
-import comp5703.sydney.edu.au.learn.util.LineChartXAxisValueFormatter;
 
 public class ItemEditAdapter extends RecyclerView.Adapter<ItemEditAdapter.LinearViewHolder>{
 
@@ -78,10 +72,6 @@ public class ItemEditAdapter extends RecyclerView.Adapter<ItemEditAdapter.Linear
         private TextView itemName;
 
         private TextView itemPrice;
-
-        private TextView itemTransferPrice;
-
-        private LineChart lineChart;
 
         public LinearViewHolder(View itemView){
             super(itemView);
