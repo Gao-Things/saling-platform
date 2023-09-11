@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -45,6 +46,8 @@ public class ItemListFragment extends Fragment {
     private TextView dumpText;
 
     private Fragment itemEditFragment;
+
+    private Fragment itemDetailFragment;
 
 
     @Nullable
@@ -156,8 +159,24 @@ public class ItemListFragment extends Fragment {
 
     ItemListAdapter.OnItemClickListener clickListener = new ItemListAdapter.OnItemClickListener() {
         @Override
-        public void onClick(int pos) {
-            Toast.makeText(getContext(), "click"+ pos, Toast.LENGTH_SHORT).show();
+        public void onClick(int pos, Integer productID) {
+            Toast.makeText(getContext(), "click"+ productID, Toast.LENGTH_SHORT).show();
+            // jump to item detail
+
+            if (itemDetailFragment == null){
+                itemDetailFragment = new ItemDetailFragment();
+            }
+            // 准备要传递的数据
+            Bundle args = new Bundle();
+            args.putInt("productId", productID); // 这里的 "key" 是你传递数据的键名，"value" 是你要传递的值
+            itemDetailFragment.setArguments(args);
+
+            // 执行 Fragment 跳转
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            transaction.replace(R.id.fl_container, itemDetailFragment); // R.id.fragment_container 是用于放置 Fragment 的容器
+            transaction.addToBackStack(null); // 将 FragmentA 添加到返回栈，以便用户可以返回到它
+            transaction.commitAllowingStateLoss();
+
         }
     };
 

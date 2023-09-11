@@ -36,7 +36,7 @@
         android:layout_weight="1"
         android:layout_height="wrap_content"
         android:paddingLeft="15dp"
-        android:textSize="15sp"
+        android:textSize="13sp"
         android:textStyle="bold"
         android:text="$5"/>
 

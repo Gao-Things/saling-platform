@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.text.DecimalFormat;
 import java.util.List;
 
 import comp5703.sydney.edu.au.learn.DTO.Product;
@@ -42,8 +44,16 @@ public class ItemEditAdapter extends RecyclerView.Adapter<ItemEditAdapter.Linear
 
             // 获取Product object
             Product product = recordList.get(position).getProduct();
-            holder.itemName.setText(product.getProductName());
-            holder.itemPrice.setText(Double.toString(product.getProductPrice()));
+            double productPrice = product.getProductPrice();
+            double productExchangePrice = product.getProductExchangePrice();
+
+            // 创建DecimalFormat对象，设置科学计数法格式
+            DecimalFormat decimalFormat = new DecimalFormat("0.##E0");
+
+            // 使用科学计数法格式化价格
+            String formattedPrice = decimalFormat.format(productPrice);
+
+            holder.itemPrice.setText(formattedPrice);
 
             System.out.println(product);
 

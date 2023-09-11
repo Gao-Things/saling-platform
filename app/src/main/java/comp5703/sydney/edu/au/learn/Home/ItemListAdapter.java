@@ -21,6 +21,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,8 +58,19 @@ public class ItemListAdapter extends RecyclerView.Adapter<ItemListAdapter.Linear
             // 获取Product object
             Product product = recordList.get(position).getProduct();
             holder.itemName.setText(product.getProductName());
-            holder.itemPrice.setText(Double.toString(product.getProductPrice()));
-            holder.itemTransferPrice.setText(Double.toString(product.getProductExchangePrice()));
+
+            double productPrice = product.getProductPrice();
+            double productExchangePrice = product.getProductExchangePrice();
+
+            // 创建DecimalFormat对象，设置科学计数法格式
+            DecimalFormat decimalFormat = new DecimalFormat("0.##E0");
+
+            // 使用科学计数法格式化价格
+            String formattedPrice = decimalFormat.format(productPrice);
+            String formattedExchangePrice = decimalFormat.format(productExchangePrice);
+
+            holder.itemPrice.setText(formattedPrice);
+            holder.itemTransferPrice.setText(formattedExchangePrice);
             System.out.println(product);
             // 获取productPriceHistory
             List<Double> productHistoryPrice = recordList.get(position).getPriceUpdateRecord();
@@ -71,16 +83,17 @@ public class ItemListAdapter extends RecyclerView.Adapter<ItemListAdapter.Linear
             }
             // 设置图表
             initialLineChart(holder.lineChart, productHistoryPrice, productHistoryTime, setStatus);
+
+            // 绑定点击事件
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mlistener.onClick(position, product.getId());
+                }
+            });
         }
 
 
-
-        holder.lineChart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                mlistener.onClick(position);
-            }
-        });
 
     }
 
@@ -128,7 +141,7 @@ public class ItemListAdapter extends RecyclerView.Adapter<ItemListAdapter.Linear
         dataSet.setDrawFilled(true); // 启用填充
         dataSet.setFillAlpha(100); // 设置填充颜色的透明度
 
-        if(priceStatus == 1){
+        if(priceStatus == 0){
             dataSet.setColor(Color.RED); // 折线的颜色
             dataSet.setFillDrawable(ContextCompat.getDrawable(mcontext, R.drawable.gradient_red)); // 设置填充区域的Drawable资源
         }else {
@@ -185,7 +198,7 @@ public class ItemListAdapter extends RecyclerView.Adapter<ItemListAdapter.Linear
     }
 
     public interface OnItemClickListener{
-        void onClick(int pos);
+        void onClick(int pos, Integer itemId);
     }
 
     public List<Record> getRecordList() {

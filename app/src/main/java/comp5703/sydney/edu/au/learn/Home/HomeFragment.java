@@ -65,7 +65,7 @@ public class HomeFragment extends Fragment {
 
         // 准备要传递的数据
         Bundle args = new Bundle();
-        args.putString("Category", "value"); // 这里的 "key" 是你传递数据的键名，"value" 是你要传递的值
+        args.putString("Category", category); // 这里的 "key" 是你传递数据的键名，"value" 是你要传递的值
         fragmentB.setArguments(args);
 
         // 执行 Fragment 跳转
