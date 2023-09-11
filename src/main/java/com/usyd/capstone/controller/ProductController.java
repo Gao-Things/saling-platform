@@ -68,5 +68,11 @@ public class ProductController {
         return Result.suc(resultMap);
     }
 
+    @GetMapping("/getProductDetail")
+    public Result productDetail(@RequestParam Integer productID){
+      return   productService.getProductById(productID);
+    }
+
+
 }
 
