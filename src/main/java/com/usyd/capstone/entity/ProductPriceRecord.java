@@ -14,6 +14,8 @@ import lombok.experimental.Accessors;
 import javax.persistence.*;
 import javax.persistence.Entity;
 
+import javax.persistence.*;
+
 /**
  * <p>
  * 
@@ -27,6 +29,7 @@ import javax.persistence.Entity;
 @Entity
 @Accessors(chain = true)
 @TableName("product_price_record")
+@Entity
 public class ProductPriceRecord implements Serializable {
 
     private static final long serialVersionUID = 1L;
