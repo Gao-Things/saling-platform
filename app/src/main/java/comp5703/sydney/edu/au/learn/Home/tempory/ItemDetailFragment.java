@@ -1,4 +1,4 @@
-package comp5703.sydney.edu.au.learn.Home;
+package comp5703.sydney.edu.au.learn.Home.tempory;
 
 import static android.content.ContentValues.TAG;
 
@@ -36,10 +36,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import comp5703.sydney.edu.au.learn.DTO.Product;
-import comp5703.sydney.edu.au.learn.DTO.Record;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.productDetailParameter;
-import comp5703.sydney.edu.au.learn.fragment.AFragment;
 import comp5703.sydney.edu.au.learn.util.LineChartXAxisValueFormatter;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
 import okhttp3.Call;

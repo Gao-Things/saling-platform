@@ -13,6 +13,7 @@ import android.provider.Settings;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import comp5703.sydney.edu.au.learn.Common.HeaderFragment;
+import comp5703.sydney.edu.au.learn.Home.tempory.ItemDetailFragment;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.service.MyService;
 
