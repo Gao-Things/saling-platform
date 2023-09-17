@@ -11,6 +11,24 @@
         android:background="@color/white"
         android:paddingLeft="5dp"
         android:layout_height="match_parent">
+        
+          <LinearLayout
+        android:id="@+id/bubbleLayout"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:paddingTop="10dp"
+        android:background="@color/white"
+        android:paddingLeft="5dp"
+        android:layout_height="match_parent">
+              
+                <LinearLayout
+        android:id="@+id/bubbleLayout"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:paddingTop="10dp"
+        android:background="@color/white"
+        android:paddingLeft="5dp"
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:paddingTop="5dp"
