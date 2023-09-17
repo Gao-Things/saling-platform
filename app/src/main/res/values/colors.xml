@@ -16,6 +16,7 @@
     <color name="borderGray">#D6D6D6</color>
     <color name="lightwhite">#F2FEED</color>
     <color name="withoutSelect">#B9C1D9</color>
+    <color name="popWindowsBackground">#FFFFFF</color>
     
     <color name="cardViewColorGray">#3B3943</color>
     <color name="cardViewColorPurple">#725AD1</color>

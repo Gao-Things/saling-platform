@@ -2,13 +2,14 @@ package comp5703.sydney.edu.au.learn.Home;
 
 import static android.content.ContentValues.TAG;
 
-import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +39,7 @@ import comp5703.sydney.edu.au.learn.DTO.Product;
 import comp5703.sydney.edu.au.learn.DTO.Record;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.productDetailParameter;
+import comp5703.sydney.edu.au.learn.fragment.AFragment;
 import comp5703.sydney.edu.au.learn.util.LineChartXAxisValueFormatter;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
 import okhttp3.Call;
@@ -49,6 +51,8 @@ public class ItemDetailFragment extends Fragment {
     private LineChart itemDetailLineChart;
     private EditText maximumPrice;
     private EditText minimumPrice;
+    private Button confirmButton;
+    private IOMessageClick listener;
 
 
     @Nullable
@@ -64,10 +68,21 @@ public class ItemDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
         itemDetailPrice = view.findViewById(R.id.itemDetailPrice);
         itemDetailLineChart = view.findViewById(R.id.itemDetail_line_chart);
         maximumPrice = view.findViewById(R.id.maximumPrice);
         minimumPrice = view.findViewById(R.id.minimumPrice);
+        confirmButton = view.findViewById(R.id.confirm_button);
+
+        confirmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onClick("fragment往activity传值");
+            }
+        });
+
+
         // 在 ItemDetailFragment 中获取传递的整数值
         Bundle args = getArguments();
         if (args != null) {
@@ -91,6 +106,11 @@ public class ItemDetailFragment extends Fragment {
             });
 
         }
+    }
+
+
+    public interface IOMessageClick{
+        void onClick(String text);
     }
 
 
@@ -133,6 +153,18 @@ public class ItemDetailFragment extends Fragment {
         }
     }
 
+    // 出现时候触发的事件
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        try {
+            listener = (ItemDetailFragment.IOMessageClick) context;
+        }catch (ClassCastException e){
+            throw new ClassCastException("Activity必须实现 IOMessageClick接口");
+        }
+
+    }
+
     private void runOnUiThread(Runnable runnable) {
         // 使用Activity或Fragment的runOnUiThread方法来确保在主线程上运行代码
         getActivity().runOnUiThread(runnable);
@@ -150,19 +182,15 @@ public class ItemDetailFragment extends Fragment {
         YAxis yAxis = lineChart.getAxisLeft(); // 获取Y轴
         XAxis xAxis = lineChart.getXAxis();    // 获取X轴
 
-        yAxis.setEnabled(false); // 禁用 Y 轴
-        xAxis.setEnabled(false); // 禁用 X 轴
+//        yAxis.setEnabled(true); // 禁用 Y 轴
+//        xAxis.setEnabled(true); // 禁用 X 轴
 
 
-        lineChart.getAxisLeft().setDrawGridLines(false);
+        lineChart.getAxisLeft().setDrawGridLines(true);
         lineChart.getAxisRight().setEnabled(false);
         lineChart.getXAxis().setDrawAxisLine(false);
-        lineChart.getXAxis().setDrawGridLines(true);
+        lineChart.getXAxis().setDrawGridLines(false);
 
-        // 禁用触摸交互
-        lineChart.setDragEnabled(false);
-        lineChart.setScaleEnabled(false);
-        lineChart.setPinchZoom(false);
 
         // 移除描述
         lineChart.getDescription().setEnabled(false);
@@ -182,7 +210,7 @@ public class ItemDetailFragment extends Fragment {
         dataSet.setLineWidth(3f); // 折线的宽度
         dataSet.setDrawValues(false); // 禁用数据点上的标签显示
         dataSet.setDrawCircles(false); // 禁用绘制节点圆圈
-        dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER); // 使用立方贝塞尔模式绘制平滑的曲线
+        dataSet.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER); // 使用立方贝塞尔模式绘制平滑的曲线
 
 
         dataSet.setDrawFilled(true); // 启用填充
