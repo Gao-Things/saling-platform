@@ -68,7 +68,13 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             List<Double> priceUpdateRecord = new ArrayList<>();
             Long productID = pp.getId();
             // get the price record
-            List<ProductPriceRecord> record =  productPriceRecordMapper.selectList(new QueryWrapper<ProductPriceRecord>().eq("product_id", productID));
+            List<ProductPriceRecord> record = productPriceRecordMapper.selectList(
+                    new QueryWrapper<ProductPriceRecord>()
+                            .eq("product_id", productID)
+                            .orderByAsc("record_timestamp") // 按照 record_timestamp 从小到大排序
+                            .last("LIMIT 10") // 限制结果返回最大的十条数据
+            );
+
 
             for (ProductPriceRecord aa : record){
                 priceUpdateTime.add(aa.getRecordTimestamp());

@@ -35,7 +35,6 @@ public class ProductPriceRecord implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
     @TableId(value = "id")
     private Long id;
 
