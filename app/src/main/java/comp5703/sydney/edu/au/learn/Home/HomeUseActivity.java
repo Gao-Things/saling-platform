@@ -13,12 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.widget.TextView;
-
-import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import comp5703.sydney.edu.au.learn.Common.HeaderFragment;
-import comp5703.sydney.edu.au.learn.Home.Fragment.HomeFragment;
 import comp5703.sydney.edu.au.learn.Home.Fragment.ItemDetailFragment;
 import comp5703.sydney.edu.au.learn.Home.Fragment.ItemListEditFragment;
 import comp5703.sydney.edu.au.learn.Home.Fragment.ItemListFragment;
@@ -42,23 +37,28 @@ public class HomeUseActivity extends AppCompatActivity implements ItemDetailFrag
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    loadFragment(new HomeFragment());
+                    loadFragment(new ItemListFragment());
                     toolbar_title.setText("Home");  // 使用自定义标题
                     return true;
-                case R.id.navigation_dashboard:
+                case R.id.navigation_sell:
                     loadFragment(new ItemListEditFragment());
-                    toolbar_title.setText("Dashboard");  // 使用自定义标题
+                    toolbar_title.setText("Sell");  // 使用自定义标题
                     return true;
                 case R.id.navigation_notifications:
                     loadFragment(new ItemDetailFragment());
-                    toolbar_title.setText("Detail");  // 使用自定义标题
+                    toolbar_title.setText("Notifications");  // 使用自定义标题
                     return true;
+                case R.id.profile:
+                    loadFragment(new ItemDetailFragment());
+                    toolbar_title.setText("Profile");  // 使用自定义标题
+                    return true;
+
             }
             return false;
         });
 
         // 默认加载一个Fragment
-        loadFragment(new HomeFragment());
+        loadFragment(new ItemListFragment());
 
     }
 

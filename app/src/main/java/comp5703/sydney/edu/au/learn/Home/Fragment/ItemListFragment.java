@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -27,8 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import comp5703.sydney.edu.au.learn.DTO.Record;
 import comp5703.sydney.edu.au.learn.Home.Adapter.ItemListAdapter;
-import comp5703.sydney.edu.au.learn.Home.Fragment.ItemDetailFragment;
-import comp5703.sydney.edu.au.learn.Home.Fragment.ItemListEditFragment;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.productParameter;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
@@ -44,10 +41,6 @@ public class ItemListFragment extends Fragment {
     private List<Record> recordList;
 
     private ItemListAdapter itemListAdapter;
-
-    private TextView dumpText;
-
-    private Fragment itemEditFragment;
 
     private Fragment itemDetailFragment;
 
@@ -68,7 +61,6 @@ public class ItemListFragment extends Fragment {
 
         super.onViewCreated(view, savedInstanceState);
         itemRecyclerView = view.findViewById(R.id.list_main);
-        dumpText = view.findViewById(R.id.moveToItemEdit);
 
         // 创建并设置RecyclerView的LayoutManager
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -79,24 +71,7 @@ public class ItemListFragment extends Fragment {
         itemListAdapter = new ItemListAdapter(getContext(),new ArrayList<Record>(),clickListener);
         itemRecyclerView.setAdapter(itemListAdapter);
 
-        // 添加分隔线装饰
-        itemRecyclerView.addItemDecoration(new myDecoration());
-        // 定义进入和退出动画资源文件
-        int enterAnimation = R.anim.slide_in_right; // 进入动画
-        int exitAnimation = R.anim.slide_out_left; // 退出动画
-        dumpText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (itemEditFragment == null){
-                    itemEditFragment = new ItemListEditFragment();
-                }
-                Fragment fragment = getFragmentManager().findFragmentByTag("itemList");
 
-                getFragmentManager().beginTransaction().replace(R.id.fl_container, itemEditFragment).setCustomAnimations(enterAnimation, exitAnimation).
-                        addToBackStack(null).commitAllowingStateLoss();
-
-            }
-        });
 
     }
 
@@ -182,11 +157,4 @@ public class ItemListFragment extends Fragment {
         }
     };
 
-    class myDecoration extends RecyclerView.ItemDecoration{
-        @Override
-        public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-            super.getItemOffsets(outRect, view, parent, state);
-            outRect.set(0,0,0,getResources().getDimensionPixelOffset(R.dimen.dividerHeight));
-        }
-    }
 }
