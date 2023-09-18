@@ -1,51 +1,57 @@
 package comp5703.sydney.edu.au.learn.Home;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.widget.TextView;
 
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import comp5703.sydney.edu.au.learn.Common.HeaderFragment;
+import comp5703.sydney.edu.au.learn.Home.Fragment.HomeFragment;
+import comp5703.sydney.edu.au.learn.Home.Fragment.ItemDetailFragment;
+import comp5703.sydney.edu.au.learn.Home.Fragment.ItemListEditFragment;
+import comp5703.sydney.edu.au.learn.Home.Fragment.ItemListFragment;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.service.MyService;
 
 public class HomeUseActivity extends AppCompatActivity implements ItemDetailFragment.IOMessageClick{
-    private HeaderFragment headerFragment;
-    private ItemListFragment itemListFragment;
-    private ItemListEditFragment itemListEditFragment;
     private static final int REQUEST_CODE_OVERLAY_PERMISSION = 123;
-
+    @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_use);
 
-
-        // initial item list fragment
-        headerFragment = new HeaderFragment();
-        itemListFragment = new ItemListFragment();
-
-        // fragment添加到Activity中
-        getSupportFragmentManager().beginTransaction().add(R.id.fl_header, headerFragment, "header").commitAllowingStateLoss();
+        Toolbar toolbar = findViewById(R.id.simple_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);  // 禁用默认的标题
+        TextView toolbar_title = findViewById(R.id.toolbar_title);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     loadFragment(new HomeFragment());
+                    toolbar_title.setText("Home");  // 使用自定义标题
                     return true;
                 case R.id.navigation_dashboard:
                     loadFragment(new ItemListEditFragment());
+                    toolbar_title.setText("Dashboard");  // 使用自定义标题
                     return true;
                 case R.id.navigation_notifications:
                     loadFragment(new ItemDetailFragment());
+                    toolbar_title.setText("Detail");  // 使用自定义标题
                     return true;
             }
             return false;

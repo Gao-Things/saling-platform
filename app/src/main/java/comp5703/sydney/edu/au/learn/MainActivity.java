@@ -130,13 +130,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onClick(View view) {
-        boolean isValid = FormValidator.validateEmail(inputLayoutEmail, userName.getText().toString())
-                & FormValidator.validatePassword(inputLayoutPassword, password.getText().toString());
-
-        if (isValid) {
-            // 执行提交逻辑
-            verityLoginAction();
-        }
+        // 测试。直接放行
+        startActivity(new Intent(MainActivity.this, HomeUseActivity.class));
+//        boolean isValid = FormValidator.validateEmail(inputLayoutEmail, userName.getText().toString())
+//                & FormValidator.validatePassword(inputLayoutPassword, password.getText().toString());
+//
+//        if (isValid) {
+//            // 执行提交逻辑
+//            verityLoginAction();
+//        }
 
 
     }

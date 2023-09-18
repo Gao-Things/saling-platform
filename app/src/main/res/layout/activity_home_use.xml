@@ -1,30 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Home.HomeUseActivity">
+    android:orientation="vertical">
 
-    <FrameLayout
-        android:id="@+id/fl_header"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/simple_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="?attr/actionBarSize"
+        android:paddingStart="0dp"
+        android:paddingEnd="0dp"
+        android:background="@color/backgroundGreen"
+        app:titleTextColor="@color/black">
+        <ImageView
+            android:id="@+id/header_logo"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|top"
+            android:paddingTop="13dp"
+            android:paddingBottom="13dp"
+            android:src="@drawable/img_13" />
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Home"
+            android:textSize="18sp"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/toolbar_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/ic_baseline_add_shopping_cart_24" />
+    </androidx.appcompat.widget.Toolbar>
+
+
 
     <FrameLayout
         android:id="@+id/fl_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/fl_header" />
+        android:layout_height="0dp"
+        android:layout_weight="1">
+    </FrameLayout>
 
-    <!-- 添加一个包含底部导航栏的外部布局 -->
     <LinearLayout
-        android:id="@+id/ll_bottom_navigation_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:orientation="vertical">
-        <!-- 上方边框 -->
+
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
@@ -38,6 +66,7 @@
             app:menu="@menu/bottom_navigation_menu"
             app:itemTextColor="@color/textColorSecondary"
             app:itemIconTint="@drawable/bottom_nav_icon_color_selector"
-             />
+            />
     </LinearLayout>
-</RelativeLayout>
+
+</LinearLayout>

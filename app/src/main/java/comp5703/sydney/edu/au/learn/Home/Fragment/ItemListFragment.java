@@ -1,4 +1,4 @@
-package comp5703.sydney.edu.au.learn.Home;
+package comp5703.sydney.edu.au.learn.Home.Fragment;
 
 import static android.content.ContentValues.TAG;
 
@@ -26,9 +26,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import comp5703.sydney.edu.au.learn.DTO.Record;
+import comp5703.sydney.edu.au.learn.Home.Adapter.ItemListAdapter;
+import comp5703.sydney.edu.au.learn.Home.Fragment.ItemDetailFragment;
+import comp5703.sydney.edu.au.learn.Home.Fragment.ItemListEditFragment;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.productParameter;
-import comp5703.sydney.edu.au.learn.fragment.BFragment;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
 import okhttp3.Call;
 import okhttp3.Callback;

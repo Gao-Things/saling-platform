@@ -1,4 +1,4 @@
-package comp5703.sydney.edu.au.learn.Home;
+package comp5703.sydney.edu.au.learn.Home.Adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

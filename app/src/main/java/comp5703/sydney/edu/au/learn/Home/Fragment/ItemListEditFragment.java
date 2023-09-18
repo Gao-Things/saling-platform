@@ -1,4 +1,4 @@
-package comp5703.sydney.edu.au.learn.Home;
+package comp5703.sydney.edu.au.learn.Home.Fragment;
 
 import static android.content.ContentValues.TAG;
 
@@ -28,6 +28,7 @@ import java.util.List;
 
 import comp5703.sydney.edu.au.learn.Common.DialogFragment;
 import comp5703.sydney.edu.au.learn.DTO.Record;
+import comp5703.sydney.edu.au.learn.Home.Adapter.ItemEditAdapter;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.productParameter;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;

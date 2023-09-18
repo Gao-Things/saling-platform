@@ -1,4 +1,4 @@
-package comp5703.sydney.edu.au.learn.Home;
+package comp5703.sydney.edu.au.learn.Home.Fragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
