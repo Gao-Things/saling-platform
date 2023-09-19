@@ -1,6 +1,6 @@
 package com.usyd.capstone.common.Enums;
 
-public enum RareMetalType {
+public enum PreciousMetalType {
     XAG("silver", "USDXAG"),
     XAU("gold", "USDXAU"),
     XPD("palladium", "USDXPD"),
@@ -10,7 +10,7 @@ public enum RareMetalType {
     private final String explain;
 
     private final String tranerName;
-    RareMetalType(String explain, String tranerName) {
+    PreciousMetalType(String explain, String tranerName) {
         this.explain = explain;
         this.tranerName = tranerName;
     }

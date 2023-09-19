@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum CATEGORY {
     CRYPTOCURRENCY(1, "cryptocurrency"),
-    RAREMETAL(2, "raremetal");
+    PRECIOUS_METAL(2, "precious metals"); //贵金属，之前的命名有误
 
     private int value;
     private String name;
@@ -20,7 +20,18 @@ public enum CATEGORY {
             case 1:
                 return CRYPTOCURRENCY;
             case 2:
-                return RAREMETAL;
+                return PRECIOUS_METAL;
+
+        }
+        return null;
+    }
+
+    public static CATEGORY findByName(String name) {
+        switch (name) {
+            case "cryptocurrency":
+                return CRYPTOCURRENCY;
+            case "rare metal":
+                return PRECIOUS_METAL;
 
         }
         return null;

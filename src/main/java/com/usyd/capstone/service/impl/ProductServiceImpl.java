@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.common.DTO.productAdmin;
 import com.usyd.capstone.common.utils.pageUtil;
 import com.usyd.capstone.entity.ExchangeRateUsd;
@@ -68,13 +69,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             List<Double> priceUpdateRecord = new ArrayList<>();
             Long productID = pp.getId();
             // get the price record
-            List<ProductPriceRecord> record = productPriceRecordMapper.selectList(
-                    new QueryWrapper<ProductPriceRecord>()
-                            .eq("product_id", productID)
-                            .orderByAsc("record_timestamp") // 按照 record_timestamp 从小到大排序
-                            .last("LIMIT 10") // 限制结果返回最大的十条数据
-            );
-
+            List<ProductPriceRecord> record =  productPriceRecordMapper.selectList(new QueryWrapper<ProductPriceRecord>().eq("product_id", productID));
 
             for (ProductPriceRecord aa : record){
                 priceUpdateTime.add(aa.getRecordTimestamp());
@@ -95,6 +90,28 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         IPage iPage = pageUtil.listToPage(productListWithUpdates, pageNum, pageSize);
 
         return iPage;
+    }
+
+    @Override
+    public Result getProductById(Integer productID) {
+        productAdmin productAdmin = new productAdmin();
+
+        List<Long> priceUpdateTime =new ArrayList<>();
+        List<Double> priceUpdateRecord = new ArrayList<>();
+
+        Product pp = productMapper.selectById(productID);
+        // get the price record
+        List<ProductPriceRecord> record =  productPriceRecordMapper.selectList(new QueryWrapper<ProductPriceRecord>().eq("product_id", productID));
+
+        for (ProductPriceRecord aa : record){
+            priceUpdateTime.add(aa.getRecordTimestamp());
+            priceUpdateRecord.add(aa.getProductPrice());
+        }
+
+        productAdmin.setProduct(pp);
+        productAdmin.setPriceUpdateTime(priceUpdateTime);
+        productAdmin.setPriceUpdateRecord(priceUpdateRecord);
+        return Result.suc(productAdmin);
     }
 
 }

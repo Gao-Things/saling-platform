@@ -1,5 +1,5 @@
 package com.usyd.capstone.common.Enums;
 
-public enum CryptoCurrency {
+public enum CryptoCurrencyType {
     bitcoin, tether, litecoin
 }

@@ -28,6 +28,7 @@ public class Product implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     @TableId(value = "id")
     private Long id;
 
@@ -89,6 +90,10 @@ public class Product implements Serializable {
     public String getCategoryName() {
         return category.getName();
     }
+
+    @TableField("name_for_update_API")
+    @Column(name = "name_for_update_API")
+    private String nameForUpdateAPI;
 
 
     @OneToMany(mappedBy = "product")

@@ -26,9 +26,6 @@ public class AdminUserServiceImpl implements AdminUserService {
     private final Object lock = new Object();
 
     @Autowired
-    private JwtToken jwtToken;
-
-    @Autowired
     private AdminUserBaseService adminUserBaseService;
 
     @Autowired
@@ -50,7 +47,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         // 因为admin操作的并发量不会很高，所以只使用最简单的同步机制
         synchronized (lock) {
 
-            Long adminId = jwtToken.getId(token);
+            Long adminId = JwtToken.getId(token);
             if (adminId == -1L) {
                 return Result.fail("Cannot parse token!");
             }
@@ -59,6 +56,10 @@ public class AdminUserServiceImpl implements AdminUserService {
 
             if (adminUser == null || product == null) {
                 return Result.fail("Cannot find admin or product!");
+            }
+
+            if(!adminUser.isActivationStatus()) {
+                return Result.fail("The admin account isn't active!");
             }
             //验证报价轮次是否一致，防止有ADMIN页面没刷新，没看到新价格已经出了，又提交上一轮的报价
             if(turnOfRecord != product.getCurrentTurnOfRecord() + 1)

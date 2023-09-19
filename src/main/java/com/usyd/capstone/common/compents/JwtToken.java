@@ -61,7 +61,7 @@ public class JwtToken extends OncePerRequestFilter {
 
 
 
-    public Long getId(String token)
+    public static Long getId(String token)
     {
         try {
             Claims claims = parser(token);
