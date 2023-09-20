@@ -17,6 +17,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import comp5703.sydney.edu.au.learn.Home.Fragment.ItemDetailFragment;
 import comp5703.sydney.edu.au.learn.Home.Fragment.ItemListEditFragment;
 import comp5703.sydney.edu.au.learn.Home.Fragment.ItemListFragment;
+import comp5703.sydney.edu.au.learn.Home.Fragment.SellFragment;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.service.MyService;
 
@@ -41,8 +42,8 @@ public class HomeUseActivity extends AppCompatActivity implements ItemDetailFrag
                     toolbar_title.setText("Home");  // 使用自定义标题
                     return true;
                 case R.id.navigation_sell:
-                    loadFragment(new ItemListEditFragment());
-                    toolbar_title.setText("Sell");  // 使用自定义标题
+                    loadFragment(new SellFragment());
+                    toolbar_title.setText("Selling An Item");  // 使用自定义标题
                     return true;
                 case R.id.navigation_notifications:
                     loadFragment(new ItemDetailFragment());

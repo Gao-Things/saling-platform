@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 当选项被选中时，文字颜色为墨绿色 -->
+    <item android:color="@color/darkGreen" android:state_selected="true"/>
+    <!-- 当选项被按下时，文字颜色为墨绿色 -->
+    <item android:color="@color/darkGreen" android:state_pressed="true"/>
+    <!-- 默认文字颜色为黑色 -->
+    <item android:color="#000000"/>
+</selector>

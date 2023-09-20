@@ -2,6 +2,8 @@ package comp5703.sydney.edu.au.learn.util;
 
 import com.alibaba.fastjson.JSON;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +24,22 @@ public class NetworkUtils {
         String useUrl = apiURL + url;
         Request request = new Request.Builder()
                 .url(useUrl)
+                .post(requestBody)
+                .build();
+
+        client.newCall(request).enqueue(callback);
+    }
+
+    public static void postFormDataRequest(File file , String url, Callback callback) {
+
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", file.getName(), RequestBody.create(MediaType.parse("image/jpg"), file))
+                .build();
+
+
+        Request request = new Request.Builder()
+                .url("http://172.16.28.200:8082/public/product/uploadImage")  // 上传URL
                 .post(requestBody)
                 .build();
 
@@ -58,6 +76,7 @@ public class NetworkUtils {
     }
 
 
+
     public static void postRequest(String url, Callback callback) {
         Request request = new Request.Builder()
                 .url(url)
@@ -90,4 +109,5 @@ public class NetworkUtils {
 
         return paramMap;
     }
+
 }

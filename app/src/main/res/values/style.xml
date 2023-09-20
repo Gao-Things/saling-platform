@@ -62,6 +62,12 @@
         <item name="colorControlActivated">@color/darkGreen</item>
     </style>
 
+    <style name="MyCustomTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu">
+        <item name="boxStrokeColor">@color/darkGreen</item>
+        <item name="hintTextColor">@color/darkGreen</item>
+        <item name="android:textColorHint">@color/black</item>
+    </style>
+
 
 
 

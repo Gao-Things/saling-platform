@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -58,6 +60,12 @@ public class ItemListAdapter extends RecyclerView.Adapter<ItemListAdapter.Linear
             // 获取Product object
             Product product = recordList.get(position).getProduct();
             holder.itemName.setText(product.getProductName());
+            holder.itemWeight.setText(String.valueOf(product.getProductWeight()));
+
+            Picasso.get()
+                    .load(product.getProductImage()) // 网络图片的URL
+                    .into(holder.itemImage);
+
 
             double productPrice = product.getProductPrice();
             double productExchangePrice = product.getProductExchangePrice();
@@ -70,6 +78,8 @@ public class ItemListAdapter extends RecyclerView.Adapter<ItemListAdapter.Linear
             String formattedExchangePrice = decimalFormat.format(productExchangePrice);
 
             holder.itemPrice.setText(formattedPrice);
+
+
             System.out.println(product);
             // 获取productPriceHistory
             List<Double> productHistoryPrice = recordList.get(position).getPriceUpdateRecord();
@@ -107,12 +117,17 @@ public class ItemListAdapter extends RecyclerView.Adapter<ItemListAdapter.Linear
 
         private TextView itemPrice;
 
+        private TextView itemWeight;
 
+        private ImageView itemImage;
 
         public LinearViewHolder(View itemView){
             super(itemView);
             itemName = itemView.findViewById(R.id.itemName);
             itemPrice = itemView.findViewById(R.id.itemPrice);
+            itemWeight = itemView.findViewById(R.id.itemWeight);
+            itemImage = itemView.findViewById(R.id.ItemImage);
+
         }
     }
 

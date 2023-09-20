@@ -64,7 +64,7 @@
             android:layout_height="wrap_content"
             android:background="@color/white"
             app:menu="@menu/bottom_navigation_menu"
-            app:itemTextColor="@color/textColorSecondary"
+            app:itemTextColor="@color/darkGreen"
             app:itemIconTint="@drawable/bottom_nav_icon_color_selector"
             />
     </LinearLayout>

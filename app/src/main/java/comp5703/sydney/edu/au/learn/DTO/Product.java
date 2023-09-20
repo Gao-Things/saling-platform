@@ -15,8 +15,17 @@ public class Product {
 
     private boolean inResettingProcess;
 
+    private double productWeight;
 
     public Product() {
+    }
+
+    public double getProductWeight() {
+        return productWeight;
+    }
+
+    public void setProductWeight(double productWeight) {
+        this.productWeight = productWeight;
     }
 
     public Integer getPriceStatus() {

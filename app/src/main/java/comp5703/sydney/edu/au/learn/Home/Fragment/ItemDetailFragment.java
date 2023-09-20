@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +32,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,12 +49,11 @@ import okhttp3.Response;
 
 public class ItemDetailFragment extends Fragment {
     private TextView itemDetailPrice;
-    private LineChart itemDetailLineChart;
-    private EditText maximumPrice;
-    private EditText minimumPrice;
     private Button confirmButton;
     private IOMessageClick listener;
-
+    private Button send_offer_btn;
+    private ImageView ItemImage;
+    LinearLayout hiddenLayout;
 
     @Nullable
     @Override
@@ -68,17 +70,20 @@ public class ItemDetailFragment extends Fragment {
 
 
         itemDetailPrice = view.findViewById(R.id.itemDetailPrice);
-        itemDetailLineChart = view.findViewById(R.id.itemDetail_line_chart);
-        maximumPrice = view.findViewById(R.id.maximumPrice);
-        minimumPrice = view.findViewById(R.id.minimumPrice);
         confirmButton = view.findViewById(R.id.confirm_button);
+        send_offer_btn = view.findViewById(R.id.send_offer_btn);
+        hiddenLayout = view.findViewById(R.id.hidden_layout);
+        ItemImage = view.findViewById(R.id.ItemImage);
+        confirmButton.setOnClickListener(this::sendOfferClick);
 
-        confirmButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onClick("fragment往activity传值");
-            }
-        });
+
+//        confirmButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                listener.onClick("fragment往activity传值");
+//            }
+//        });
+
 
 
         // 在 ItemDetailFragment 中获取传递的整数值
@@ -91,7 +96,7 @@ public class ItemDetailFragment extends Fragment {
             productDetailParameter productDetailParameter = new productDetailParameter();
             productDetailParameter.setProductId(productId);
             // send request to backend
-            NetworkUtils.getWithParamsRequest( productDetailParameter, "/public/product/getProductDetail", new Callback() {
+            NetworkUtils.getWithParamsRequest(productDetailParameter, "/public/product/getProductDetail", new Callback() {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     handleResponse(response);
@@ -106,6 +111,12 @@ public class ItemDetailFragment extends Fragment {
         }
     }
 
+
+    public void sendOfferClick(View view){
+        hiddenLayout.setVisibility(View.VISIBLE); // 设置为 VISIBLE，使其显示
+        confirmButton.setVisibility(View.GONE);
+        send_offer_btn.setVisibility(View.VISIBLE);
+    }
 
     public interface IOMessageClick{
         void onClick(String text);
@@ -124,21 +135,16 @@ public class ItemDetailFragment extends Fragment {
             int code = jsonObject.getIntValue("code");
 
             if (code == 200) {
-                Product product = jsonObject.getJSONObject("data").getJSONObject("product").toJavaObject(Product.class);
-
-                JSONArray priceUpdateTimeArray = jsonObject.getJSONObject("data").getJSONArray("priceUpdateTime");
-                List<Long> priceUpdateTimeList = priceUpdateTimeArray.toJavaList(Long.class);
-
-                JSONArray priceUpdateRecord = jsonObject.getJSONObject("data").getJSONArray("priceUpdateRecord");
-                List<Double> priceUpdateRecordList = priceUpdateRecord.toJavaList(Double.class);
+                Product product = jsonObject.getJSONObject("data").toJavaObject(Product.class);
 
                 // 在主线程中更新UI
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         itemDetailPrice.setText(Double.toString(product.getProductPrice()));
-                        // 设置图表
-                        initialLineChart(itemDetailLineChart, priceUpdateRecordList, priceUpdateTimeList, product.getPriceStatus());
+                        Picasso.get()
+                                .load(product.getProductImage()) // 网络图片的URL
+                                .into(ItemImage);
                     }
                 });
             } else {
@@ -175,73 +181,4 @@ public class ItemDetailFragment extends Fragment {
 
 
 
-    private void initialLineChart(LineChart lineChart, List<Double> YList, List<Long> XList, Integer priceStatus){
-
-        YAxis yAxis = lineChart.getAxisLeft(); // 获取Y轴
-        XAxis xAxis = lineChart.getXAxis();    // 获取X轴
-
-//        yAxis.setEnabled(true); // 禁用 Y 轴
-//        xAxis.setEnabled(true); // 禁用 X 轴
-
-
-        lineChart.getAxisLeft().setDrawGridLines(true);
-        lineChart.getAxisRight().setEnabled(false);
-        lineChart.getXAxis().setDrawAxisLine(false);
-        lineChart.getXAxis().setDrawGridLines(false);
-
-
-        // 移除描述
-        lineChart.getDescription().setEnabled(false);
-
-        // 创建一个数据集并添加数据
-        ArrayList<Entry> entries = new ArrayList<>();
-        // 配置X轴为时间轴
-        xAxis.setValueFormatter(new LineChartXAxisValueFormatter());
-
-        for (int i = 0; i<YList.size(); i++){
-            float xValue =  XList.get(i);
-            float yValue = (float)YList.get(i).doubleValue();
-            entries.add(new Entry(i, yValue));
-        }
-
-        LineDataSet dataSet = new LineDataSet(entries, "折线图数据"); // 数据集的标签
-        dataSet.setLineWidth(3f); // 折线的宽度
-        dataSet.setDrawValues(false); // 禁用数据点上的标签显示
-        dataSet.setDrawCircles(false); // 禁用绘制节点圆圈
-        dataSet.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER); // 使用立方贝塞尔模式绘制平滑的曲线
-
-
-        dataSet.setDrawFilled(true); // 启用填充
-        dataSet.setFillAlpha(100); // 设置填充颜色的透明度
-
-        if(priceStatus == 0){
-            dataSet.setColor(Color.RED); // 折线的颜色
-            dataSet.setFillDrawable(ContextCompat.getDrawable(getContext(), R.drawable.gradient_red)); // 设置填充区域的Drawable资源
-        }else {
-            dataSet.setColor(Color.GREEN); // 折线的颜色
-            dataSet.setFillDrawable(ContextCompat.getDrawable(getContext(), R.drawable.gradient_green)); // 设置填充区域的Drawable资源
-        }
-
-
-        // 创建一个数据对象并将数据集添加到其中
-        ArrayList<ILineDataSet> dataSets = new ArrayList<>();
-        dataSets.add(dataSet);
-
-        LineData lineData = new LineData(dataSets);
-
-        // 将数据对象设置给LineChart
-        lineChart.setData(lineData);
-
-        // 设置图表描述
-//        Description description = new Description();
-//        description.setText("折线图示例");
-//        lineChart.setDescription(description);
-
-        // 隐藏图例
-        Legend legend = lineChart.getLegend();
-        legend.setEnabled(false);
-
-        // 刷新图表
-        lineChart.invalidate();
-    }
 }
