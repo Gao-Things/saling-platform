@@ -1,4 +1,4 @@
-package com.usyd.capstone.common.compents;
+package com.usyd.capstone.common.CurrentUselessFiles;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 import org.springframework.web.socket.TextMessage;

@@ -22,4 +22,5 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(requestRateLimitInterceptor)
                 .addPathPatterns("/public/product/productList"); // 拦截指定的API路径
     }
+
 }

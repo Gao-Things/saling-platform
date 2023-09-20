@@ -1,20 +1,18 @@
-package com.usyd.capstone.service.impl;
+package com.usyd.capstone;
 
-        import com.usyd.capstone.CapstoneApplication;
-        import com.usyd.capstone.common.VO.UserLogin;
-        import com.usyd.capstone.common.VO.UserRegistration;
-        import com.usyd.capstone.common.VO.EmailAddress;
-        import com.usyd.capstone.common.VO.UpdatePasswordParameter;
-        import com.usyd.capstone.service.PublicService;
-        import org.junit.Test;
-        import org.junit.runner.Result;
-        import org.junit.runner.RunWith;
-        import org.springframework.beans.factory.annotation.Autowired;
-        import org.springframework.boot.test.context.SpringBootTest;
-        import org.springframework.test.context.junit4.SpringRunner;
+import com.usyd.capstone.common.VO.EmailAddress;
+import com.usyd.capstone.common.VO.UpdatePasswordParameter;
+import com.usyd.capstone.common.VO.UserLogin;
+import com.usyd.capstone.common.VO.UserRegistration;
+import com.usyd.capstone.service.PublicService;
+import org.junit.Test;
+import org.junit.runner.Result;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
-        import static org.junit.Assert.*;
-        import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = CapstoneApplication.class)

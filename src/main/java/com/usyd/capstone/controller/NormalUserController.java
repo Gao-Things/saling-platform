@@ -1,12 +1,12 @@
 package com.usyd.capstone.controller;
 
 import com.usyd.capstone.common.DTO.Result;
+import com.usyd.capstone.common.VO.MakeAnOfferRequest;
+import com.usyd.capstone.common.VO.Recaptcha;
+import com.usyd.capstone.common.VO.SetPriceThresholdRequest;
 import com.usyd.capstone.service.NormalUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/normal")
@@ -22,8 +22,18 @@ public class NormalUserController {
     }
 
     @PostMapping("/setPriceThreshold")
-    public Result setPriceThreshold() {
-        return normalUserService.setPriceThresholdSingle("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI5NDk3MzE5ODhAcXEuY29tIiwianRpIjoiMSIsInJvbGUiOiJST0xFX05PUk1BTCIsImlhdCI6MTY5NDQ1NjM4MiwiZXhwIjoxNjk0NTQyNzgyfQ.W73WkCd6unNAYiq40VazxVIYlIXq4X9QTBq2PztZqyY",
-                1L,true, 1.00);
+    public Result setPriceThreshold(@RequestBody SetPriceThresholdRequest setPriceThresholdRequest) {
+        return normalUserService.setPriceThresholdSingle(setPriceThresholdRequest.getToken(),
+                setPriceThresholdRequest.getProductId(),
+                setPriceThresholdRequest.isMinimum(),
+                setPriceThresholdRequest.getThreshold());
+    }
+
+    @PostMapping("/makeAnOffer")
+    public Result makeAnOffer(@RequestBody MakeAnOfferRequest makeAnOfferRequest) {
+        return normalUserService.makeAnOffer(makeAnOfferRequest.getToken(),
+                makeAnOfferRequest.getProductId(),
+                makeAnOfferRequest.getNote(),
+                makeAnOfferRequest.getPrice());
     }
 }

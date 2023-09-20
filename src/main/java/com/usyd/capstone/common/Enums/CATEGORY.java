@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum CATEGORY {
+    UNDEFINED(0,"undefined"),
     CRYPTOCURRENCY(1, "cryptocurrency"),
     PRECIOUS_METAL(2, "precious metals"); //贵金属，之前的命名有误
 
@@ -17,6 +18,8 @@ public enum CATEGORY {
 
     public static CATEGORY findByValue(int value) {
         switch (value) {
+            case 0:
+                return UNDEFINED;
             case 1:
                 return CRYPTOCURRENCY;
             case 2:
@@ -28,6 +31,8 @@ public enum CATEGORY {
 
     public static CATEGORY findByName(String name) {
         switch (name) {
+            case "undefined":
+                return UNDEFINED;
             case "cryptocurrency":
                 return CRYPTOCURRENCY;
             case "rare metal":

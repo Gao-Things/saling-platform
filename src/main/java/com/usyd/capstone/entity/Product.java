@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.security.acl.Owner;
 import java.util.Set;
 
+import com.github.dreamyoung.mprelation.EntityMapper;
 import com.usyd.capstone.common.Enums.CATEGORY;
 import lombok.Getter;
 import lombok.Setter;
@@ -109,4 +111,24 @@ public class Product implements Serializable {
     @com.github.dreamyoung.mprelation.JoinColumn(name = "id", referencedColumnName = "product_id")
     private Set<ProductPriceRecord> ProductPriceRecords;
 
+    @TableField("product_status")
+    private int productStatus; //0: open 1:close 2: sold 3:cancelled
+
+    @TableField("owner_id")
+    @Transient
+    private Long ownerId;
+
+    @ManyToOne
+    @JoinColumn(name = "owner_id", nullable = false)
+    @TableField(exist = false)
+    @com.github.dreamyoung.mprelation.ManyToOne
+    @com.github.dreamyoung.mprelation.JoinColumn(name = "owner_id", referencedColumnName = "id")
+    @EntityMapper
+    private NormalUser owner;
+
+    @OneToMany(mappedBy = "product")
+    @TableField(exist = false)
+    @com.github.dreamyoung.mprelation.OneToMany
+    @com.github.dreamyoung.mprelation.JoinColumn(name = "id", referencedColumnName = "product_id")
+    private Set<Offer> offers;
 }

@@ -39,7 +39,7 @@ public class CryptoCurrencyPriceUpdateTask extends BaseTask {
     }
 
     @Async
-    @Scheduled(fixedRate = 1800000) // 每半小时执行一次，单位为毫秒
+//    @Scheduled(fixedRate = 1800000) // 每半小时执行一次，单位为毫秒
     public void updateCurrencyRates() {
 
         StringBuilder cryptocurrencyNames = new StringBuilder();
