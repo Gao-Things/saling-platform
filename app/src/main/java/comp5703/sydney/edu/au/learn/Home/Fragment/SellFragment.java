@@ -229,24 +229,7 @@ public class SellFragment extends Fragment {
         });
     }
 
-    private void handleResponse(Response response) throws IOException {
-        String responseBody = response.body().string();
-        JSONObject jsonObject = JSONObject.parseObject(responseBody);
-        int code = jsonObject.getIntValue("code");
-
-        if (code == 200) {
-            DialogFragment dialogFragment = new DialogFragment();
-            FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-            dialogFragment.show(transaction, "dialog_fragment_tag");
-        } else {
-
-        }
-    }
-
-    private void handleFailure(IOException e) {
-        Log.e(TAG, "Exception: " + e.getMessage());
-    }
-
+  
 
 
 
