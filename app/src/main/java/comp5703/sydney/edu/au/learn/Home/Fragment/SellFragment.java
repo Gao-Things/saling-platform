@@ -186,14 +186,14 @@ public class SellFragment extends Fragment {
 
 
 
-//     private File createImageFile() throws IOException {
-//         // 创建一个唯一的文件名
-//         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-//         String imageFileName = "JPEG_" + timeStamp + "_";
-//         File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-//         File image = File.createTempFile(imageFileName, ".jpg", storageDir);
-//         return image;
-//     }
+    private File createImageFile() throws IOException {
+        // 创建一个唯一的文件名
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+        return image;
+    }
 
 
     private void submitClick(View view){
