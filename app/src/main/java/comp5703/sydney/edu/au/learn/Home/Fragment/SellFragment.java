@@ -186,14 +186,14 @@ public class SellFragment extends Fragment {
 
 
 
-    private File createImageFile() throws IOException {
-        // 创建一个唯一的文件名
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
-        return image;
-    }
+//     private File createImageFile() throws IOException {
+//         // 创建一个唯一的文件名
+//         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+//         String imageFileName = "JPEG_" + timeStamp + "_";
+//         File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+//         File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+//         return image;
+//     }
 
 
     private void submitClick(View view){
@@ -230,6 +230,23 @@ public class SellFragment extends Fragment {
     }
 
   
+      private void handleResponse(Response response) throws IOException {
+        String responseBody = response.body().string();
+        JSONObject jsonObject = JSONObject.parseObject(responseBody);
+        int code = jsonObject.getIntValue("code");
+
+        if (code == 200) {
+            DialogFragment dialogFragment = new DialogFragment();
+            FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+            dialogFragment.show(transaction, "dialog_fragment_tag");
+        } else {
+
+        }
+    }
+
+    private void handleFailure(IOException e) {
+        Log.e(TAG, "Exception: " + e.getMessage());
+    }
 
 
 
