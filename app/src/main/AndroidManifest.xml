@@ -110,6 +110,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".ListView.ListViewActivity" />
+        <activity android:name=".MyProfileActivity"></activity>
+
     </application>
 
 </manifest>
