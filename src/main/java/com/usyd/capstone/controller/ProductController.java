@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.common.DTO.productAdmin;
+import com.usyd.capstone.common.VO.productVO;
 import com.usyd.capstone.entity.Product;
 import com.usyd.capstone.service.ExchangeRateUsdService;
 import com.usyd.capstone.service.ProductService;
@@ -17,14 +18,15 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * <p>
- *  前端控制器
- * </p>
+ * 前端控制器
+ * </p >
  *
  * @author yyf
  * @since 2023年08月26日
@@ -46,7 +48,7 @@ public class ProductController {
 
     @GetMapping("/productList")
     public Result getProductsWithPrices(@RequestParam(required = false) String targetCurrency,
-                                        @RequestParam int pageSize,  @RequestParam int pageNum) {
+                                        @RequestParam int pageSize, @RequestParam int pageNum) {
 
 
         Page<productAdmin> page = new Page<>();
@@ -61,7 +63,7 @@ public class ProductController {
         }
 
 
-        IPage productList =  productService.getProductListByCurrency(useCurrency, pageNum, pageSize);
+        IPage productList = productService.getProductListByCurrency(useCurrency, pageNum, pageSize);
 
         resultMap.put("CurrencyUnit", targetCurrency);
         resultMap.put("ProductList", productList);
@@ -80,13 +82,13 @@ public class ProductController {
         }
 
         try {
-            // 确保上传目录存在，如果不存在则创建
+        // 确保上传目录存在，如果不存在则创建
             File dir = new File(uploadDir);
             if (!dir.exists()) {
                 dir.mkdirs();
             }
 
-            // 生成新的文件名，将时间戳添加到原始文件名中
+// 生成新的文件名，将时间戳添加到原始文件名中
             String originalFileName = file.getOriginalFilename();
             assert originalFileName != null;
             String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
@@ -98,16 +100,41 @@ public class ProductController {
             String imageUrlUse = imageUrl + newFileName;
             // 返回成功响应
             return Result.suc(imageUrlUse);
-        }  catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    @PostMapping("/uploadProduct")
+    public Result uploadProduct(@RequestBody productVO productVO){
+        Product product = new Product();
+        product.setCategory(1);
+        product.setCurrentTurnOfRecord(0);
+        product.setInResettingProcess(false);
+        product.setPriceStatus(1);
+        product.setProductCreateTime(System.currentTimeMillis());
+        product.setProductDescription(productVO.getItemDescription());
+        product.setProductImage(productVO.getImageUrl());
+        product.setProductName(productVO.getItemTitle());
+        product.setProductPrice(400);
+        product.setProductUpdateTime(System.currentTimeMillis());
+        product.setProductWeight(productVO.getItemWeight());
+        if (productService.save(product)){
+            return Result.suc();
+        }else {
+            return Result.fail();
+        }
+
+    }
+
     @GetMapping("/getProductDetail")
-    public Result productDetail(@RequestParam Integer productID){
-      return   productService.getProductById(productID);
+    public Result getProductDetail(@RequestParam("productID") Integer productID ){
+
+        if (productService.getById(productID) !=null){
+            return Result.suc(productService.getById(productID));
+        }
+        return Result.fail();
     }
 
 
 }
-
