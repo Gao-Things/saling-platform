@@ -250,7 +250,8 @@ public class SellFragment extends Fragment {
         });
     }
 
-    private void handleResponse(Response response) throws IOException {
+  
+      private void handleResponse(Response response) throws IOException {
         String responseBody = response.body().string();
         JSONObject jsonObject = JSONObject.parseObject(responseBody);
         int code = jsonObject.getIntValue("code");
@@ -267,7 +268,6 @@ public class SellFragment extends Fragment {
     private void handleFailure(IOException e) {
         Log.e(TAG, "Exception: " + e.getMessage());
     }
-
 
 
 
