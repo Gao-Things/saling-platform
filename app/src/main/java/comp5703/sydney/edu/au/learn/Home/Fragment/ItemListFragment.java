@@ -137,9 +137,7 @@ public class ItemListFragment extends Fragment {
     ItemListAdapter.OnItemClickListener clickListener = new ItemListAdapter.OnItemClickListener() {
         @Override
         public void onClick(int pos, Integer productID) {
-            Toast.makeText(getContext(), "click"+ productID, Toast.LENGTH_SHORT).show();
             // jump to item detail
-
             if (itemDetailFragment == null){
                 itemDetailFragment = new ItemDetailFragment();
             }
@@ -149,6 +147,7 @@ public class ItemListFragment extends Fragment {
             itemDetailFragment.setArguments(args);
 
             // 执行 Fragment 跳转
+            assert getFragmentManager() != null;
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
             transaction.replace(R.id.fl_container, itemDetailFragment); // R.id.fragment_container 是用于放置 Fragment 的容器
             transaction.addToBackStack(null); // 将 FragmentA 添加到返回栈，以便用户可以返回到它

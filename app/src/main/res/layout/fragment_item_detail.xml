@@ -210,16 +210,17 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2"
+        android:gravity="center_horizontal"
+        android:layout_weight="2.5"
         android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/hidden_layout"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
+            android:layout_height="40dp"
             android:visibility="gone"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
             android:orientation="horizontal">
 
             <TextView
@@ -230,14 +231,6 @@
                 android:paddingStart="20dp"
                 android:textColor="@color/textColorSecondary"
                 android:textSize="22sp" />
-
-            <EditText
-                android:id="@+id/setPrice"
-                android:layout_width="110dp"
-                android:layout_height="40dp"
-                android:layout_marginLeft="20dp"
-                android:background="@drawable/edittext_border"
-                android:textStyle="bold" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
@@ -246,9 +239,29 @@
                 android:paddingLeft="10dp"
                 android:textColor="@color/textColorSecondary"
                 android:textSize="22sp" />
+            <EditText
+                android:id="@+id/setPrice"
+                android:layout_width="110dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="20dp"
+                android:background="@drawable/edittext_border"
+                android:textStyle="bold" />
 
 
         </LinearLayout>
+
+        <EditText
+            android:id="@+id/optionNotes"
+            android:layout_margin="20dp"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:hint="Note(optional)"
+            android:paddingLeft="20dp"
+
+            android:background="@drawable/edittext_border"
+            android:textStyle="bold" />
+
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/confirm_button"
@@ -256,8 +269,7 @@
             android:layout_height="50dp"
             android:layout_marginBottom="40dp"
             android:layout_gravity="end"
-            android:layout_marginRight="50dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginRight="40dp"
             android:background="@drawable/custom_button_background"
             android:text="confirm Offer"
             android:textColor="@color/lightwhite"
@@ -270,12 +282,13 @@
             android:visibility="gone"
             android:layout_marginBottom="40dp"
             android:layout_gravity="end"
-            android:layout_marginRight="50dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginRight="40dp"
             android:background="@drawable/custom_button_background"
             android:text="Send Offer"
             android:textColor="@color/lightwhite"
             />
+
+
 
     </LinearLayout>
 

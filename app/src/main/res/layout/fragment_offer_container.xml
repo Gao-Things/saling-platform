@@ -1,0 +1,76 @@
+<!-- layout/fragment_offer_container.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/sendOfferTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Offer i sent"
+                android:textSize="22sp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/myOfferBox"
+                android:layout_width="match_parent"
+                android:layout_height="15dp"
+                android:layout_marginTop="5dp"
+                android:layout_gravity="center"
+                app:cardBackgroundColor="@color/darkGreen"
+                app:cardCornerRadius="0dp"
+                app:strokeWidth="0dp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_gravity=""
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/receiveOfferTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Offer i received"
+                android:textSize="22sp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/receiveOfferBox"
+                android:layout_width="match_parent"
+                android:layout_marginTop="5dp"
+                android:layout_height="15dp"
+                android:layout_gravity="center"
+                app:cardBackgroundColor="@color/darkGreen"
+                app:cardCornerRadius="0dp"
+                app:strokeWidth="0dp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+</LinearLayout>
+

@@ -30,12 +30,15 @@ import androidx.fragment.app.FragmentTransaction;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.itheima.wheelpicker.WheelPicker;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 import comp5703.sydney.edu.au.learn.Common.DialogFragment;
@@ -63,7 +66,7 @@ public class SellFragment extends Fragment {
     private File photoFile;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
     private static final int REQUEST_IMAGE_CAPTURE = 2;
-
+    WheelPicker wheelPicker;
 
 
     @Nullable
@@ -83,6 +86,7 @@ public class SellFragment extends Fragment {
         editWeight = view.findViewById(R.id.editWeight);
         btnSubmit = view.findViewById(R.id.btnSubmit);
         coverImage = view.findViewById(R.id.coverImage);
+        wheelPicker =  view.findViewById(R.id.wheel1);
 
         String[] items = new String[] {"24K", "21K", "18K"};
 
@@ -96,6 +100,23 @@ public class SellFragment extends Fragment {
         autoCompleteTextView.setAdapter(adapter);
         openCamera.setOnClickListener(this::openCameraClick);
 
+
+        // 设置数据
+        List<String> data = Arrays.asList("g", "kg", "oz");
+        wheelPicker.setData(data);
+        wheelPicker.setItemTextSize(40);
+        wheelPicker.setVisibleItemCount(3);  // 假设5是一个合适的可见项数
+
+        wheelPicker.setMaximumWidthTextPosition(2);
+        wheelPicker.setItemSpace(20);  // 假设5是一个合适的可见项数
+        // 设置选定项目的监听器
+        wheelPicker.setOnItemSelectedListener(new WheelPicker.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(WheelPicker picker, Object data, int position) {
+                // 处理选定项目的事件
+                System.out.println(position +":::"+data);
+            }
+        });
 
         // submit the form
         btnSubmit.setOnClickListener(this::submitClick);

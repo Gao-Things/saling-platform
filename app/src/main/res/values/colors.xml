@@ -22,8 +22,7 @@
     <color name="cardViewColorPurple">#725AD1</color>
     <color name="cardViewColorBlue">#29A4EA</color>
     <color name="cardViewColorRed">#B63A5F</color>
-<!--    overcome the textinput default color-->
-    <color name="mtrl_textinput_default_box_stroke_color">#437D28</color>
+    <color name="cardViewWithoutSelected">#DDDDDD</color>
 
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>

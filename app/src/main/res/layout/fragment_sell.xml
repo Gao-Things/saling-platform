@@ -1,145 +1,220 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/backgroundGreen"
-    android:orientation="vertical"
-    android:paddingLeft="20dp"
-    android:paddingRight="50dp"
-    android:layout_height="match_parent">
-    
-    <TextView
+    android:layout_height="match_parent"
+    android:background="@color/backgroundGreen">
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add detail of your item"
-        android:textSize="23sp"
-        android:textStyle="bold"
-        android:paddingTop="20dp"/>
+        android:orientation="vertical"
+        android:paddingLeft="20dp"
+        android:paddingRight="50dp">
 
-    <ImageView
-        android:id="@+id/coverImage"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginTop="10dp"
-        android:visibility="gone"/>
-    <!-- 正方形的白色背景 -->
-    <FrameLayout
-        android:id="@+id/openCamera"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="10dp"
-        android:background="@color/white"
-       >
-
-        <!-- 垂直的LinearLayout包含图片和文本 -->
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:text="Add detail of your item"
+            android:textSize="23sp"
+            android:textStyle="bold" />
 
-            <!-- 相机logo -->
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:src="@drawable/img_18" />
+        <ImageView
+            android:id="@+id/coverImage"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="10dp"
+            android:visibility="gone" />
+        <!-- 正方形的白色背景 -->
+        <FrameLayout
+            android:id="@+id/openCamera"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/white">
 
-            <!-- 文本 -->
-            <TextView
+            <!-- 垂直的LinearLayout包含图片和文本 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <!-- 相机logo -->
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:src="@drawable/img_18" />
+
+                <!-- 文本 -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="Take photos"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Title"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/editTitle"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/rounded_edittext"
+            android:padding="10dp"
+            android:paddingStart="13dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Description"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/editDescription"
+            android:layout_width="match_parent"
+            android:layout_height="110dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/rounded_edittext"
+            android:padding="10dp"
+            android:paddingStart="13dp"
+            tools:ignore="RtlSymmetry" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout"
+            style="@style/MyCustomTextInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="Choose gold type"
+            app:endIconTint="@color/darkGreen">
+
+            <AutoCompleteTextView
+                android:id="@+id/autoCompleteTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Take photos"
-                android:textStyle="bold"
-                android:layout_gravity="center"
-                android:gravity="center"/>
-        </LinearLayout>
-    </FrameLayout>
+                android:background="@android:color/background_light"
+                android:editable="false"
+                android:inputType="none"
+                android:popupBackground="@color/white" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Title"
-        android:textStyle="bold"
-        android:layout_marginTop="10dp"
-        android:textSize="17sp"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <EditText
-        android:id="@+id/editTitle"
-        android:layout_marginTop="5dp"
-        android:paddingStart="13dp"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/rounded_edittext"
-        android:padding="10dp"
-    />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Description"
-        android:textStyle="bold"
-        android:layout_marginTop="10dp"
-        android:textSize="17sp"/>
-    <EditText
-        android:id="@+id/editDescription"
-        android:layout_width="match_parent"
-        android:layout_marginTop="5dp"
-        android:paddingStart="13dp"
-        android:layout_height="110dp"
-        android:background="@drawable/rounded_edittext"
-        android:padding="10dp"
-        tools:ignore="RtlSymmetry" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout"
-        android:layout_marginTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Choose gold type"
-        app:endIconTint="@color/darkGreen"
-        style="@style/MyCustomTextInputLayout">
-
-        <AutoCompleteTextView
-            android:id="@+id/autoCompleteTextView"
+        <TextView
             android:layout_width="match_parent"
-            android:popupBackground="@color/white"
             android:layout_height="wrap_content"
-            android:background="@android:color/background_light"
-            android:inputType="none"
-            android:editable="false"/>
+            android:layout_marginTop="20dp"
+            android:text="Weight"
+            android:textSize="17sp"
+            android:textStyle="bold" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/editWeight"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:background="@drawable/rounded_edittext"
+                android:padding="10dp"
+                android:paddingStart="13dp"
+                tools:ignore="RtlSymmetry" />
+
+            <com.itheima.wheelpicker.WheelPicker
+                android:id="@+id/wheel1"
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:paddingLeft="10dp"
+                android:layout_height="match_parent"
+                app:wheel_atmospheric="true"
+                app:wheel_cyclic="true"
+                app:wheel_item_text_color="@color/black"
+                app:wheel_selected_item_text_color="@color/darkGreen" />
 
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Weight"
-        android:textStyle="bold"
-        android:layout_marginTop="20dp"
-        android:textSize="17sp"/>
+            <!--属性解释:
 
-    <EditText
-        android:id="@+id/editWeight"
-        android:layout_width="match_parent"
-        android:layout_marginTop="5dp"
-        android:paddingStart="13dp"
-        android:layout_height="50dp"
-        android:background="@drawable/rounded_edittext"
-        android:padding="10dp"
-        tools:ignore="RtlSymmetry" />
+    wheel_atmospheric :  条目颜色是否执行衔接处理 效果更好
+    wheel_curved ： 是否是弧形状态显示
+    wheel_cyclic : 是否可循环
+    wheel_selected_item_position ： 默认选中第几个条目
+    wheel_item_text_color 未选中的条目颜色
+    wheel_selected_item_text_color  选中的条目颜色-->
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnSubmit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/custom_button_background"
-        android:text="Submit"
-        android:textColor="@color/lightwhite" />
-</LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Price"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/editPrice"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/rounded_edittext"
+                android:hint="$"
+                android:padding="10dp"
+                android:paddingStart="13dp"
+                android:paddingLeft="15dp"
+                tools:ignore="RtlSymmetry" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/checkBoxHiddenPrice"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="30dp"
+                android:layout_weight="1"
+                android:text="Hide Price" />
+
+
+        </LinearLayout>
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnSubmit"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="30dp"
+            android:background="@drawable/custom_button_background"
+            android:text="Submit"
+            android:textColor="@color/lightwhite" />
+    </LinearLayout>
+
+
+</ScrollView>

@@ -24,14 +24,6 @@ import androidx.fragment.app.Fragment;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
@@ -41,7 +33,6 @@ import java.util.List;
 import comp5703.sydney.edu.au.learn.DTO.Product;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.productDetailParameter;
-import comp5703.sydney.edu.au.learn.util.LineChartXAxisValueFormatter;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -54,6 +45,7 @@ public class ItemDetailFragment extends Fragment {
     private Button send_offer_btn;
     private ImageView ItemImage;
     LinearLayout hiddenLayout;
+    private EditText optionNotes;
 
     @Nullable
     @Override
@@ -68,12 +60,12 @@ public class ItemDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
         itemDetailPrice = view.findViewById(R.id.itemDetailPrice);
         confirmButton = view.findViewById(R.id.confirm_button);
         send_offer_btn = view.findViewById(R.id.send_offer_btn);
         hiddenLayout = view.findViewById(R.id.hidden_layout);
         ItemImage = view.findViewById(R.id.ItemImage);
+        optionNotes = view.findViewById(R.id.optionNotes);
         confirmButton.setOnClickListener(this::sendOfferClick);
 
 
@@ -91,8 +83,6 @@ public class ItemDetailFragment extends Fragment {
         if (args != null) {
             int productId = args.getInt("productId");
             // 在这里可以使用 productId 进行操作
-            Toast.makeText(getContext(), "click"+ productId, Toast.LENGTH_SHORT).show();
-
             productDetailParameter productDetailParameter = new productDetailParameter();
             productDetailParameter.setProductId(productId);
             // send request to backend
@@ -116,6 +106,7 @@ public class ItemDetailFragment extends Fragment {
         hiddenLayout.setVisibility(View.VISIBLE); // 设置为 VISIBLE，使其显示
         confirmButton.setVisibility(View.GONE);
         send_offer_btn.setVisibility(View.VISIBLE);
+        optionNotes.setVisibility(View.VISIBLE);
     }
 
     public interface IOMessageClick{
@@ -138,7 +129,7 @@ public class ItemDetailFragment extends Fragment {
                 Product product = jsonObject.getJSONObject("data").toJavaObject(Product.class);
 
                 // 在主线程中更新UI
-                runOnUiThread(new Runnable() {
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         itemDetailPrice.setText(Double.toString(product.getProductPrice()));
@@ -167,11 +158,6 @@ public class ItemDetailFragment extends Fragment {
             throw new ClassCastException("Activity必须实现 IOMessageClick接口");
         }
 
-    }
-
-    private void runOnUiThread(Runnable runnable) {
-        // 使用Activity或Fragment的runOnUiThread方法来确保在主线程上运行代码
-        getActivity().runOnUiThread(runnable);
     }
 
 

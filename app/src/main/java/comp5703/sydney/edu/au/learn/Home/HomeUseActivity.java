@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -14,9 +15,13 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.widget.TextView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import comp5703.sydney.edu.au.learn.Home.Adapter.FragmentOfferAdapter;
 import comp5703.sydney.edu.au.learn.Home.Fragment.ItemDetailFragment;
 import comp5703.sydney.edu.au.learn.Home.Fragment.ItemListEditFragment;
 import comp5703.sydney.edu.au.learn.Home.Fragment.ItemListFragment;
+import comp5703.sydney.edu.au.learn.Home.Fragment.MyOfferFragment;
+import comp5703.sydney.edu.au.learn.Home.Fragment.OfferContainerFragment;
 import comp5703.sydney.edu.au.learn.Home.Fragment.SellFragment;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.service.MyService;
@@ -50,8 +55,8 @@ public class HomeUseActivity extends AppCompatActivity implements ItemDetailFrag
                     toolbar_title.setText("Notifications");  // 使用自定义标题
                     return true;
                 case R.id.profile:
-                    loadFragment(new ItemDetailFragment());
-                    toolbar_title.setText("Profile");  // 使用自定义标题
+                    loadFragment(new OfferContainerFragment());
+                    toolbar_title.setText("My offer");  // 使用自定义标题
                     return true;
 
             }
@@ -60,6 +65,7 @@ public class HomeUseActivity extends AppCompatActivity implements ItemDetailFrag
 
         // 默认加载一个Fragment
         loadFragment(new ItemListFragment());
+
 
     }
 
