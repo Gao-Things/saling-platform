@@ -88,7 +88,7 @@ public class ProductController {
                 dir.mkdirs();
             }
 
-// 生成新的文件名，将时间戳添加到原始文件名中
+            // 生成新的文件名，将时间戳添加到原始文件名中
             String originalFileName = file.getOriginalFilename();
             assert originalFileName != null;
             String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
