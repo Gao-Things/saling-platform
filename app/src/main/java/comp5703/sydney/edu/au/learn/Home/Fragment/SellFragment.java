@@ -4,7 +4,9 @@ import static android.content.ContentValues.TAG;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -230,12 +232,19 @@ public class SellFragment extends Fragment {
         // drop box value
         String selectedValue = autoCompleteTextView.getText().toString();
 
+        // get SharedPreferences instance
+        SharedPreferences sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences("comp5703", Context.MODE_PRIVATE);
+
+        // get global userID
+        Integer userId = sharedPreferences.getInt("userId", 9999);
+
         ItemVO itemVO = new ItemVO();
         itemVO.setItemTitle(itemTitle);
         itemVO.setItemDescription(itemDescription);
         itemVO.setItemWeight(Double.parseDouble(itemWeight));
         itemVO.setSelectedValue(selectedValue);
         itemVO.setImageUrl(uploadImageUrl);
+        itemVO.setUserId(userId);
 
         NetworkUtils.postJsonRequest(itemVO, "/public/product/uploadProduct", new Callback() {
             @Override

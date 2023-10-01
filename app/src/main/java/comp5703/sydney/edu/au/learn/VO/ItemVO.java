@@ -7,6 +7,15 @@ public class ItemVO {
     private double itemWeight;
     private String selectedValue;
     private String imageUrl;
+    private Integer userId;
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
 
     public String getItemTitle() {
         return itemTitle;

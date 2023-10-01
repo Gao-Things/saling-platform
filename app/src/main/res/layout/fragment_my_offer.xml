@@ -3,11 +3,12 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent">
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id = "@+id/list_main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:text="My offer"/>
-
+        android:layout_marginTop="20dp"
+        android:background="@color/backgroundGreen"
+        />
 
 </LinearLayout>

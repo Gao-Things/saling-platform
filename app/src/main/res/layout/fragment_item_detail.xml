@@ -1,296 +1,342 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
-
-
-    <ImageView
-        android:id="@+id/itemStatusImg"
-        android:layout_width="100dp"
-        android:layout_height="0dp"
-        android:layout_gravity="end"
-        android:layout_weight="0.6"
-        android:paddingRight="10dp"
-        android:src="@drawable/img_17" />
-
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_margin="10dp"
-        android:layout_weight="5"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="5dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="5">
-
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="20dp"
-                    android:layout_weight="4"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/itemName"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1.3"
-                        android:paddingLeft="15dp"
-                        android:text="24k Bullion Minted tablet Gold "
-                        android:textSize="23sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/itemDescription"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_weight="4"
-                        android:paddingLeft="15dp"
-                        android:text="We are proud to present the latest release in our product range - the ABC Bullion gold minted tablet range. Each tablet showcases the signature ABC Bullion squar "
-                        android:textColor="@color/textColorSecondary"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-                <ImageView
-                    android:id="@+id/ItemImage"
-                    android:layout_width="0dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_height="130dp"
-                    android:layout_weight="2.5"
-                     />
-
-
-            </LinearLayout>
-
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.5"
-                android:paddingLeft="20dp"
-                android:text="Information Detail"
-                android:textSize="17sp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="2.5"
-                android:background="@color/white"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:paddingLeft="20dp"
-                    android:paddingBottom="10dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:text="Weight"
-                        android:textColor="@color/textColorSecondary"
-                        android:textSize="17sp" />
-
-                    <TextView
-                        android:id="@+id/itemWeight"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:text="1g"
-                        android:textColor="@color/black"
-                        android:textSize="17sp" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="0.6"
-                        android:textSize="17sp" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:text="Type"
-                        android:textColor="@color/textColorSecondary"
-                        android:textSize="17sp" />
-
-                    <TextView
-                        android:id="@+id/itemType"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:text="Gold"
-                        android:textColor="@color/black"
-                        android:textSize="17sp" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:paddingRight="20dp">
-
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="Weight"
-                        android:textColor="@color/textColorSecondary"
-                        android:textSize="17sp" />
-
-                    <TextView
-                        android:id="@+id/itemPurity"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="99.99%"
-
-                        android:textColor="@color/black"
-                        android:textSize="17sp" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="0.6"
-                        android:textSize="17sp" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="Price"
-                        android:textColor="@color/textColorSecondary"
-                        android:textSize="17sp" />
-
-                    <TextView
-                        android:id="@+id/itemDetailPrice"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="144.3$"
-                        android:textColor="@color/red"
-                        android:textSize="17sp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-
-        </LinearLayout>
-
-
-    </androidx.cardview.widget.CardView>
+    android:background="@color/backgroundGreen">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:gravity="center_horizontal"
-        android:layout_weight="2.5"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/hidden_layout"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:visibility="gone"
-            android:layout_marginTop="10dp"
-            android:gravity="center"
-            android:orientation="horizontal">
+        <ImageView
+            android:id="@+id/itemStatusImg"
+            android:layout_width="100dp"
+            android:layout_height="0dp"
+            android:layout_gravity="end"
+            android:layout_weight="0.6"
+            android:paddingRight="10dp"
+            android:src="@drawable/img_17" />
 
-            <TextView
-                android:layout_width="wrap_content"
+
+        <com.kyleduo.switchbutton.SwitchButton
+            android:id="@+id/switch_button"
+            android:visibility="gone"
+            android:layout_width="150dp"
+            android:layout_height="0dp"
+            android:layout_gravity="end"
+            android:layout_weight="0.6"
+            android:paddingRight="10dp"
+
+            app:kswBackColor="@color/generalGreen"
+            app:kswTextExtra="35sp"
+            app:kswThumbMargin="10dp"
+            app:kswThumbColor="@color/white"
+
+            app:kswTextOn="Open"
+            app:kswThumbHeight="30dp"
+            app:kswThumbWidth="30dp"
+            app:kswThumbRadius="60dp"
+            app:kswTextOff="Close"
+            />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="10dp"
+            android:layout_weight="5"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="5dp">
+
+            <LinearLayout
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="5">
+
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_weight="5"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/itemName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="15dp"
+                            android:text="24k Bullion Minted tablet Gold "
+                            android:textSize="23sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/itemDescription"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:layout_marginTop="10dp"
+                            android:paddingLeft="15dp"
+                            android:text="We are proud to present the latest release in our product range - the ABC Bullion gold minted tablet range. Each tablet showcases the signature ABC Bullion squar "
+                            android:textColor="@color/textColorSecondary"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/ItemImage"
+                        android:layout_width="0dp"
+                        android:layout_height="130dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_weight="2.5" />
+
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="20dp"
+                    android:paddingTop="10dp"
+                    android:text="Information Detail"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:paddingTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:paddingLeft="20dp"
+                        android:paddingBottom="10dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:text="Weight"
+                            android:textColor="@color/textColorSecondary"
+                            android:textSize="17sp" />
+
+                        <TextView
+                            android:id="@+id/itemWeight"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:text="1g"
+                            android:textColor="@color/black"
+                            android:textSize="17sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.6"
+                            android:textSize="17sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:text="Type"
+                            android:textColor="@color/textColorSecondary"
+                            android:textSize="17sp" />
+
+                        <TextView
+                            android:id="@+id/itemType"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:text="Gold"
+                            android:textColor="@color/black"
+                            android:textSize="17sp" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:paddingRight="20dp">
+
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="Weight"
+                            android:textColor="@color/textColorSecondary"
+                            android:textSize="17sp" />
+
+                        <TextView
+                            android:id="@+id/itemPurity"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="99.99%"
+
+                            android:textColor="@color/black"
+                            android:textSize="17sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.6"
+                            android:textSize="17sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="Price"
+                            android:textColor="@color/textColorSecondary"
+                            android:textSize="17sp" />
+
+                        <TextView
+                            android:id="@+id/itemDetailPrice"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="144.3$"
+                            android:textColor="@color/red"
+                            android:textSize="17sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/offerTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="13dp"
+            android:text="3h 1M 50S"
+            android:textColor="@color/textColorSecondary"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+
+        <LinearLayout
+            android:id="@+id/generalView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2.5"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/hidden_layout"
+                android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:layout_gravity="center_vertical"
-                android:text="You offered price:"
-                android:paddingStart="20dp"
-                android:textColor="@color/textColorSecondary"
-                android:textSize="22sp" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_gravity="center_vertical"
-                android:text="$"
-                android:paddingLeft="10dp"
-                android:textColor="@color/textColorSecondary"
-                android:textSize="22sp" />
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_vertical"
+                    android:paddingStart="20dp"
+                    android:text="You offered price:"
+                    android:textColor="@color/textColorSecondary"
+                    android:textSize="22sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:text="$"
+                    android:textColor="@color/textColorSecondary"
+                    android:textSize="22sp" />
+
+                <EditText
+                    android:id="@+id/setPrice"
+                    android:layout_width="110dp"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="20dp"
+                    android:background="@drawable/edittext_border"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+
             <EditText
-                android:id="@+id/setPrice"
-                android:layout_width="110dp"
-                android:layout_height="40dp"
-                android:layout_marginLeft="20dp"
+                android:id="@+id/optionNotes"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_margin="20dp"
                 android:background="@drawable/edittext_border"
-                android:textStyle="bold" />
+                android:hint="Note(optional)"
+                android:paddingLeft="20dp"
+
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/confirm_button"
+                android:layout_width="130dp"
+                android:layout_height="50dp"
+                android:layout_gravity="end"
+                android:layout_marginRight="40dp"
+                android:layout_marginBottom="40dp"
+                android:background="@drawable/custom_button_background"
+                android:text="confirm Offer"
+                android:textColor="@color/lightwhite" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/send_offer_btn"
+                android:layout_width="130dp"
+                android:layout_height="50dp"
+                android:layout_gravity="end"
+                android:layout_marginRight="40dp"
+                android:layout_marginBottom="40dp"
+                android:background="@drawable/custom_button_background"
+                android:text="Send Offer"
+                android:textColor="@color/lightwhite"
+                android:visibility="gone" />
 
 
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/optionNotes"
-            android:layout_margin="20dp"
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/offerList"
             android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:hint="Note(optional)"
-            android:paddingLeft="20dp"
-
-            android:background="@drawable/edittext_border"
-            android:textStyle="bold" />
-
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/confirm_button"
-            android:layout_width="130dp"
-            android:layout_height="50dp"
-            android:layout_marginBottom="40dp"
-            android:layout_gravity="end"
-            android:layout_marginRight="40dp"
-            android:background="@drawable/custom_button_background"
-            android:text="confirm Offer"
-            android:textColor="@color/lightwhite"
-            />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/send_offer_btn"
-            android:layout_width="130dp"
-            android:layout_height="50dp"
-            android:visibility="gone"
-            android:layout_marginBottom="40dp"
-            android:layout_gravity="end"
-            android:layout_marginRight="40dp"
-            android:background="@drawable/custom_button_background"
-            android:text="Send Offer"
-            android:textColor="@color/lightwhite"
-            />
-
+            android:layout_height="wrap_content"/>
 
 
     </LinearLayout>
 
 
-</LinearLayout>
+</ScrollView>

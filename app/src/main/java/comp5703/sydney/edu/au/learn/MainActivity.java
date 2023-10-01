@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -130,15 +131,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onClick(View view) {
-        // 测试。直接放行
-        startActivity(new Intent(MainActivity.this, HomeUseActivity.class));
-//        boolean isValid = FormValidator.validateEmail(inputLayoutEmail, userName.getText().toString())
-//                & FormValidator.validatePassword(inputLayoutPassword, password.getText().toString());
-//
-//        if (isValid) {
-//            // 执行提交逻辑
-//            verityLoginAction();
-//        }
+//        // 测试。直接放行
+//        startActivity(new Intent(MainActivity.this, HomeUseActivity.class));
+        boolean isValid = FormValidator.validateEmail(inputLayoutEmail, userName.getText().toString())
+                & FormValidator.validatePassword(inputLayoutPassword, password.getText().toString());
+
+        if (isValid) {
+            // 执行提交逻辑
+            verityLoginAction();
+        }
 
 
     }
@@ -248,11 +249,24 @@ public class MainActivity extends AppCompatActivity {
         String responseBody = response.body().string();
         JSONObject jsonObject = JSONObject.parseObject(responseBody);
         int code = jsonObject.getIntValue("code");
+        JSONObject data = jsonObject.getJSONObject("data");
         Object dataValue = jsonObject.get("data");
 
         if (code == 200) {
-            String token = jsonObject.getString("token"); // 根据实际 JSON 键获取 Token
-            Log.d(TAG, "LoginToken: " + token);
+            String token = jsonObject.getString("jwttoken"); // 根据实际 JSON 键获取 Token
+            System.out.println(jsonObject);
+            // 获取用户id
+            Integer userId  = data.getInteger("id");
+            Log.d(TAG, "userId: " + userId);
+
+            // get SharedPreferences instance
+            SharedPreferences sharedPreferences = getSharedPreferences("comp5703", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            // 设置全局的userId
+            editor.putInt("userId", userId);
+
+            editor.apply();
+
             startActivity(new Intent(MainActivity.this, HomeUseActivity.class));
         } else {
             showErrorDialog("Login failed", dataValue.toString(), MainActivity.this);

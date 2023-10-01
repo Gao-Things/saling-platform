@@ -17,6 +17,16 @@ public class Product {
 
     private double productWeight;
 
+    private Long ownerId;
+
+    public Long getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(Long ownerId) {
+        this.ownerId = ownerId;
+    }
+
     public Product() {
     }
 

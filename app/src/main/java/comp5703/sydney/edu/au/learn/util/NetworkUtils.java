@@ -14,7 +14,7 @@ public class NetworkUtils {
 
     private static final String TAG = "NetworkUtils";
     // replace with your computer ip address
-    public static final String apiURL = "http://172.16.28.200:8082";
+    public static final String apiURL = "http://172.16.31.75:8082";
     private static OkHttpClient client = new OkHttpClient();
 
     public static void postJsonRequest(Object object, String url, Callback callback) {
@@ -39,7 +39,7 @@ public class NetworkUtils {
 
 
         Request request = new Request.Builder()
-                .url("http://172.16.28.200:8082/public/product/uploadImage")  // 上传URL
+                .url(apiURL + "/public/product/uploadImage")  // 上传URL
                 .post(requestBody)
                 .build();
 

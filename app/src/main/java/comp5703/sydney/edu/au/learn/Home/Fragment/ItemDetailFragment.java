@@ -3,13 +3,18 @@ package comp5703.sydney.edu.au.learn.Home.Fragment;
 import static android.content.ContentValues.TAG;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,18 +24,27 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GestureDetectorCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.kyleduo.switchbutton.SwitchButton;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import comp5703.sydney.edu.au.learn.DTO.Product;
+import comp5703.sydney.edu.au.learn.DTO.Record;
+import comp5703.sydney.edu.au.learn.Home.Adapter.MyOfferListAdapter;
+import comp5703.sydney.edu.au.learn.Home.Adapter.ProductOfferListAdapter;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.productDetailParameter;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
@@ -46,6 +60,19 @@ public class ItemDetailFragment extends Fragment {
     private ImageView ItemImage;
     LinearLayout hiddenLayout;
     private EditText optionNotes;
+
+    private Integer userId;
+
+    private LinearLayout generalView;
+
+    private RecyclerView offerList;
+
+    private ProductOfferListAdapter productOfferListAdapter;
+
+
+    private ImageView itemStatusImg;
+
+    private SwitchButton switchButton;
 
     @Nullable
     @Override
@@ -68,15 +95,30 @@ public class ItemDetailFragment extends Fragment {
         optionNotes = view.findViewById(R.id.optionNotes);
         confirmButton.setOnClickListener(this::sendOfferClick);
 
+        generalView = view.findViewById(R.id.generalView);
+        offerList = view.findViewById(R.id.offerList);
+        itemStatusImg = view.findViewById(R.id.itemStatusImg);
+
+        // 创建并设置RecyclerView的LayoutManager
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        offerList.setLayoutManager(layoutManager);
+
+        // 创建并设置RecyclerView的Adapter
+        productOfferListAdapter = new ProductOfferListAdapter(getContext(),new ArrayList<Record>(),clickListener);
+        offerList.setAdapter(productOfferListAdapter);
+
+        // get SharedPreferences instance
+        SharedPreferences sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences("comp5703", Context.MODE_PRIVATE);
+
+        // get global userID
+        userId = sharedPreferences.getInt("userId", 9999);
 
 //        confirmButton.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
 //                listener.onClick("fragment往activity传值");
 //            }
-//        });
-
-
+//        })
 
         // 在 ItemDetailFragment 中获取传递的整数值
         Bundle args = getArguments();
@@ -99,6 +141,25 @@ public class ItemDetailFragment extends Fragment {
             });
 
         }
+
+        switchButton = view.findViewById(R.id.switch_button);
+        switchButton.setChecked(true);
+        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+               if (isChecked){
+                   // 设置背景颜色
+                   // 获取颜色资源
+                   int backColor = ContextCompat.getColor(Objects.requireNonNull(getContext()), R.color.generalGreen);
+                   switchButton.setBackColor(ColorStateList.valueOf(backColor));
+               }else {
+                   int backColor = ContextCompat.getColor(Objects.requireNonNull(getContext()), R.color.red);
+                   switchButton.setBackColor(ColorStateList.valueOf(backColor));
+               }
+            }
+        });
+
+
     }
 
 
@@ -136,6 +197,15 @@ public class ItemDetailFragment extends Fragment {
                         Picasso.get()
                                 .load(product.getProductImage()) // 网络图片的URL
                                 .into(ItemImage);
+
+                        if (product.getOwnerId().intValue() == userId){
+                            // if the login is the seller
+                            generalView.setVisibility(View.GONE);
+                            offerList.setVisibility(View.VISIBLE);
+                            switchButton.setVisibility(View.VISIBLE);
+                            itemStatusImg.setVisibility(View.GONE);
+                        }
+
                     }
                 });
             } else {
@@ -166,5 +236,11 @@ public class ItemDetailFragment extends Fragment {
     }
 
 
+    ProductOfferListAdapter.OnItemClickListener clickListener = new ProductOfferListAdapter.OnItemClickListener() {
+        @Override
+        public void onClick(int pos, Integer itemId) {
+
+        }
+    };
 
 }

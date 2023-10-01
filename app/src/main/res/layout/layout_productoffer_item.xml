@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_margin="10dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="5dp"
+        app:strokeColor="@color/darkGreen"
+        app:strokeWidth="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:padding="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="$"
+                android:textSize="20sp"/>
+
+            <TextView
+                android:id="@+id/offerPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="120"
+                android:textSize="20sp"/>
+
+            <TextView
+                android:id="@+id/buyerType"
+                android:layout_marginLeft="40dp"
+                android:layout_width="wrap_content"
+                android:textColor="@color/white"
+                android:layout_height="match_parent"
+                android:background="@drawable/rounded_bg"
+                android:padding="6dp"
+                android:text="Personal buyer"
+                android:textSize="17sp"/>
+
+
+            <TextView
+                android:id="@+id/offerTime"
+                android:layout_marginLeft="40dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="50 minute ago"
+                android:textSize="20sp"/>
+        </LinearLayout>
+
+
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>
