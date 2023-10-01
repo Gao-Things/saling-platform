@@ -14,8 +14,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
+import comp5703.sydney.edu.au.learn.DTO.Offer;
 import comp5703.sydney.edu.au.learn.DTO.Product;
 import comp5703.sydney.edu.au.learn.DTO.Record;
 import comp5703.sydney.edu.au.learn.R;
@@ -24,13 +27,13 @@ public class MyOfferListAdapter extends RecyclerView.Adapter<MyOfferListAdapter.
 
     private Context mcontext;
     private OnItemClickListener mlistener;
-    private List<Record> recordList;
+    private List<Offer> offerList;
 
 
-    public MyOfferListAdapter(Context context, List<Record> recordList, OnItemClickListener listener){
+    public MyOfferListAdapter(Context context, List<Offer> offerList, OnItemClickListener listener){
         this.mcontext = context;
         this.mlistener = listener;
-        this.recordList = recordList;
+        this.offerList = offerList;
     }
     @NonNull
     @Override
@@ -43,12 +46,24 @@ public class MyOfferListAdapter extends RecyclerView.Adapter<MyOfferListAdapter.
     public void onBindViewHolder(@NonNull LinearViewHolder holder, @SuppressLint("RecyclerView") int position) {
 
         // 初始化请求数据还没回来的时候list是空的
-        if (!recordList.isEmpty()){
+        if (!offerList.isEmpty()){
 
             // 获取Product object
-            Product product = recordList.get(position).getProduct();
+            Product product = offerList.get(position).getProduct();
+
+            // 获取offer的提交时间
+            Long timeStamp = offerList.get(position).getTimestamp() * 1000;  // 将时间戳转换为毫秒
+
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            // 使用 SimpleDateFormat 对象将时间戳转换为字符串
+            String formattedDate = sdf.format(new Date(timeStamp));
+
             holder.itemName.setText(product.getProductName());
-            holder.itemWeight.setText(String.valueOf(product.getProductWeight()));
+            holder.itemPrice.setText(Double.toString(product.getProductPrice()));
+            holder.myOfferTime.setText(formattedDate);
+            Picasso.get()
+                    .load(product.getProductImage()) // 网络图片的URL
+                    .into(holder.itemImage);
 
             // 绑定点击事件
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -67,7 +82,7 @@ public class MyOfferListAdapter extends RecyclerView.Adapter<MyOfferListAdapter.
 
     @Override
     public int getItemCount() {
-        return 10;
+        return offerList.size();
     }
 
     class LinearViewHolder extends RecyclerView.ViewHolder{
@@ -76,17 +91,16 @@ public class MyOfferListAdapter extends RecyclerView.Adapter<MyOfferListAdapter.
 
         private TextView itemPrice;
 
-        private TextView itemWeight;
-
         private ImageView itemImage;
+
+        private TextView myOfferTime;
 
         public LinearViewHolder(View itemView){
             super(itemView);
             itemName = itemView.findViewById(R.id.itemName);
             itemPrice = itemView.findViewById(R.id.itemPrice);
-            itemWeight = itemView.findViewById(R.id.itemWeight);
             itemImage = itemView.findViewById(R.id.ItemImage);
-
+            myOfferTime = itemView.findViewById(R.id.myOfferTime);
         }
     }
 
@@ -94,11 +108,11 @@ public class MyOfferListAdapter extends RecyclerView.Adapter<MyOfferListAdapter.
         void onClick(int pos, Integer itemId);
     }
 
-    public List<Record> getRecordList() {
-        return recordList;
+    public List<Offer> getRecordList() {
+        return offerList;
     }
 
-    public void setRecordList(List<Record> recordList) {
-        this.recordList = recordList;
+    public void setRecordList(List<Offer> offerList) {
+        this.offerList = offerList;
     }
 }

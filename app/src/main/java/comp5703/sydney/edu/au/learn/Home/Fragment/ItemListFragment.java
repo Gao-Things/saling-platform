@@ -81,7 +81,7 @@ public class ItemListFragment extends Fragment {
         productParameter.setPageNum(1);
         productParameter.setPageSize(20);
 
-        NetworkUtils.getWithParamsRequest( productParameter, "/public/product/productList", new Callback() {
+        NetworkUtils.getWithParamsRequest( productParameter, "/public/product/productList",null, new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 handleResponse(response);
@@ -101,7 +101,6 @@ public class ItemListFragment extends Fragment {
         JSONObject jsonObject = JSONObject.parseObject(responseBody);
         int code = jsonObject.getIntValue("code");
         JSONObject dataObject = jsonObject.getJSONObject("data").getJSONObject("ProductList");
-
 
         // 提取 "records" 数组并转换为List
         JSONArray recordsArray = dataObject.getJSONArray("records");

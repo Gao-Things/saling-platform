@@ -144,7 +144,7 @@ public class forgotPassword extends AppCompatActivity {
             @Override
             public void run() {
                 // 在这里执行你想要进行的操作
-                NetworkUtils.getWithParamsRequest(queryParamsUse, "/user/pollingResult", new Callback() {
+                NetworkUtils.getWithParamsRequest(queryParamsUse, "/user/pollingResult",null, new Callback() {
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         handleResponse2(response);

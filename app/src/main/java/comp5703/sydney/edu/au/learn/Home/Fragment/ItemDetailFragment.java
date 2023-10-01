@@ -128,7 +128,7 @@ public class ItemDetailFragment extends Fragment {
             productDetailParameter productDetailParameter = new productDetailParameter();
             productDetailParameter.setProductId(productId);
             // send request to backend
-            NetworkUtils.getWithParamsRequest(productDetailParameter, "/public/product/getProductDetail", new Callback() {
+            NetworkUtils.getWithParamsRequest(productDetailParameter, "/public/product/getProductDetail",null, new Callback() {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     handleResponse(response);

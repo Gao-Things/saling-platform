@@ -115,7 +115,7 @@ public class ItemListEditFragment extends Fragment {
         productParameter.setPageNum(1);
         productParameter.setPageSize(20);
 
-        NetworkUtils.getWithParamsRequest( productParameter, "/public/product/productList", new Callback() {
+        NetworkUtils.getWithParamsRequest( productParameter, "/public/product/productList",null, new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 handleResponse(response);

@@ -262,9 +262,9 @@ public class MainActivity extends AppCompatActivity {
             // get SharedPreferences instance
             SharedPreferences sharedPreferences = getSharedPreferences("comp5703", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            // 设置全局的userId
+            // 设置全局的userId, token
             editor.putInt("userId", userId);
-
+            editor.putString("token", token);
             editor.apply();
 
             startActivity(new Intent(MainActivity.this, HomeUseActivity.class));

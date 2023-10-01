@@ -1,5 +1,7 @@
 package comp5703.sydney.edu.au.learn.util;
 
+import androidx.annotation.Nullable;
+
 import com.alibaba.fastjson.JSON;
 
 import java.io.File;
@@ -54,7 +56,7 @@ public class NetworkUtils {
         client.newCall(request).enqueue(callback);
     }
 
-    public static void getWithParamsRequest( Object object, String url, Callback callback) {
+    public static void getWithParamsRequest(Object object, String url, @Nullable String token, Callback callback) {
 
         HttpUrl.Builder urlBuilder = HttpUrl.parse(apiURL + url).newBuilder();
         // 拼接参数
@@ -68,12 +70,19 @@ public class NetworkUtils {
 
         String useUrl = urlBuilder.build().toString();
 
-        Request request = new Request.Builder()
-                .url(useUrl)
-                .build();
+        Request.Builder requestBuilder = new Request.Builder()
+                .url(useUrl);
+
+        // 检查token是否不为空，然后添加到请求头
+        if (token != null && !token.isEmpty()) {
+            requestBuilder.addHeader("Authorization", "Bearer " + token);
+        }
+
+        Request request = requestBuilder.build();
 
         client.newCall(request).enqueue(callback);
     }
+
 
 
 
