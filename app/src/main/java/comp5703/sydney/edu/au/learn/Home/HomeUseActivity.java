@@ -100,6 +100,10 @@ public class HomeUseActivity extends AppCompatActivity implements ItemDetailFrag
         }
     }
 
+    public int getContainerId() {
+        return R.id.fl_container;
+    }
+
     // when the item detail click , trigger this function
     @Override
     public void onClick(String text) {

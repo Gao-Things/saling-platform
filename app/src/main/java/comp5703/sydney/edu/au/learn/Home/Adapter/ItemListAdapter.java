@@ -1,5 +1,7 @@
 package comp5703.sydney.edu.au.learn.Home.Adapter;
 
+import static comp5703.sydney.edu.au.learn.util.NetworkUtils.imageURL;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
@@ -63,7 +65,7 @@ public class ItemListAdapter extends RecyclerView.Adapter<ItemListAdapter.Linear
             holder.itemWeight.setText(String.valueOf(product.getProductWeight()));
 
             Picasso.get()
-                    .load(product.getProductImage()) // 网络图片的URL
+                    .load(imageURL+product.getProductImage()) // 网络图片的URL
                     .into(holder.itemImage);
 
 

@@ -2,6 +2,8 @@ package comp5703.sydney.edu.au.learn.Home.Fragment;
 
 import static android.content.ContentValues.TAG;
 
+import static comp5703.sydney.edu.au.learn.util.NetworkUtils.imageURL;
+
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
@@ -194,7 +196,7 @@ public class SellFragment extends Fragment {
                                 coverImage.setVisibility(View.VISIBLE);
 
                                 Picasso.get()
-                                        .load(uploadImageUrl) // 网络图片的URL
+                                        .load(imageURL +uploadImageUrl) // 网络图片的URL
                                         .into(coverImage);
                             }
                         });

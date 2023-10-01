@@ -23,24 +23,23 @@
 
         <com.kyleduo.switchbutton.SwitchButton
             android:id="@+id/switch_button"
-            android:visibility="gone"
             android:layout_width="150dp"
             android:layout_height="0dp"
             android:layout_gravity="end"
             android:layout_weight="0.6"
             android:paddingRight="10dp"
+            android:visibility="gone"
 
             app:kswBackColor="@color/generalGreen"
             app:kswTextExtra="35sp"
-            app:kswThumbMargin="10dp"
-            app:kswThumbColor="@color/white"
-
-            app:kswTextOn="Open"
-            app:kswThumbHeight="30dp"
-            app:kswThumbWidth="30dp"
-            app:kswThumbRadius="60dp"
             app:kswTextOff="Close"
-            />
+            app:kswTextOn="Open"
+
+            app:kswThumbColor="@color/white"
+            app:kswThumbHeight="30dp"
+            app:kswThumbMargin="10dp"
+            app:kswThumbRadius="60dp"
+            app:kswThumbWidth="30dp" />
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -51,10 +50,10 @@
             app:cardElevation="5dp">
 
             <LinearLayout
-                android:padding="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="10dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -112,11 +111,11 @@
                     android:textStyle="bold" />
 
                 <LinearLayout
-                    android:paddingTop="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/white"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:paddingTop="10dp">
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -236,11 +235,50 @@
             android:id="@+id/offerTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="13dp"
+            android:layout_marginLeft="13dp"
+            android:layout_marginTop="5dp"
             android:text="3h 1M 50S"
             android:textColor="@color/textColorSecondary"
             android:textSize="16sp"
             android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/offerHistory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="13dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Offered History Price:"
+                android:textColor="@color/textColorSecondary"
+                android:textSize="22sp"
+                 />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="22sp"
+                android:text="$"
+                android:textColor="@color/darkGreen"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/offeredPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="3dp"
+                android:text="650"
+                android:textColor="@color/darkGreen"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
 
 
         <LinearLayout
@@ -255,16 +293,17 @@
                 android:id="@+id/hidden_layout"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
+                android:visibility="gone"
+                android:paddingLeft="13dp"
+                android:gravity="center_vertical"
                 android:layout_marginTop="10dp"
-                android:gravity="center"
                 android:orientation="horizontal"
-                android:visibility="gone">
+             >
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
-                    android:layout_gravity="center_vertical"
-                    android:paddingStart="20dp"
+                    android:gravity="center_vertical"
                     android:text="You offered price:"
                     android:textColor="@color/textColorSecondary"
                     android:textSize="22sp" />
@@ -272,8 +311,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
-                    android:layout_gravity="center_vertical"
-                    android:paddingLeft="10dp"
+                    android:gravity="center_vertical"
+                    android:layout_marginLeft="20dp"
                     android:text="$"
                     android:textColor="@color/textColorSecondary"
                     android:textSize="22sp" />
@@ -281,8 +320,9 @@
                 <EditText
                     android:id="@+id/setPrice"
                     android:layout_width="110dp"
+                    android:layout_marginLeft="5dp"
+                    android:gravity="center_vertical"
                     android:layout_height="40dp"
-                    android:layout_marginLeft="20dp"
                     android:background="@drawable/edittext_border"
                     android:textStyle="bold" />
 
@@ -309,6 +349,7 @@
                 android:layout_gravity="end"
                 android:layout_marginRight="40dp"
                 android:layout_marginBottom="40dp"
+                android:layout_marginTop="10dp"
                 android:background="@drawable/custom_button_background"
                 android:text="confirm Offer"
                 android:textColor="@color/lightwhite" />
@@ -331,9 +372,9 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/offerList"
-            android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
 
 
     </LinearLayout>

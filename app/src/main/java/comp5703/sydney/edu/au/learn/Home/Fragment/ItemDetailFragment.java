@@ -2,6 +2,9 @@ package comp5703.sydney.edu.au.learn.Home.Fragment;
 
 import static android.content.ContentValues.TAG;
 
+import static comp5703.sydney.edu.au.learn.util.NetworkUtils.imageURL;
+
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
@@ -41,12 +44,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import comp5703.sydney.edu.au.learn.DTO.Offer;
 import comp5703.sydney.edu.au.learn.DTO.Product;
 import comp5703.sydney.edu.au.learn.DTO.Record;
 import comp5703.sydney.edu.au.learn.Home.Adapter.MyOfferListAdapter;
 import comp5703.sydney.edu.au.learn.Home.Adapter.ProductOfferListAdapter;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.productDetailParameter;
+import comp5703.sydney.edu.au.learn.VO.productOfferParameter;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -62,6 +67,7 @@ public class ItemDetailFragment extends Fragment {
     private EditText optionNotes;
 
     private Integer userId;
+    private String token;
 
     private LinearLayout generalView;
 
@@ -73,6 +79,10 @@ public class ItemDetailFragment extends Fragment {
     private ImageView itemStatusImg;
 
     private SwitchButton switchButton;
+
+    private LinearLayout offerHistory;
+
+    private TextView offeredPrice;
 
     @Nullable
     @Override
@@ -98,7 +108,8 @@ public class ItemDetailFragment extends Fragment {
         generalView = view.findViewById(R.id.generalView);
         offerList = view.findViewById(R.id.offerList);
         itemStatusImg = view.findViewById(R.id.itemStatusImg);
-
+        offerHistory = view.findViewById(R.id.offerHistory);
+        offeredPrice = view.findViewById(R.id.offeredPrice);
         // 创建并设置RecyclerView的LayoutManager
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         offerList.setLayoutManager(layoutManager);
@@ -112,7 +123,7 @@ public class ItemDetailFragment extends Fragment {
 
         // get global userID
         userId = sharedPreferences.getInt("userId", 9999);
-
+        token = sharedPreferences.getString("token", "null");
 //        confirmButton.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -124,21 +135,8 @@ public class ItemDetailFragment extends Fragment {
         Bundle args = getArguments();
         if (args != null) {
             int productId = args.getInt("productId");
-            // 在这里可以使用 productId 进行操作
-            productDetailParameter productDetailParameter = new productDetailParameter();
-            productDetailParameter.setProductId(productId);
-            // send request to backend
-            NetworkUtils.getWithParamsRequest(productDetailParameter, "/public/product/getProductDetail",null, new Callback() {
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    handleResponse(response);
-                }
-
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    handleFailure(e);
-                }
-            });
+            getProductInformation(productId);
+            getProductOfferHistory(productId);
 
         }
 
@@ -160,6 +158,82 @@ public class ItemDetailFragment extends Fragment {
         });
 
 
+    }
+
+    private void getProductOfferHistory(Integer productId){
+        // 在这里可以使用 productId 进行操作
+        productOfferParameter productOfferParameter = new productOfferParameter();
+        productOfferParameter.setProductId(productId);
+        productOfferParameter.setUserId(userId);
+        // send request to backend
+        NetworkUtils.getWithParamsRequest(productOfferParameter, "/normal/getOfferByUserAndProductId",token, new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                handleResponse2(response);
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                handleFailure(e);
+            }
+        });
+    }
+
+    private void handleResponse2(Response response) {
+
+        try {
+            if (!response.isSuccessful()) {
+                Log.d(TAG, "Request not successful");
+                return;
+            }
+            String responseBody = response.body().string();
+            JSONObject jsonObject = JSONObject.parseObject(responseBody);
+            int code = jsonObject.getIntValue("code");
+
+            if (code == 200) {
+                JSONArray dataArray = jsonObject.getJSONArray("data");
+
+                if (!dataArray.isEmpty()) {
+                    Offer offer = dataArray.getJSONObject(0).toJavaObject(Offer.class);
+                    // 在主线程中更新UI
+                    Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
+                        @SuppressLint("SetTextI18n")
+                        @Override
+                        public void run() {
+                            // 如果后端返回的不为空值就更新历史记录
+                            offerHistory.setVisibility(View.VISIBLE);
+                            offeredPrice.setText(Double.toString(offer.getPrice()));
+                        }
+                    });
+                }
+
+
+            } else {
+                Log.d(TAG, "Error response code: " + code);
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "IOException: " + e.getMessage());
+        } catch (JSONException e) {
+            Log.e(TAG, "JSONException: " + e.getMessage());
+        }
+    }
+
+    private void getProductInformation(Integer productId) {
+        // 在这里可以使用 productId 进行操作
+        productDetailParameter productDetailParameter = new productDetailParameter();
+        productDetailParameter.setProductId(productId);
+        // send request to backend
+        NetworkUtils.getWithParamsRequest(productDetailParameter, "/public/product/getProductDetail",null, new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                handleResponse(response);
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                handleFailure(e);
+            }
+        });
     }
 
 
@@ -195,7 +269,7 @@ public class ItemDetailFragment extends Fragment {
                     public void run() {
                         itemDetailPrice.setText(Double.toString(product.getProductPrice()));
                         Picasso.get()
-                                .load(product.getProductImage()) // 网络图片的URL
+                                .load(imageURL+ product.getProductImage()) // 网络图片的URL
                                 .into(ItemImage);
 
                         if (product.getOwnerId().intValue() == userId){
