@@ -1,5 +1,7 @@
 package comp5703.sydney.edu.au.learn.Home.Adapter;
 
+import static comp5703.sydney.edu.au.learn.util.TimeCalculateUtil.getTimeElapsed;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -13,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import comp5703.sydney.edu.au.learn.DTO.Offer;
 import comp5703.sydney.edu.au.learn.DTO.Product;
 import comp5703.sydney.edu.au.learn.DTO.Record;
 import comp5703.sydney.edu.au.learn.R;
@@ -21,10 +24,10 @@ public class ProductOfferListAdapter extends RecyclerView.Adapter<ProductOfferLi
 
     private Context mcontext;
     private OnItemClickListener mlistener;
-    private List<Record> recordList;
+    private List<Offer> recordList;
 
 
-    public ProductOfferListAdapter(Context context, List<Record> recordList, OnItemClickListener listener){
+    public ProductOfferListAdapter(Context context, List<Offer> recordList, OnItemClickListener listener){
         this.mcontext = context;
         this.mlistener = listener;
         this.recordList = recordList;
@@ -44,8 +47,14 @@ public class ProductOfferListAdapter extends RecyclerView.Adapter<ProductOfferLi
 
             // 获取Product object
             Product product = recordList.get(position).getProduct();
-            holder.itemName.setText(product.getProductName());
-            holder.itemWeight.setText(String.valueOf(product.getProductWeight()));
+
+            // set offer price
+            holder.offerPrice.setText(String.valueOf(recordList.get(position).getPrice()));
+
+            Long offerSentTime = recordList.get(position).getTimestamp();
+            String timeElapsed = getTimeElapsed(offerSentTime);
+
+            holder.offerTime.setText(timeElapsed);
 
             // 绑定点击事件
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -63,26 +72,24 @@ public class ProductOfferListAdapter extends RecyclerView.Adapter<ProductOfferLi
 
     @Override
     public int getItemCount() {
-        return 10;
+        return recordList.size();
     }
 
     class LinearViewHolder extends RecyclerView.ViewHolder{
 
-        private TextView itemName;
+        private TextView offerPrice;
 
-        private TextView itemPrice;
+        private TextView buyerType;
 
-        private TextView itemWeight;
+        private TextView offerTime;
 
-        private ImageView itemImage;
+
 
         public LinearViewHolder(View itemView){
             super(itemView);
-            itemName = itemView.findViewById(R.id.itemName);
-            itemPrice = itemView.findViewById(R.id.itemPrice);
-            itemWeight = itemView.findViewById(R.id.itemWeight);
-            itemImage = itemView.findViewById(R.id.ItemImage);
-
+            offerPrice = itemView.findViewById(R.id.offerPrice);
+            buyerType = itemView.findViewById(R.id.buyerType);
+            offerTime = itemView.findViewById(R.id.offerTime);
         }
     }
 
@@ -90,11 +97,11 @@ public class ProductOfferListAdapter extends RecyclerView.Adapter<ProductOfferLi
         void onClick(int pos, Integer itemId);
     }
 
-    public List<Record> getRecordList() {
+    public List<Offer> getRecordList() {
         return recordList;
     }
 
-    public void setRecordList(List<Record> recordList) {
+    public void setRecordList(List<Offer> recordList) {
         this.recordList = recordList;
     }
 }

@@ -3,13 +3,11 @@ package comp5703.sydney.edu.au.learn.Home.Fragment;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,7 +25,7 @@ import java.util.List;
 import comp5703.sydney.edu.au.learn.DTO.Record;
 import comp5703.sydney.edu.au.learn.Home.Adapter.ItemListAdapter;
 import comp5703.sydney.edu.au.learn.R;
-import comp5703.sydney.edu.au.learn.VO.productParameter;
+import comp5703.sydney.edu.au.learn.VO.productListParameter;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -77,11 +75,11 @@ public class ItemListFragment extends Fragment {
 
 
     private void getRecordList(){
-        productParameter productParameter = new productParameter();
-        productParameter.setPageNum(1);
-        productParameter.setPageSize(20);
+        productListParameter productListParameter = new productListParameter();
+        productListParameter.setPageNum(1);
+        productListParameter.setPageSize(20);
 
-        NetworkUtils.getWithParamsRequest( productParameter, "/public/product/productList",null, new Callback() {
+        NetworkUtils.getWithParamsRequest( productListParameter, "/public/product/productList",null, new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 handleResponse(response);

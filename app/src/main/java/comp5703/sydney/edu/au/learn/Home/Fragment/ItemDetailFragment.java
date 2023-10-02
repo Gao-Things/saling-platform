@@ -6,6 +6,7 @@ import static comp5703.sydney.edu.au.learn.util.NetworkUtils.imageURL;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -26,15 +27,18 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.kyleduo.switchbutton.SwitchButton;
 import com.squareup.picasso.Picasso;
@@ -46,12 +50,13 @@ import java.util.Objects;
 
 import comp5703.sydney.edu.au.learn.DTO.Offer;
 import comp5703.sydney.edu.au.learn.DTO.Product;
-import comp5703.sydney.edu.au.learn.DTO.Record;
-import comp5703.sydney.edu.au.learn.Home.Adapter.MyOfferListAdapter;
 import comp5703.sydney.edu.au.learn.Home.Adapter.ProductOfferListAdapter;
+import comp5703.sydney.edu.au.learn.Home.HomeUseActivity;
 import comp5703.sydney.edu.au.learn.R;
+import comp5703.sydney.edu.au.learn.VO.OfferParameter;
 import comp5703.sydney.edu.au.learn.VO.productDetailParameter;
 import comp5703.sydney.edu.au.learn.VO.productOfferParameter;
+import comp5703.sydney.edu.au.learn.VO.productParameter;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -84,6 +89,10 @@ public class ItemDetailFragment extends Fragment {
 
     private TextView offeredPrice;
 
+    private Integer productId;
+
+    private TextView emptyText;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -115,9 +124,9 @@ public class ItemDetailFragment extends Fragment {
         offerList.setLayoutManager(layoutManager);
 
         // 创建并设置RecyclerView的Adapter
-        productOfferListAdapter = new ProductOfferListAdapter(getContext(),new ArrayList<Record>(),clickListener);
+        productOfferListAdapter = new ProductOfferListAdapter(getContext(),new ArrayList<Offer>(),clickListener);
         offerList.setAdapter(productOfferListAdapter);
-
+        emptyText = view.findViewById(R.id.emptyText);
         // get SharedPreferences instance
         SharedPreferences sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences("comp5703", Context.MODE_PRIVATE);
 
@@ -134,30 +143,81 @@ public class ItemDetailFragment extends Fragment {
         // 在 ItemDetailFragment 中获取传递的整数值
         Bundle args = getArguments();
         if (args != null) {
-            int productId = args.getInt("productId");
+             productId = args.getInt("productId");
             getProductInformation(productId);
             getProductOfferHistory(productId);
 
         }
 
+        // 初始化 switchButton
         switchButton = view.findViewById(R.id.switch_button);
         switchButton.setChecked(true);
-        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        initializeSwitchListener();
+
+
+
+    }
+    private void initializeSwitchListener() {
+        SwitchButton.OnCheckedChangeListener listener = new SwitchButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-               if (isChecked){
-                   // 设置背景颜色
-                   // 获取颜色资源
-                   int backColor = ContextCompat.getColor(Objects.requireNonNull(getContext()), R.color.generalGreen);
-                   switchButton.setBackColor(ColorStateList.valueOf(backColor));
-               }else {
-                   int backColor = ContextCompat.getColor(Objects.requireNonNull(getContext()), R.color.red);
-                   switchButton.setBackColor(ColorStateList.valueOf(backColor));
-               }
+                switchButton.setOnCheckedChangeListener(null);
+                showConfirmationDialog(isChecked);
             }
+        };
+        switchButton.setOnCheckedChangeListener(listener);
+    }
+
+    private void showConfirmationDialog(boolean isChecked) {
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext());
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_custom_layout, null);
+        TextView title = dialogView.findViewById(R.id.dialogTitle);
+
+        if (isChecked){
+            title.setText("Do you wish to open the offer ?");
+        }else {
+            title.setText("Do you wish to close the offer ?");
+        }
+
+        builder.setView(dialogView);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        Button confirmButton = dialogView.findViewById(R.id.confirm_button);
+
+        // 确认按钮的点击处理
+        confirmButton.setOnClickListener(v -> {
+            dialog.dismiss();
+
+            // User confirmed, so update the button color
+            updateButtonColor(isChecked);
+            // Re-set the OnCheckedChangeListener
+            initializeSwitchListener();
+
         });
 
+        Button cancelButton = dialogView.findViewById(R.id.cancel_button);
+        cancelButton.setOnClickListener(v -> {
+            // 取消按钮的点击处理
+            dialog.dismiss();
+            // User cancelled, so revert the button state and re-set the OnCheckedChangeListener
+            switchButton.setChecked(!isChecked);
+            initializeSwitchListener();
+        });
+    }
 
+
+
+    private void updateButtonColor(boolean isChecked) {
+        int backColor;
+        if (isChecked) {
+            backColor = ContextCompat.getColor(Objects.requireNonNull(getContext()), R.color.generalGreen);
+        } else {
+            backColor = ContextCompat.getColor(Objects.requireNonNull(getContext()), R.color.red);
+        }
+        switchButton.setBackColor(ColorStateList.valueOf(backColor));
     }
 
     private void getProductOfferHistory(Integer productId){
@@ -263,6 +323,11 @@ public class ItemDetailFragment extends Fragment {
             if (code == 200) {
                 Product product = jsonObject.getJSONObject("data").toJavaObject(Product.class);
 
+                if (product.getOwnerId().intValue() == userId){
+                    // if the login is the seller
+                    loadSellerView();
+                }
+
                 // 在主线程中更新UI
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
@@ -271,14 +336,6 @@ public class ItemDetailFragment extends Fragment {
                         Picasso.get()
                                 .load(imageURL+ product.getProductImage()) // 网络图片的URL
                                 .into(ItemImage);
-
-                        if (product.getOwnerId().intValue() == userId){
-                            // if the login is the seller
-                            generalView.setVisibility(View.GONE);
-                            offerList.setVisibility(View.VISIBLE);
-                            switchButton.setVisibility(View.VISIBLE);
-                            itemStatusImg.setVisibility(View.GONE);
-                        }
 
                     }
                 });
@@ -291,6 +348,97 @@ public class ItemDetailFragment extends Fragment {
             Log.e(TAG, "JSONException: " + e.getMessage());
         }
     }
+
+
+    // 加载seller的商品的offer
+    private void loadSellerView(){
+
+        // 在主线程中更新UI
+        Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void run() {
+                generalView.setVisibility(View.GONE);
+                switchButton.setVisibility(View.VISIBLE);
+                itemStatusImg.setVisibility(View.GONE);
+
+            }
+        });
+
+        // send request to get the seller item
+        productParameter productParameter = new productParameter();
+        productParameter.setProductId(productId);
+
+        NetworkUtils.getWithParamsRequest( productParameter, "/normal/getProductOfferList", token, new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                handleResponse3(response);
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                handleFailure(e);
+            }
+        });
+
+
+
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private void handleResponse3(Response response) {
+        // set data to seller adapter
+        try {
+            if (!response.isSuccessful()) {
+                Log.d(TAG, "Request not successful");
+                return;
+            }
+            String responseBody = response.body().string();
+            JSONObject jsonObject = JSONObject.parseObject(responseBody);
+            int code = jsonObject.getIntValue("code");
+
+            if (code == 200) {
+                JSONArray dataArray = jsonObject.getJSONArray("data");
+
+                if (!dataArray.isEmpty()) {
+
+                    List<Offer> OfferList = dataArray.toJavaList(Offer.class);
+                    // 更新Adapter的数据
+                    productOfferListAdapter.setRecordList(OfferList);
+
+                    // 在主线程中更新UI
+                    Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
+                        @SuppressLint("SetTextI18n")
+                        @Override
+                        public void run() {
+                            offerList.setVisibility(View.VISIBLE);
+                            // 在UI线程上更新Adapter的数据
+                            productOfferListAdapter.notifyDataSetChanged();
+                        }
+                    });
+                }else {
+                    // seller offer为空在主线程中更新UI
+                    Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
+                        @SuppressLint("SetTextI18n")
+                        @Override
+                        public void run() {
+                            emptyText.setVisibility(View.VISIBLE);
+                        }
+                    });
+                }
+
+
+            } else {
+                Log.d(TAG, "Error response code: " + code);
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "IOException: " + e.getMessage());
+        } catch (JSONException e) {
+            Log.e(TAG, "JSONException: " + e.getMessage());
+        }
+    }
+
+
 
     // 出现时候触发的事件
     @Override

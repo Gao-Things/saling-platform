@@ -30,7 +30,7 @@ import comp5703.sydney.edu.au.learn.Common.DialogFragment;
 import comp5703.sydney.edu.au.learn.DTO.Record;
 import comp5703.sydney.edu.au.learn.Home.Adapter.ItemEditAdapter;
 import comp5703.sydney.edu.au.learn.R;
-import comp5703.sydney.edu.au.learn.VO.productParameter;
+import comp5703.sydney.edu.au.learn.VO.productListParameter;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -111,11 +111,11 @@ public class ItemListEditFragment extends Fragment {
 
 
     private void getRecordList(){
-        productParameter productParameter = new productParameter();
-        productParameter.setPageNum(1);
-        productParameter.setPageSize(20);
+        productListParameter productListParameter = new productListParameter();
+        productListParameter.setPageNum(1);
+        productListParameter.setPageSize(20);
 
-        NetworkUtils.getWithParamsRequest( productParameter, "/public/product/productList",null, new Callback() {
+        NetworkUtils.getWithParamsRequest( productListParameter, "/public/product/productList",null, new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 handleResponse(response);

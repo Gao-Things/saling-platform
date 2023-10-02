@@ -18,41 +18,49 @@
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:padding="10dp"
-            android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:layout_marginLeft="10dp"
+                android:gravity="center_vertical"
                 android:layout_height="match_parent"
                 android:text="$"
-                android:textSize="20sp"/>
+                android:textSize="17sp"/>
 
             <TextView
                 android:id="@+id/offerPrice"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="match_parent"
+                android:gravity="center_vertical"
                 android:text="120"
-                android:textSize="20sp"/>
+                android:textSize="17sp"/>
 
             <TextView
                 android:id="@+id/buyerType"
-                android:layout_marginLeft="40dp"
-                android:layout_width="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:textColor="@color/white"
                 android:layout_height="match_parent"
                 android:background="@drawable/rounded_bg"
-                android:padding="6dp"
-                android:text="Personal buyer"
+                android:padding="4dp"
+                android:layout_gravity="center"
+                android:text="Personal"
                 android:textSize="17sp"/>
 
 
             <TextView
                 android:id="@+id/offerTime"
                 android:layout_marginLeft="40dp"
-                android:layout_width="wrap_content"
+                android:gravity="center_vertical"
+                android:layout_width="0dp"
+                android:layout_weight="1.5"
                 android:layout_height="match_parent"
                 android:text="50 minute ago"
-                android:textSize="20sp"/>
+                android:textSize="17sp"/>
         </LinearLayout>
 
 

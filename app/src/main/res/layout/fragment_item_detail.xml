@@ -256,8 +256,7 @@
                 android:layout_height="wrap_content"
                 android:text="Offered History Price:"
                 android:textColor="@color/textColorSecondary"
-                android:textSize="22sp"
-                 />
+                android:textSize="22sp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -293,12 +292,11 @@
                 android:id="@+id/hidden_layout"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:visibility="gone"
-                android:paddingLeft="13dp"
-                android:gravity="center_vertical"
                 android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
                 android:orientation="horizontal"
-             >
+                android:paddingLeft="13dp"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -311,8 +309,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
-                    android:gravity="center_vertical"
                     android:layout_marginLeft="20dp"
+                    android:gravity="center_vertical"
                     android:text="$"
                     android:textColor="@color/textColorSecondary"
                     android:textSize="22sp" />
@@ -320,10 +318,10 @@
                 <EditText
                     android:id="@+id/setPrice"
                     android:layout_width="110dp"
-                    android:layout_marginLeft="5dp"
-                    android:gravity="center_vertical"
                     android:layout_height="40dp"
+                    android:layout_marginLeft="5dp"
                     android:background="@drawable/edittext_border"
+                    android:gravity="center_vertical"
                     android:textStyle="bold" />
 
 
@@ -347,9 +345,9 @@
                 android:layout_width="130dp"
                 android:layout_height="50dp"
                 android:layout_gravity="end"
+                android:layout_marginTop="10dp"
                 android:layout_marginRight="40dp"
                 android:layout_marginBottom="40dp"
-                android:layout_marginTop="10dp"
                 android:background="@drawable/custom_button_background"
                 android:text="confirm Offer"
                 android:textColor="@color/lightwhite" />
@@ -369,6 +367,17 @@
 
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/emptyText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:gravity="center_horizontal"
+            android:text="This product has not received an offer yet"
+            android:textColor="@color/darkGreen"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/offerList"
