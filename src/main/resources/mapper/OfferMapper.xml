@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.usyd.capstone.mapper.OfferMapper">
+    <resultMap id="OfferProductDTO" type="com.usyd.capstone.common.DTO.OfferProductDTO">
+        <result column="offer_id" property="offerId"/>  <!-- 映射 offer.id 到 offerId -->
+        <result column="product_id" property="productId"/>  <!-- 映射 product.id 到 productId -->
+    </resultMap>
+    <select id="getOfferListBySellerId" resultMap="OfferProductDTO">
+        SELECT
+            offer.id as offer_id,
+            product.id as product_id,
+            offer.*,
+            product.*
+        FROM offer
+        LEFT JOIN product
+        ON offer.product_id = product.id
+        WHERE product.owner_id = #{ownerId}
+    </select>
+</mapper>

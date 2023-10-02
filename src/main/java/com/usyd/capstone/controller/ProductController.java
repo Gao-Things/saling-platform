@@ -72,9 +72,6 @@ public class ProductController {
     @Value("${upload.dir}") // 从配置文件获取上传目录
     private String uploadDir;
 
-    @Value("${image.Url}") // 从配置文件获取上传目录
-    private String imageUrl;
-
     @PostMapping("/uploadImage")
     public Result uploadImage(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
@@ -97,9 +94,8 @@ public class ProductController {
             String filePath = uploadDir + File.separator + newFileName;
             File dest = new File(filePath);
             file.transferTo(dest);
-            String imageUrlUse = imageUrl + newFileName;
             // 返回成功响应
-            return Result.suc(imageUrlUse);
+            return Result.suc(newFileName);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -119,6 +115,7 @@ public class ProductController {
         product.setProductPrice(400);
         product.setProductUpdateTime(System.currentTimeMillis());
         product.setProductWeight(productVO.getItemWeight());
+        product.setOwnerId(Long.valueOf(productVO.getUserId()));
         if (productService.save(product)){
             return Result.suc();
         }else {

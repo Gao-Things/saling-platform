@@ -9,4 +9,5 @@ public class productVO {
     private double itemWeight;
     private String selectedValue;
     private String imageUrl;
+    private Integer userId;
 }

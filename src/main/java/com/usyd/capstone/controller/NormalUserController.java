@@ -39,6 +39,13 @@ public class NormalUserController {
 
         return Result.suc(userOfferList);
     }
+
+    // 获取用户id查所有收到的offer list
+    @GetMapping("/getReceivedOfferList")
+    public Result getReceivedOfferList(@RequestParam("userId") Integer userID){
+
+        return offerService.getOfferListBySellerId(userID);
+    }
     // 根据productId 获取product下的所有offer
     @GetMapping("/getProductOfferList")
     public Result getProductOfferList(@RequestParam("productId") Integer productId){
