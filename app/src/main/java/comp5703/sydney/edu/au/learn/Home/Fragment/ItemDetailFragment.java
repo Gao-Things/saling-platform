@@ -208,8 +208,6 @@ public class ItemDetailFragment extends Fragment {
         });
     }
 
-
-
     private void updateButtonColor(boolean isChecked) {
         int backColor;
         if (isChecked) {
@@ -380,8 +378,6 @@ public class ItemDetailFragment extends Fragment {
                 handleFailure(e);
             }
         });
-
-
 
     }
 

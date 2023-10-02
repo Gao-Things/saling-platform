@@ -22,6 +22,10 @@
     <!-- 在res/values/strings.xml中 -->
     <string name="underlined_text"><u>Cancel Offer</u></string>
 
+    <string name="reject_text"><u>Reject Offer</u></string>
+    <!-- 在res/values/strings.xml中 -->
+    <string name="contact_text"><u>Contact Buyer</u></string>
+
     <string name="cancel_text"><u>Cancel</u></string>
 
 </resources>
