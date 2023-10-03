@@ -77,18 +77,10 @@ public class NormalUserController {
                 setPriceThresholdRequest.getThreshold());
     }
 
-    @PostMapping("/makeAnOffer")
+    @PostMapping("/makeOrUpdateAnOffer")
     public Result makeAnOffer(@RequestBody MakeOrUpdateAnOfferRequest makeOrUpdateAnOfferRequest) {
-        return normalUserService.makeAnOffer(makeOrUpdateAnOfferRequest.getToken(),
-                makeOrUpdateAnOfferRequest.getProductOrOfferId(),
-                makeOrUpdateAnOfferRequest.getNote(),
-                makeOrUpdateAnOfferRequest.getPrice());
-    }
-
-    @PostMapping("/updateAnOffer")
-    public Result updateAnOffer(@RequestBody MakeOrUpdateAnOfferRequest makeOrUpdateAnOfferRequest) {
-        return normalUserService.updateAnOffer(makeOrUpdateAnOfferRequest.getToken(),
-                makeOrUpdateAnOfferRequest.getProductOrOfferId(),
+        return normalUserService.makeOrUpdateAnOffer(makeOrUpdateAnOfferRequest.getToken(),
+                makeOrUpdateAnOfferRequest.getProductId(),
                 makeOrUpdateAnOfferRequest.getNote(),
                 makeOrUpdateAnOfferRequest.getPrice());
     }

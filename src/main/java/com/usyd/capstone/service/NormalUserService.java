@@ -10,9 +10,7 @@ public interface NormalUserService {
 
     public Result setPriceThresholdBatch(String token, Long productId, boolean isMinimum, double threshold);
 
-    public Result makeAnOffer(String token, Long productId, String note, double price);
-
-    public Result updateAnOffer(String token, Long offerId, String note, double price);
+    public Result makeOrUpdateAnOffer(String token, Long productId, String note, double price);
 
     public Result acceptAnOffer(String token, Long offerId);
 

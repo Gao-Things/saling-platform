@@ -121,7 +121,7 @@ public class NormalUserServiceImpl implements NormalUserService {
     }
 
     @Override
-    public Result makeAnOffer(String token, Long productId, String note, double price) {
+    public Result makeOrUpdateAnOffer(String token, Long productId, String note, double price) {
         Long buyerId = JwtToken.getId(token);
         if(buyerId == -1L) {
             return Result.fail("Cannot parse the token!");
@@ -146,82 +146,59 @@ public class NormalUserServiceImpl implements NormalUserService {
             return Result.fail("The product isn't for sale!");
         }
 
-        Offer offerOld = offerMapper.selectOne(new QueryWrapper<Offer>()
+        Offer offer = offerMapper.selectOne(new QueryWrapper<Offer>()
                 .eq("product_id", productId)
                 .eq("buyer_id", buyerId));
-        if(offerOld != null)
+        if(offer == null)
         {
-            return Result.fail("There is an offer about this item existed.");
+            offer = new Offer();
+            offer.setBuyerId(buyerId);
+            offer.setProductId(productId);
+            offer.setPrice(price);
+            offer.setNote(note);
+            offer.setOfferStatus(0);
+            offer.setTimestamp(System.currentTimeMillis());
+
+            offerMapper.insert(offer);
+
+            StringBuilder notificationContent = new StringBuilder();
+            notificationContent.append(buyer.getName());
+            notificationContent.append(" has made an new offer to your item: ");
+            notificationContent.append(product.getProductName());
+            notificationContent.append(".");
+            int notificationStatus = ChatEndpoint.sendMessage(product.getOwnerId(),notificationContent.toString());
+
+
+            return Result.suc("An new offer has been made.");
         }
-
-        Offer offer = new Offer();
-        offer.setBuyerId(buyerId);
-        offer.setProductId(productId);
-        offer.setPrice(price);
-        offer.setNote(note);
-        offer.setOfferStatus(0);
-        offer.setTimestamp(System.currentTimeMillis());
-
-        offerMapper.insert(offer);
-
-        StringBuilder notificationContent = new StringBuilder();
-        notificationContent.append(buyer.getName());
-        notificationContent.append(" has made an new offer to your item: ");
-        notificationContent.append(product.getProductName());
-        notificationContent.append(".");
-        int notificationStatus = ChatEndpoint.sendMessage(product.getOwnerId(),notificationContent.toString());
-
-
-        return Result.suc("An new offer has been made.");
-    }
-
-    @Override
-    public Result updateAnOffer(String token, Long offerId, String note, double price) {
-        Long buyerId = JwtToken.getId(token);
-        if(buyerId == -1L) {
-            return Result.fail("Cannot parse the token!");
-        }
-
-        NormalUser buyer = normalUserMapper.selectById(buyerId);
-        Offer offer = offerMapper.selectById(offerId);
-        if(buyer == null || offer == null)
+        else
         {
-            return Result.fail("Cannot find the user account or offer!");
+            if(offer.getOfferStatus() == 1) {
+                return Result.fail("The accepted offer cannot be update!");
+            }
+
+            if(offer.getOfferStatus() == 4) {
+                return Result.fail("The offer had been out of date!(The product has been sold or cancelled)");
+            }
+
+            offer.setOfferStatus(0);
+            offer.setPrice(price);
+            offer.setNote(note);
+            offer.setTimestamp(System.currentTimeMillis());
+            offerMapper.updateById(offer);
+
+            StringBuilder notificationContent = new StringBuilder();
+            notificationContent.append(buyer.getName());
+            notificationContent.append(" has update his offer to your item: ");
+            notificationContent.append(product.getProductName());
+            notificationContent.append(".");
+            int notificationStatus = ChatEndpoint.sendMessage(product.getOwnerId(),notificationContent.toString());
+
+
+            return Result.suc("The offer has been updated.");
         }
 
-        if(!buyer.isActivationStatus()) {
-            return Result.fail("The user account isn't active!");
-        }
 
-        if(offer.getBuyerId() != buyerId) {
-            return Result.fail("The request is invalid!");
-        }
-
-        if(offer.getOfferStatus() == 1) {
-            return Result.fail("The accepted offer cannot be update!");
-        }
-
-        if(offer.getOfferStatus() == 4) {
-            return Result.fail("The offer had been out of date!(The product has been sold or cancelled)");
-        }
-
-        offer.setOfferStatus(0);
-        offer.setPrice(price);
-        offer.setNote(note);
-        offer.setTimestamp(System.currentTimeMillis());
-        offerMapper.updateById(offer);
-
-        Product product = productMapper.selectById(offer.getProductId());
-
-        StringBuilder notificationContent = new StringBuilder();
-        notificationContent.append(buyer.getName());
-        notificationContent.append(" has update his offer to your item: ");
-        notificationContent.append(product.getProductName());
-        notificationContent.append(".");
-        int notificationStatus = ChatEndpoint.sendMessage(product.getOwnerId(),notificationContent.toString());
-
-
-        return Result.suc("The offer has been updated.");
     }
 
     @Override
