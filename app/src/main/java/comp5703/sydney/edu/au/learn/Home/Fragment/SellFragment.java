@@ -31,6 +31,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.alibaba.fastjson.JSONObject;
@@ -40,12 +42,14 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 import comp5703.sydney.edu.au.learn.Common.DialogFragment;
+import comp5703.sydney.edu.au.learn.Home.Adapter.ImageAdapter;
 import comp5703.sydney.edu.au.learn.Home.HomeUseActivity;
 import comp5703.sydney.edu.au.learn.MainActivity;
 import comp5703.sydney.edu.au.learn.R;
@@ -57,13 +61,11 @@ import okhttp3.Response;
 
 public class SellFragment extends Fragment {
 
-    private FrameLayout openCamera;
     private EditText editTitle;
     private EditText editDescription;
     private EditText editWeight;
     private AppCompatButton btnSubmit;
     private String uploadImageUrl;
-    private ImageView coverImage;
     private AutoCompleteTextView autoCompleteTextView;
 
     private Uri photoURI;
@@ -72,6 +74,7 @@ public class SellFragment extends Fragment {
     private static final int REQUEST_IMAGE_CAPTURE = 2;
     WheelPicker wheelPicker;
 
+    private ImageAdapter imageAdapter;
 
     @Nullable
     @Override
@@ -84,12 +87,10 @@ public class SellFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        openCamera = view.findViewById(R.id.openCamera);
         editTitle = view.findViewById(R.id.editTitle);
         editDescription = view.findViewById(R.id.editDescription);
         editWeight = view.findViewById(R.id.editWeight);
         btnSubmit = view.findViewById(R.id.btnSubmit);
-        coverImage = view.findViewById(R.id.coverImage);
         wheelPicker =  view.findViewById(R.id.wheel1);
 
         String[] items = new String[] {"24K", "21K", "18K"};
@@ -102,7 +103,20 @@ public class SellFragment extends Fragment {
 
         autoCompleteTextView = view.findViewById(R.id.autoCompleteTextView);
         autoCompleteTextView.setAdapter(adapter);
-        openCamera.setOnClickListener(this::openCameraClick);
+
+        // 初始化画廊
+        RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));  // 3 for 3 columns
+        imageAdapter = new ImageAdapter(new ArrayList<>());  // initially empty list
+        recyclerView.setAdapter(imageAdapter);
+
+        imageAdapter.setOnAddImageClickListener(new ImageAdapter.OnAddImageClickListener() {
+            @Override
+            public void onAddImageClick() {
+                // 这里处理添加图片的操作
+                openCameraClick();
+            }
+        });
 
 
         // 设置数据
@@ -128,7 +142,7 @@ public class SellFragment extends Fragment {
 
     }
 
-    private void openCameraClick(View view){
+    private void openCameraClick(){
         requestCameraPermission();
     }
 
@@ -192,12 +206,8 @@ public class SellFragment extends Fragment {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                openCamera.setVisibility(View.GONE);
-                                coverImage.setVisibility(View.VISIBLE);
-
-                                Picasso.get()
-                                        .load(imageURL +uploadImageUrl) // 网络图片的URL
-                                        .into(coverImage);
+                                // 使用ImageAdapter的实例添加新的URL
+                                imageAdapter.addImageUrl(imageURL + uploadImageUrl);
                             }
                         });
 
@@ -261,7 +271,7 @@ public class SellFragment extends Fragment {
         });
     }
 
-  
+
       private void handleResponse(Response response) throws IOException {
         String responseBody = response.body().string();
         JSONObject jsonObject = JSONObject.parseObject(responseBody);

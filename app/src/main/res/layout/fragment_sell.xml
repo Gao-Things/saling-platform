@@ -22,46 +22,12 @@
             android:textSize="23sp"
             android:textStyle="bold" />
 
-        <ImageView
-            android:id="@+id/coverImage"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="10dp"
-            android:visibility="gone" />
-        <!-- 正方形的白色背景 -->
-        <FrameLayout
-            android:id="@+id/openCamera"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginTop="10dp"
-            android:background="@color/white">
 
-            <!-- 垂直的LinearLayout包含图片和文本 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical">
 
-                <!-- 相机logo -->
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp"
-                    android:src="@drawable/img_18" />
-
-                <!-- 文本 -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:text="Take photos"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </FrameLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <TextView
             android:layout_width="match_parent"
