@@ -208,6 +208,7 @@ public class NormalUserServiceImpl implements NormalUserService {
         offer.setOfferStatus(0);
         offer.setPrice(price);
         offer.setNote(note);
+        offer.setTimestamp(System.currentTimeMillis());
         offerMapper.updateById(offer);
 
         Product product = productMapper.selectById(offer.getProductId());
@@ -252,6 +253,9 @@ public class NormalUserServiceImpl implements NormalUserService {
         }
         if(product.getProductStatus() > 1) {
             return Result.fail("The product has been sold or cancelled!");
+        }
+        if(product.getOwnerId() != sellerId) {
+            return Result.fail("Only the product owner can accept the offer!");
         }
 
         offer.setOfferStatus(1);
