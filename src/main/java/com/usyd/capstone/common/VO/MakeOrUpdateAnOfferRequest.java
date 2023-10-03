@@ -6,11 +6,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class MakeAnOfferRequest {
+public class MakeOrUpdateAnOfferRequest {
     @JsonProperty("token")
     private String token;
-    @JsonProperty("productId")
-    private Long productId;
+    @JsonProperty("productOrOfferId")
+    private Long productOrOfferId;
     @JsonProperty("note")
     private String note;
     @JsonProperty("price")

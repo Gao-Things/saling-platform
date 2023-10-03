@@ -2,9 +2,7 @@ package com.usyd.capstone.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.usyd.capstone.common.DTO.Result;
-import com.usyd.capstone.common.VO.MakeAnOfferRequest;
-import com.usyd.capstone.common.VO.Recaptcha;
-import com.usyd.capstone.common.VO.SetPriceThresholdRequest;
+import com.usyd.capstone.common.VO.*;
 import com.usyd.capstone.entity.Offer;
 import com.usyd.capstone.service.NormalUserService;
 import com.usyd.capstone.service.OfferService;
@@ -80,10 +78,43 @@ public class NormalUserController {
     }
 
     @PostMapping("/makeAnOffer")
-    public Result makeAnOffer(@RequestBody MakeAnOfferRequest makeAnOfferRequest) {
-        return normalUserService.makeAnOffer(makeAnOfferRequest.getToken(),
-                makeAnOfferRequest.getProductId(),
-                makeAnOfferRequest.getNote(),
-                makeAnOfferRequest.getPrice());
+    public Result makeAnOffer(@RequestBody MakeOrUpdateAnOfferRequest makeOrUpdateAnOfferRequest) {
+        return normalUserService.makeAnOffer(makeOrUpdateAnOfferRequest.getToken(),
+                makeOrUpdateAnOfferRequest.getProductOrOfferId(),
+                makeOrUpdateAnOfferRequest.getNote(),
+                makeOrUpdateAnOfferRequest.getPrice());
+    }
+
+    @PostMapping("/updateAnOffer")
+    public Result updateAnOffer(@RequestBody MakeOrUpdateAnOfferRequest makeOrUpdateAnOfferRequest) {
+        return normalUserService.updateAnOffer(makeOrUpdateAnOfferRequest.getToken(),
+                makeOrUpdateAnOfferRequest.getProductOrOfferId(),
+                makeOrUpdateAnOfferRequest.getNote(),
+                makeOrUpdateAnOfferRequest.getPrice());
+    }
+
+    @PostMapping("/acceptAnOffer")
+    public Result acceptAnOffer(@RequestBody AcceptOrCancelOrRejectAnOfferRequest acceptOrCancelOrRejectAnOfferRequest) {
+        return normalUserService.acceptAnOffer(acceptOrCancelOrRejectAnOfferRequest.getToken(),
+                acceptOrCancelOrRejectAnOfferRequest.getOfferId());
+    }
+
+    @PostMapping("/cancelAnOffer")
+    public Result cancelAnOffer(@RequestBody AcceptOrCancelOrRejectAnOfferRequest acceptOrCancelOrRejectAnOfferRequest) {
+        return normalUserService.cancelAnOffer(acceptOrCancelOrRejectAnOfferRequest.getToken(),
+                acceptOrCancelOrRejectAnOfferRequest.getOfferId());
+    }
+
+    @PostMapping("/rejectAnOffer")
+    public Result rejectAnOffer(@RequestBody AcceptOrCancelOrRejectAnOfferRequest acceptOrCancelOrRejectAnOfferRequest) {
+        return normalUserService.rejectAnOffer(acceptOrCancelOrRejectAnOfferRequest.getToken(),
+                acceptOrCancelOrRejectAnOfferRequest.getOfferId());
+    }
+
+    @PostMapping("/openOrCloseOrCancelSale")
+    public Result openOrCloseOrCancelSale(@RequestBody OpenOrCloseOrCancelSaleRequest openOrCloseOrCancelSaleRequest) {
+        return normalUserService.openOrCloseOrCancelSale(openOrCloseOrCancelSaleRequest.getToken(),
+                openOrCloseOrCancelSaleRequest.getProductId(),
+                openOrCloseOrCancelSaleRequest.getProductStatusNew());
     }
 }

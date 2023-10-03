@@ -16,6 +16,9 @@ import com.usyd.capstone.service.NormalUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class NormalUserServiceImpl implements NormalUserService {
 
@@ -143,6 +146,14 @@ public class NormalUserServiceImpl implements NormalUserService {
             return Result.fail("The product isn't for sale!");
         }
 
+        Offer offerOld = offerMapper.selectOne(new QueryWrapper<Offer>()
+                .eq("product_id", productId)
+                .eq("buyer_id", buyerId));
+        if(offerOld != null)
+        {
+            return Result.fail("There is an offer about this item existed.");
+        }
+
         Offer offer = new Offer();
         offer.setBuyerId(buyerId);
         offer.setProductId(productId);
@@ -157,6 +168,7 @@ public class NormalUserServiceImpl implements NormalUserService {
         notificationContent.append(buyer.getName());
         notificationContent.append(" has made an new offer to your item: ");
         notificationContent.append(product.getProductName());
+        notificationContent.append(".");
         int notificationStatus = ChatEndpoint.sendMessage(product.getOwnerId(),notificationContent.toString());
 
 
@@ -164,13 +176,256 @@ public class NormalUserServiceImpl implements NormalUserService {
     }
 
     @Override
+    public Result updateAnOffer(String token, Long offerId, String note, double price) {
+        Long buyerId = JwtToken.getId(token);
+        if(buyerId == -1L) {
+            return Result.fail("Cannot parse the token!");
+        }
+
+        NormalUser buyer = normalUserMapper.selectById(buyerId);
+        Offer offer = offerMapper.selectById(offerId);
+        if(buyer == null || offer == null)
+        {
+            return Result.fail("Cannot find the user account or offer!");
+        }
+
+        if(!buyer.isActivationStatus()) {
+            return Result.fail("The user account isn't active!");
+        }
+
+        if(offer.getBuyerId() != buyerId) {
+            return Result.fail("The request is invalid!");
+        }
+
+        if(offer.getOfferStatus() == 1) {
+            return Result.fail("The accepted offer cannot be update!");
+        }
+
+        if(offer.getOfferStatus() == 4) {
+            return Result.fail("The offer had been out of date!(The product has been sold or cancelled)");
+        }
+
+        offer.setOfferStatus(0);
+        offer.setPrice(price);
+        offer.setNote(note);
+        offerMapper.updateById(offer);
+
+        Product product = productMapper.selectById(offer.getProductId());
+
+        StringBuilder notificationContent = new StringBuilder();
+        notificationContent.append(buyer.getName());
+        notificationContent.append(" has update his offer to your item: ");
+        notificationContent.append(product.getProductName());
+        notificationContent.append(".");
+        int notificationStatus = ChatEndpoint.sendMessage(product.getOwnerId(),notificationContent.toString());
+
+
+        return Result.suc("The offer has been updated.");
+    }
+
+    @Override
     public Result acceptAnOffer(String token, Long offerId) {
-        return null;
+        Long sellerId = JwtToken.getId(token);
+        if(sellerId == -1L) {
+            return Result.fail("Cannot parse the token!");
+        }
+
+        NormalUser seller = normalUserMapper.selectById(sellerId);
+        Offer offer = offerMapper.selectById(offerId);
+
+        if(seller == null || offer == null)
+        {
+            return Result.fail("Cannot find the seller account or offer!");
+        }
+
+        if(!seller.isActivationStatus()) {
+            return Result.fail("The seller account isn't active!");
+        }
+
+        if(offer.getOfferStatus() != 0) {
+            return Result.fail("The offer isn't on pending!");
+        }
+
+        Product product = productMapper.selectById(offer.getProductId());
+        if(product == null) {
+            return Result.fail("The product cannot be found!");
+        }
+        if(product.getProductStatus() > 1) {
+            return Result.fail("The product has been sold or cancelled!");
+        }
+
+        offer.setOfferStatus(1);
+        offerMapper.updateById(offer);
+        product.setProductStatus(2);
+        productMapper.updateById(product);
+
+        List<Offer> offers = offerMapper.selectList(new QueryWrapper<Offer>()
+                .eq("product_id", product.getId())
+                .ne("id", offerId));
+        offers.forEach(offer1 -> {
+            offer1.setOfferStatus(4);
+            offerMapper.updateById(offer1);
+        });
+
+        StringBuilder notificationContent = new StringBuilder();
+        notificationContent.append("The seller, ");
+        notificationContent.append(seller.getName());
+        notificationContent.append(", has accepted your offer about the item: ");
+        notificationContent.append(product.getProductName());
+        notificationContent.append(".");
+        int notificationStatus = ChatEndpoint.sendMessage(offer.getBuyerId(),notificationContent.toString());
+
+        return Result.suc("The offer has been accepted.");
     }
 
     @Override
     public Result cancelAnOffer(String token, Long offerId) {
-        return null;
+        Long buyerId = JwtToken.getId(token);
+        if(buyerId == -1L) {
+            return Result.fail("Cannot parse the token!");
+        }
+
+        NormalUser buyer = normalUserMapper.selectById(buyerId);
+        Offer offer = offerMapper.selectById(offerId);
+        if(buyer == null || offer == null)
+        {
+            return Result.fail("Cannot find the user account or offer!");
+        }
+
+        if(!buyer.isActivationStatus()) {
+            return Result.fail("The user account isn't active!");
+        }
+
+        if(offer.getBuyerId() != buyerId) {
+            return Result.fail("The request is invalid!");
+        }
+
+        if(offer.getOfferStatus() == 1) {
+            return Result.fail("The accepted offer cannot be cancel!");
+        }
+
+        if(offer.getOfferStatus() == 3) {
+            return Result.fail("The offer had been cancelled before!");
+        }
+
+        offer.setOfferStatus(3);
+        offerMapper.updateById(offer);
+        Product product = productMapper.selectById(offer.getProductId());
+
+        StringBuilder notificationContent = new StringBuilder();
+        notificationContent.append(buyer.getName());
+        notificationContent.append(" has cancelled his offer to your item: ");
+        notificationContent.append(product.getProductName());
+        notificationContent.append(".");
+        int notificationStatus = ChatEndpoint.sendMessage(product.getOwnerId(),notificationContent.toString());
+
+        return Result.suc("The offer has been cancelled.");
+    }
+
+    @Override
+    public Result rejectAnOffer(String token, Long offerId) {
+        Long sellerId = JwtToken.getId(token);
+        if(sellerId == -1L) {
+            return Result.fail("Cannot parse the token!");
+        }
+
+        NormalUser seller = normalUserMapper.selectById(sellerId);
+        Offer offer = offerMapper.selectById(offerId);
+
+        if(seller == null || offer == null)
+        {
+            return Result.fail("Cannot find the seller account or offer!");
+        }
+
+        if(!seller.isActivationStatus()) {
+            return Result.fail("The seller account isn't active!");
+        }
+
+        if(offer.getOfferStatus() != 0) {
+            return Result.fail("The offer isn't on pending!");
+        }
+
+        Product product = productMapper.selectById(offer.getProductId());
+        if(product == null) {
+            return Result.fail("The product cannot be found!");
+        }
+
+        offer.setOfferStatus(2);
+        offerMapper.updateById(offer);
+
+        StringBuilder notificationContent = new StringBuilder();
+        notificationContent.append("The seller, ");
+        notificationContent.append(seller.getName());
+        notificationContent.append(", has rejected your offer about the item: ");
+        notificationContent.append(product.getProductName());
+        notificationContent.append(".");
+        int notificationStatus = ChatEndpoint.sendMessage(offer.getBuyerId(),notificationContent.toString());
+
+        return Result.suc("The offer has been rejected.");
+    }
+
+    @Override
+    public Result openOrCloseOrCancelSale(String token, Long productId, int productStatusNew) {
+        Long buyerId = JwtToken.getId(token);
+        if(buyerId == -1L) {
+            return Result.fail("Cannot parse the token!");
+        }
+
+        NormalUser buyer = normalUserMapper.selectById(buyerId);
+        Product product = productMapper.selectById(productId);
+        if(buyer == null || product == null)
+        {
+            return Result.fail("Cannot find the user account or product!");
+        }
+
+        if(!buyer.isActivationStatus()) {
+            return Result.fail("The user account isn't active!");
+        }
+
+        switch (productStatusNew)
+        {
+            case 0:
+                if(product.getProductStatus() == 1)
+                {
+                    product.setProductStatus(productStatusNew);
+                    productMapper.updateById(product);
+                    return Result.suc("The item, " + product.getProductName() + " is open.");
+                }
+                else
+                {
+                    return Result.fail("Invalid action.");
+                }
+            case 1:
+                if(product.getProductStatus() == 0)
+                {
+                    product.setProductStatus(productStatusNew);
+                    productMapper.updateById(product);
+                    return Result.suc("The item, " + product.getProductName() + " has close.");
+                }
+                else
+                {
+                    return Result.fail("Invalid action.");
+                }
+            case 3:
+                if(product.getProductStatus() <= 2)
+                {
+                    product.setProductStatus(productStatusNew);
+                    productMapper.updateById(product);
+                    List<Offer> offers = offerMapper.selectList(new QueryWrapper<Offer>()
+                            .eq("product_id", productId));
+                    offers.forEach(offer -> {
+                        offer.setOfferStatus(4);
+                        offerMapper.updateById(offer);
+                    });
+                    return Result.suc("The item, " + product.getProductName() + " is cancelled.");
+                }
+                else
+                {
+                    return Result.fail("Invalid action.");
+                }
+            default:
+                return Result.fail("Invalid status input.");
+        }
     }
 
 

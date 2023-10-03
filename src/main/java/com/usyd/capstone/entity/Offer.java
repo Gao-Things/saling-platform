@@ -3,6 +3,7 @@ package com.usyd.capstone.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.dreamyoung.mprelation.EntityMapper;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,10 +33,12 @@ public class Offer {
     @EntityMapper
     private Product product;
 
+//    @JsonIgnore
     @TableField("buyer_id")
     @Transient
     private Long buyerId;
 
+//    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "buyer_id", nullable = false)
     @TableField(exist = false)
@@ -47,12 +50,12 @@ public class Offer {
     @TableField("price")
     private double price;
 
-    //备注
+    //买家的备注
     @TableField("note")
     private String note;
 
     @TableField("offer_status")
-    private int offerStatus; //0: send 1: accepted 2: rejected 3:cancelled
+    private int offerStatus; //0: send 1: accepted 2: rejected 3:cancelled 4:out of date
 
     @TableField("timestamp")
     private long timestamp;

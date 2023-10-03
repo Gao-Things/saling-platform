@@ -12,7 +12,13 @@ public interface NormalUserService {
 
     public Result makeAnOffer(String token, Long productId, String note, double price);
 
+    public Result updateAnOffer(String token, Long offerId, String note, double price);
+
     public Result acceptAnOffer(String token, Long offerId);
 
     public Result cancelAnOffer(String token, Long offerId);
+
+    public Result rejectAnOffer(String token, Long offerId);
+
+    public Result openOrCloseOrCancelSale(String token, Long productId, int productStatusNew);
 }
