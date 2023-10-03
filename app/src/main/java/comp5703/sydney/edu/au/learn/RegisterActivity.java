@@ -148,7 +148,7 @@ public class RegisterActivity extends AppCompatActivity {
         registerParameter.setLastname(lastname);
 
 
-        NetworkUtils.postJsonRequest(registerParameter, "/public/registration", new Callback() {
+        NetworkUtils.postJsonRequest(registerParameter, "/public/registration", null,new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 handleResponse(response);

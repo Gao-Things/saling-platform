@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,12 +36,14 @@ import comp5703.sydney.edu.au.learn.Home.Adapter.MyOfferListAdapter;
 import comp5703.sydney.edu.au.learn.Home.HomeUseActivity;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.OfferParameter;
+import comp5703.sydney.edu.au.learn.VO.cancelOfferParameter;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
 public class MyOfferFragment extends Fragment {
+    private View rootView;
 
     private RecyclerView itemRecyclerView;
 
@@ -55,7 +58,7 @@ public class MyOfferFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_my_offer, container, false);
+        rootView = inflater.inflate(R.layout.fragment_my_offer, container, false);
         // get SharedPreferences instance
         SharedPreferences sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences("comp5703", Context.MODE_PRIVATE);
 
@@ -65,7 +68,7 @@ public class MyOfferFragment extends Fragment {
 
         // get offer list from back-end
         getOfferList();
-        return view;
+        return rootView;
     }
 
     @Override
@@ -140,24 +143,24 @@ public class MyOfferFragment extends Fragment {
 
     MyOfferListAdapter.OnItemClickListener clickListener = new MyOfferListAdapter.OnItemClickListener() {
         @Override
-        public void onClick(int pos, Integer itemId) {
+        public void onClick(int pos, Integer itemId,Integer productId) {
                 // is resent click
-                showConfirmationDialog(1, itemId);
+                showConfirmationDialog(1, itemId, productId);
 
         }
     };
 
     MyOfferListAdapter.OnCancelClickListener onCancelClickListener = new MyOfferListAdapter.OnCancelClickListener() {
         @Override
-        public void onClick(int pos, Integer itemId, int i) {
+        public void onClick(int pos, Integer itemId, int i, Integer productId) {
 
-            showConfirmationDialog(0, itemId);
+            showConfirmationDialog(0, itemId, productId);
 
         }
     };
 
 
-    private void showConfirmationDialog(int operate, Integer itemId) {
+    private void showConfirmationDialog(int operate, Integer itemId, Integer productId) {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_custom_layout, null);
@@ -182,6 +185,7 @@ public class MyOfferFragment extends Fragment {
         confirmButton.setOnClickListener(v -> {
             dialog.dismiss();
 
+            // resent offer
             if (operate == 1){
                 // dump to detail page
 
@@ -193,7 +197,7 @@ public class MyOfferFragment extends Fragment {
                     // 准备要传递的数据
                     itemDetailFragment = new ItemDetailFragment();
                     Bundle args = new Bundle();
-                    args.putInt("productId", itemId); // 这里的 "key" 是传递数据的键名，"value" 是要传递的值
+                    args.putInt("productId", productId); // 这里的 "key" 是传递数据的键名，"value" 是要传递的值
                     itemDetailFragment.setArguments(args);
                     FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                     transaction.replace(containerId, itemDetailFragment); // containerId 是用于放置 Fragment 的容器
@@ -201,8 +205,29 @@ public class MyOfferFragment extends Fragment {
                     transaction.commitAllowingStateLoss();
                 }
 
+                return;
+
             }
 
+            if (operate == 0){
+                // 取消offer的点击
+                cancelOfferParameter cancelOfferParameter = new cancelOfferParameter();
+                cancelOfferParameter.setOfferId(itemId);
+                cancelOfferParameter.setToken(token);
+                NetworkUtils.postJsonRequest(cancelOfferParameter,"/normal/cancelAnOffer",token, new Callback() {
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        handleResponseForCancelOffer(response);
+                    }
+
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        handleFailure(e);
+                    }
+                });
+
+                return;
+            }
 
         });
 
@@ -211,5 +236,37 @@ public class MyOfferFragment extends Fragment {
             // 取消按钮的点击处理
             dialog.dismiss();
         });
+    }
+
+
+    private void handleResponseForCancelOffer(Response response) {
+        try {
+            if (!response.isSuccessful()) {
+                Log.d(TAG, "Request not successful");
+                return;
+            }
+            String responseBody = response.body().string();
+            JSONObject jsonObject = JSONObject.parseObject(responseBody);
+            int code = jsonObject.getIntValue("code");
+
+            if (code == 200) {
+                // 在主线程中更新UI
+                Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void run() {
+                        getOfferList();
+                        Snackbar.make(rootView, "Your offer has been canceled", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+
+                    }
+                });
+
+            } else {
+                Log.d(TAG, "Error response code: " + code);
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "IOException: " + e.getMessage());
+        }
     }
 }

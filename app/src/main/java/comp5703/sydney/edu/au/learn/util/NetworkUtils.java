@@ -20,16 +20,23 @@ public class NetworkUtils {
     public static final String imageURL = "http://192.168.1.101:8083/";
     private static OkHttpClient client = new OkHttpClient();
 
-    public static void postJsonRequest(Object object, String url, Callback callback) {
+    public static void postJsonRequest(Object object, String url,@Nullable String token, Callback callback) {
         String jsonBody = JSON.toJSONString(object);
         MediaType JSON_MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8");
         RequestBody requestBody = RequestBody.create(JSON_MEDIA_TYPE, jsonBody);
         String useUrl = apiURL + url;
-        Request request = new Request.Builder()
+        // 创建Request的构建器
+        Request.Builder requestBuilder = new Request.Builder()
                 .url(useUrl)
-                .post(requestBody)
-                .build();
+                .post(requestBody);
 
+        // 如果token不为空，添加请求头
+        if (token != null && !token.isEmpty()) {
+            requestBuilder.header("Authorization", "Bearer " + token);
+        }
+
+        // 构建请求
+        Request request = requestBuilder.build();
         client.newCall(request).enqueue(callback);
     }
 

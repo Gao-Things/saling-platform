@@ -56,7 +56,7 @@ public class OfferReceivedListAdapter extends RecyclerView.Adapter<OfferReceived
             ProductOffer productOffer = offerList.get(position);
 
             // 获取offer的提交时间
-            Long timeStamp = productOffer.getTimestamp() * 1000;  // 将时间戳转换为毫秒
+            Long timeStamp = productOffer.getTimestamp();  // 将时间戳转换为毫秒
 
             Integer offerStatus = productOffer.getOfferStatus();
 

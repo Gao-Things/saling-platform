@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
                                 RecaptchaParameter recaptchaParameter = new RecaptchaParameter();
                                 recaptchaParameter.setExpectedAction("login");
                                 recaptchaParameter.setToken(token);
-                                NetworkUtils.postJsonRequest(recaptchaParameter, "/public/reCAPTCHA", new Callback() {
+                                NetworkUtils.postJsonRequest(recaptchaParameter, "/public/reCAPTCHA", null,new Callback() {
                                     @Override
                                     public void onResponse(Call call, Response response) throws IOException {
                                         handleVerityResponse(response);
@@ -232,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
         loginParameter.setPassword(passwordUse);
         loginParameter.setUserRole(1);
 
-        NetworkUtils.postJsonRequest(loginParameter, "/public/login", new Callback() {
+        NetworkUtils.postJsonRequest(loginParameter, "/public/login", null,new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 handleResponse(response);

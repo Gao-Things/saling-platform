@@ -3,8 +3,6 @@ package comp5703.sydney.edu.au.learn.util;
 public abstract class TimeCalculateUtil {
 
     public static String getTimeElapsed(Long offerSentTime) {
-        // 将秒为单位的时间戳转换为毫秒为单位的时间戳
-        offerSentTime = offerSentTime * 1000;
 
         // 获取当前时间戳（以毫秒为单位）
         long currentTimestamp = System.currentTimeMillis();

@@ -258,7 +258,7 @@ public class SellFragment extends Fragment {
         itemVO.setImageUrl(uploadImageUrl);
         itemVO.setUserId(userId);
 
-        NetworkUtils.postJsonRequest(itemVO, "/public/product/uploadProduct", new Callback() {
+        NetworkUtils.postJsonRequest(itemVO, "/public/product/uploadProduct", null, new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 handleResponse(response);

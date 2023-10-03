@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,12 +38,14 @@ import comp5703.sydney.edu.au.learn.Home.Adapter.OfferReceivedListAdapter;
 import comp5703.sydney.edu.au.learn.Home.HomeUseActivity;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.OfferParameter;
+import comp5703.sydney.edu.au.learn.VO.cancelOfferParameter;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
 public class ReceivedOfferFragment extends Fragment {
+    private View rootView;
 
     private RecyclerView itemRecyclerView;
 
@@ -57,7 +60,7 @@ public class ReceivedOfferFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_received_offer, container, false);
+        rootView = inflater.inflate(R.layout.fragment_received_offer, container, false);
         // get SharedPreferences instance
         SharedPreferences sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences("comp5703", Context.MODE_PRIVATE);
 
@@ -67,7 +70,7 @@ public class ReceivedOfferFragment extends Fragment {
 
         // get offer list from back-end
         getOfferList();
-        return view;
+        return rootView;
     }
 
     @Override
@@ -188,7 +191,20 @@ public class ReceivedOfferFragment extends Fragment {
 
             if (operate == 1){
                 // 处理接受offer的操作
+                cancelOfferParameter cancelOfferParameter = new cancelOfferParameter();
+                cancelOfferParameter.setOfferId(itemId);
+                cancelOfferParameter.setToken(token);
+                NetworkUtils.postJsonRequest(cancelOfferParameter,"/normal/acceptAnOffer",token, new Callback() {
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        handleResponseForAcceptOffer(response);
+                    }
 
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        handleFailure(e);
+                    }
+                });
             }
 
 
@@ -199,5 +215,36 @@ public class ReceivedOfferFragment extends Fragment {
             // 取消按钮的点击处理
             dialog.dismiss();
         });
+    }
+
+
+    private void handleResponseForAcceptOffer(Response response) {
+        try {
+            if (!response.isSuccessful()) {
+                Log.d(TAG, "Request not successful");
+                return;
+            }
+            String responseBody = response.body().string();
+            JSONObject jsonObject = JSONObject.parseObject(responseBody);
+            int code = jsonObject.getIntValue("code");
+
+            if (code == 200) {
+                // 在主线程中更新UI
+                Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void run() {
+                        getOfferList();
+                        Snackbar.make(rootView, "Your have accept the offer", Snackbar.LENGTH_LONG)
+                                .setAction("NEWS", null).show();
+                    }
+                });
+
+            } else {
+                Log.d(TAG, "Error response code: " + code);
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "IOException: " + e.getMessage());
+        }
     }
 }

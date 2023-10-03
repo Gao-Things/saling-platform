@@ -6,15 +6,11 @@ import static comp5703.sydney.edu.au.learn.util.NetworkUtils.imageURL;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,15 +19,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.GestureDetectorCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,7 +32,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.google.android.material.snackbar.Snackbar;
 import com.kyleduo.switchbutton.SwitchButton;
 import com.squareup.picasso.Picasso;
 
@@ -51,9 +44,8 @@ import java.util.Objects;
 import comp5703.sydney.edu.au.learn.DTO.Offer;
 import comp5703.sydney.edu.au.learn.DTO.Product;
 import comp5703.sydney.edu.au.learn.Home.Adapter.ProductOfferListAdapter;
-import comp5703.sydney.edu.au.learn.Home.HomeUseActivity;
 import comp5703.sydney.edu.au.learn.R;
-import comp5703.sydney.edu.au.learn.VO.OfferParameter;
+import comp5703.sydney.edu.au.learn.VO.makeAnOfferParameter;
 import comp5703.sydney.edu.au.learn.VO.productDetailParameter;
 import comp5703.sydney.edu.au.learn.VO.productOfferParameter;
 import comp5703.sydney.edu.au.learn.VO.productParameter;
@@ -82,6 +74,7 @@ public class ItemDetailFragment extends Fragment {
 
 
     private ImageView itemStatusImg;
+    private ImageView itemCloseImg;
 
     private SwitchButton switchButton;
 
@@ -92,6 +85,8 @@ public class ItemDetailFragment extends Fragment {
     private Integer productId;
 
     private TextView emptyText;
+
+    private TextView setPrice;
 
     @Nullable
     @Override
@@ -117,11 +112,15 @@ public class ItemDetailFragment extends Fragment {
         generalView = view.findViewById(R.id.generalView);
         offerList = view.findViewById(R.id.offerList);
         itemStatusImg = view.findViewById(R.id.itemStatusImg);
+        itemCloseImg = view.findViewById(R.id.itemCloseImg);
         offerHistory = view.findViewById(R.id.offerHistory);
         offeredPrice = view.findViewById(R.id.offeredPrice);
         // 创建并设置RecyclerView的LayoutManager
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         offerList.setLayoutManager(layoutManager);
+
+
+        setPrice = view.findViewById(R.id.setPrice);
 
         // 创建并设置RecyclerView的Adapter
         productOfferListAdapter = new ProductOfferListAdapter(getContext(),new ArrayList<Offer>(),clickListener);
@@ -154,9 +153,71 @@ public class ItemDetailFragment extends Fragment {
         switchButton.setChecked(true);
         initializeSwitchListener();
 
-
+        send_offer_btn.setOnClickListener(this::submitOffer);
 
     }
+
+
+    // submit a offer
+    private void submitOffer(View view){
+
+        makeAnOfferParameter makeAnOfferParameter = new makeAnOfferParameter();
+        String stringPrice =setPrice.getText().toString();
+        String notes = optionNotes.getText().toString();
+        double doubleValue = Double.parseDouble(stringPrice);
+
+        makeAnOfferParameter.setToken(token);
+        makeAnOfferParameter.setPrice(doubleValue);
+        makeAnOfferParameter.setNote(notes);
+        makeAnOfferParameter.setProductId(productId);
+
+        // 发送一份offer
+        NetworkUtils.postJsonRequest(makeAnOfferParameter,"/normal/makeOrUpdateAnOffer",token, new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                handleResponseForMakeOffer(response, view);
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                handleFailure(e);
+            }
+        });
+
+    }
+
+    private void handleResponseForMakeOffer(Response response, View view) {
+        try {
+            if (!response.isSuccessful()) {
+                Log.d(TAG, "Request not successful");
+                return;
+            }
+            String responseBody = response.body().string();
+            JSONObject jsonObject = JSONObject.parseObject(responseBody);
+            int code = jsonObject.getIntValue("code");
+
+            if (code == 200) {
+                    // 在主线程中更新UI
+                    Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
+                        @SuppressLint("SetTextI18n")
+                        @Override
+                        public void run() {
+                            offerHistory.setVisibility(View.VISIBLE);
+                            offeredPrice.setText(setPrice.getText().toString());
+                            Snackbar.make(view, "Make offer successful!", Snackbar.LENGTH_LONG)
+                                    .setAction("Action", null).show();
+
+                        }
+                    });
+
+            } else {
+                Log.d(TAG, "Error response code: " + code);
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "IOException: " + e.getMessage());
+        }
+    }
+
     private void initializeSwitchListener() {
         SwitchButton.OnCheckedChangeListener listener = new SwitchButton.OnCheckedChangeListener() {
             @Override
@@ -195,6 +256,9 @@ public class ItemDetailFragment extends Fragment {
             updateButtonColor(isChecked);
             // Re-set the OnCheckedChangeListener
             initializeSwitchListener();
+
+            // TODO 发送请求，更改商品状态
+
 
         });
 
@@ -321,9 +385,10 @@ public class ItemDetailFragment extends Fragment {
             if (code == 200) {
                 Product product = jsonObject.getJSONObject("data").toJavaObject(Product.class);
 
+                // 属于卖家页面
                 if (product.getOwnerId().intValue() == userId){
                     // if the login is the seller
-                    loadSellerView();
+                    loadSellerView(true);
                 }
 
                 // 在主线程中更新UI
@@ -334,6 +399,11 @@ public class ItemDetailFragment extends Fragment {
                         Picasso.get()
                                 .load(imageURL+ product.getProductImage()) // 网络图片的URL
                                 .into(ItemImage);
+//                        // 如果状态不在售卖且不属于卖家家页面
+//                        if (product.getPriceStatus()!=0 && product.getOwnerId().intValue() != userId){
+//                            itemStatusImg.setVisibility(View.GONE);
+//                            itemCloseImg.setVisibility(View.VISIBLE);
+//                        }
 
                     }
                 });
@@ -349,13 +419,14 @@ public class ItemDetailFragment extends Fragment {
 
 
     // 加载seller的商品的offer
-    private void loadSellerView(){
+    private void loadSellerView(boolean checked){
 
         // 在主线程中更新UI
         Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
             @SuppressLint("SetTextI18n")
             @Override
             public void run() {
+
                 generalView.setVisibility(View.GONE);
                 switchButton.setVisibility(View.VISIBLE);
                 itemStatusImg.setVisibility(View.GONE);

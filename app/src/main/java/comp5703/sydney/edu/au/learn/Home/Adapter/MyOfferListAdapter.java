@@ -55,7 +55,7 @@ public class MyOfferListAdapter extends RecyclerView.Adapter<MyOfferListAdapter.
             Product product = offerList.get(position).getProduct();
 
             // 获取offer的提交时间
-            Long timeStamp = offerList.get(position).getTimestamp() * 1000;  // 将时间戳转换为毫秒
+            Long timeStamp = offerList.get(position).getTimestamp();
 
             Integer offerStatus = offerList.get(position).getOfferStatus();
 
@@ -95,15 +95,15 @@ public class MyOfferListAdapter extends RecyclerView.Adapter<MyOfferListAdapter.
                 @Override
                 public void onClick(View view) {
                     // 1. resent click  0.reject click
-                    mlistener.onClick(position, product.getId());
+                    mlistener.onClick(position, offerList.get(position).getId(), product.getId());
                 }
             });
 
             holder.cancelClick.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // 1. resent click  0.reject click
-                    cancelClickListener.onClick(position, product.getId(), 1);
+                    // 1. resent click
+                    cancelClickListener.onClick(position, offerList.get(position).getId(), 1, product.getId());
                 }
             });
 
@@ -157,11 +157,11 @@ public class MyOfferListAdapter extends RecyclerView.Adapter<MyOfferListAdapter.
     }
 
     public interface OnItemClickListener{
-        void onClick(int pos, Integer itemId);
+        void onClick(int pos, Integer itemId, Integer productId);
     }
 
     public interface OnCancelClickListener{
-        void onClick(int pos, Integer itemId, int i);
+        void onClick(int pos, Integer itemId, int i, Integer productId);
     }
 
     public List<Offer> getRecordList() {

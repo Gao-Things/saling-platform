@@ -99,7 +99,7 @@ public class forgotPassword extends AppCompatActivity {
     private void forgetPassword(String emailAddress){
         EmailAddress emailUse = new EmailAddress();
         emailUse.setEmailAddress(emailAddress);
-        NetworkUtils.postJsonRequest(emailUse, "/user/forgetPassword", new Callback() {
+        NetworkUtils.postJsonRequest(emailUse, "/user/forgetPassword",null, new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 handleResponse(response);

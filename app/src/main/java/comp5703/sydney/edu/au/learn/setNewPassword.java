@@ -67,7 +67,7 @@ public class setNewPassword extends AppCompatActivity {
 
         if (isValid) {
             // 执行提交逻辑
-            NetworkUtils.postJsonRequest(updatePasswordParameter, "/user/updatePassword", new Callback() {
+            NetworkUtils.postJsonRequest(updatePasswordParameter, "/user/updatePassword",null, new Callback() {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     handleResponse(response);
