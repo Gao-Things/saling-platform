@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/searchContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="15dp"
+        android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="23sp"
+        android:gravity="center"
+        android:text="What are you looking for today?"
+        android:textStyle="bold"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp">
+
+            <!-- 圆角搜索框 -->
+            <EditText
+                android:id="@+id/search_box"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:drawableStart="@drawable/ic_baseline_search_24"
+                android:hint="  Search..."
+                android:background="@drawable/rounded_search_box"/>
+
+        </RelativeLayout>
+
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/filterContainer"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:gravity="center_vertical|end"
+        android:layout_below="@+id/searchContainer"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/filterIcon"
+            android:layout_width="20dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="16dp"
+            android:src="@drawable/img_14"/>
+        <ImageView
+            android:id="@+id/sortIcon"
+            android:layout_width="15dp"
+            android:layout_marginRight="20dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/img_15"/>
+    </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id = "@+id/list_main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/filterContainer"
+        android:layout_marginTop="20dp"
+        android:background="@color/backgroundGreen"
+        />
+
+</RelativeLayout>

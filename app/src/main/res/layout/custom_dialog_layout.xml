@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/myDialog"
+    android:orientation="vertical"
+    android:layout_margin="20dp"
+    android:background="@drawable/custom_dialog_background"> <!-- 使用自定义背景 -->
+
+    <!-- 弹窗内容，可以在这里添加文本、按钮等元素 -->
+    <ImageView
+        android:id="@+id/imageLogo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/img_7"
+        android:layout_gravity="center"/>
+    <TextView
+        android:layout_marginTop="20dp"
+
+        android:layout_width="300dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:textSize="21sp"
+        android:text="Set the maximum and minimum price
+ for items successfully!"
+        />
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/confirm_button"
+        android:background="@drawable/custom_button_background"
+        android:textColor="@color/lightwhite"
+        android:layout_width="150dp"
+        android:textSize="17sp"
+        android:layout_marginTop="40dp"
+        android:layout_gravity="center"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="20dp"
+        android:text="confirm"
+
+      />
+
+</LinearLayout>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="115dp">
+
+    <LinearLayout
+        android:id="@+id/bubbleLayout"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:paddingTop="10dp"
+        android:background="@color/white"
+        android:paddingLeft="5dp"
+        android:layout_height="match_parent">
+        
+        <LinearLayout
+            android:paddingTop="5dp"
+            android:paddingLeft="5dp"
+            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/logoImageView"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/img_12" /> <!-- 替换为您的 logo 图片资源 -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="17sp"
+                android:paddingLeft="4dp"
+                android:text="Bitcoin"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:layout_marginLeft="44dp"
+            android:textColor="@color/black"
+            android:paddingTop="4dp"
+            android:textSize="17sp"
+            android:text="Hello chloe, your item...."/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:layout_marginLeft="44dp"
+            android:textSize="17sp"
+            android:text="item3 has reach the setting price ！"/>
+
+
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_gravity="bottom"
+        android:background="#F6B9B9" />
+
+</FrameLayout>
