@@ -51,7 +51,7 @@
             android:textColor="@color/black"
             android:layout_marginLeft="44dp"
             android:textSize="17sp"
-            android:text="Bob123 has sent you a new offer"/>
+            android:text="Your offer is accepted."/>
 
 
     </LinearLayout>
