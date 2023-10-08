@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +18,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -152,9 +155,9 @@ public class ReceivedOfferFragment extends Fragment {
 
     OfferReceivedListAdapter.OnCancelClickListener onCancelClickListener = new OfferReceivedListAdapter.OnCancelClickListener() {
         @Override
-        public void onClick(int pos, Integer itemId, int i) {
+        public void onClick(int pos, Integer itemId, double productPrice) {
 
-//            showConfirmationDialog(0, itemId);
+            showConfirmationDialog(0, itemId, productPrice);
 
         }
     };
@@ -170,12 +173,17 @@ public class ReceivedOfferFragment extends Fragment {
             TextView dialogOfferPrice = dialogView.findViewById(R.id.dialogOfferPrice);
             offerPriceLayout.setVisibility(View.VISIBLE);
             dialogOfferPrice.setText(Double.toString(productPrice));
+
             title.setText("Do you wish accept the offer ?");
         }
 
         if (operate == 0){
+            // Set the background tint using ViewCompat
+            Button confirmBtn = dialogView.findViewById(R.id.confirm_button);
+            ColorStateList colorStateList = ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.red));
+            ViewCompat.setBackgroundTintList(confirmBtn, colorStateList);
             TextView title = dialogView.findViewById(R.id.dialogTitle);
-            title.setText("Do you wish to cancel the offer ?");
+            title.setText("Do you confirm to reject the offer ?");
         }
 
         builder.setView(dialogView);
@@ -197,7 +205,7 @@ public class ReceivedOfferFragment extends Fragment {
                 NetworkUtils.postJsonRequest(cancelOfferParameter,"/normal/acceptAnOffer",token, new Callback() {
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
-                        handleResponseForAcceptOffer(response);
+                        handleResponseForAcceptOffer(response, 1);
                     }
 
                     @Override
@@ -205,6 +213,29 @@ public class ReceivedOfferFragment extends Fragment {
                         handleFailure(e);
                     }
                 });
+
+                return;
+            }
+
+            // TODO 拒绝offer操作
+            if (operate == 0){
+                // 处理接受offer的操作
+                cancelOfferParameter cancelOfferParameter = new cancelOfferParameter();
+                cancelOfferParameter.setOfferId(itemId);
+                cancelOfferParameter.setToken(token);
+                NetworkUtils.postJsonRequest(cancelOfferParameter,"/normal/rejectAnOffer",token, new Callback() {
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        handleResponseForAcceptOffer(response, 0);
+                    }
+
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        handleFailure(e);
+                    }
+                });
+
+                return;
             }
 
 
@@ -218,7 +249,7 @@ public class ReceivedOfferFragment extends Fragment {
     }
 
 
-    private void handleResponseForAcceptOffer(Response response) {
+    private void handleResponseForAcceptOffer(Response response, int operation) {
         try {
             if (!response.isSuccessful()) {
                 Log.d(TAG, "Request not successful");
@@ -235,8 +266,14 @@ public class ReceivedOfferFragment extends Fragment {
                     @Override
                     public void run() {
                         getOfferList();
-                        Snackbar.make(rootView, "Your have accept the offer", Snackbar.LENGTH_LONG)
-                                .setAction("NEWS", null).show();
+                        if (operation == 0){
+                            Snackbar.make(rootView, "Your have reject the offer", Snackbar.LENGTH_LONG)
+                                    .setAction("NEWS", null).show();
+                        }else {
+                            Snackbar.make(rootView, "Your have accept the offer", Snackbar.LENGTH_LONG)
+                                    .setAction("NEWS", null).show();
+                        }
+
                     }
                 });
 

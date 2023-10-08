@@ -47,7 +47,6 @@ public class MyOfferFragment extends Fragment {
 
     private RecyclerView itemRecyclerView;
 
-
     private MyOfferListAdapter myOfferListAdapter;
 
     private Integer userId;

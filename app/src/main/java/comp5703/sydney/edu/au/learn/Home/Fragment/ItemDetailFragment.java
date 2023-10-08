@@ -31,10 +31,22 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.kyleduo.switchbutton.SwitchButton;
 import com.squareup.picasso.Picasso;
+import com.youth.banner.Banner;
+import com.youth.banner.adapter.BannerImageAdapter;
+import com.youth.banner.config.IndicatorConfig;
+import com.youth.banner.holder.BannerImageHolder;
+import com.youth.banner.indicator.CircleIndicator;
+import com.youth.banner.listener.OnBannerListener;
+import com.youth.banner.transformer.RotateDownPageTransformer;
+import com.youth.banner.transformer.ScaleInTransformer;
+import com.youth.banner.transformer.ZoomOutPageTransformer;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,12 +66,11 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class ItemDetailFragment extends Fragment {
+public class ItemDetailFragment extends Fragment implements OnBannerListener<String> {
     private TextView itemDetailPrice;
     private Button confirmButton;
     private IOMessageClick listener;
     private Button send_offer_btn;
-    private ImageView ItemImage;
     LinearLayout hiddenLayout;
     private EditText optionNotes;
 
@@ -71,7 +82,6 @@ public class ItemDetailFragment extends Fragment {
     private RecyclerView offerList;
 
     private ProductOfferListAdapter productOfferListAdapter;
-
 
     private ImageView itemStatusImg;
     private ImageView itemCloseImg;
@@ -87,6 +97,8 @@ public class ItemDetailFragment extends Fragment {
     private TextView emptyText;
 
     private TextView setPrice;
+
+    private Banner imageBanner;
 
     @Nullable
     @Override
@@ -105,9 +117,9 @@ public class ItemDetailFragment extends Fragment {
         confirmButton = view.findViewById(R.id.confirm_button);
         send_offer_btn = view.findViewById(R.id.send_offer_btn);
         hiddenLayout = view.findViewById(R.id.hidden_layout);
-        ItemImage = view.findViewById(R.id.ItemImage);
         optionNotes = view.findViewById(R.id.optionNotes);
         confirmButton.setOnClickListener(this::sendOfferClick);
+        imageBanner = view.findViewById(R.id.banner);
 
         generalView = view.findViewById(R.id.generalView);
         offerList = view.findViewById(R.id.offerList);
@@ -155,6 +167,9 @@ public class ItemDetailFragment extends Fragment {
 
         send_offer_btn.setOnClickListener(this::submitOffer);
 
+
+
+
     }
 
 
@@ -186,6 +201,7 @@ public class ItemDetailFragment extends Fragment {
 
     }
 
+    // make offer
     private void handleResponseForMakeOffer(Response response, View view) {
         try {
             if (!response.isSuccessful()) {
@@ -218,6 +234,7 @@ public class ItemDetailFragment extends Fragment {
         }
     }
 
+    // 初始化切换按钮
     private void initializeSwitchListener() {
         SwitchButton.OnCheckedChangeListener listener = new SwitchButton.OnCheckedChangeListener() {
             @Override
@@ -229,6 +246,7 @@ public class ItemDetailFragment extends Fragment {
         switchButton.setOnCheckedChangeListener(listener);
     }
 
+    // 显示确认弹窗
     private void showConfirmationDialog(boolean isChecked) {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
@@ -272,6 +290,7 @@ public class ItemDetailFragment extends Fragment {
         });
     }
 
+    // 更新按钮颜色
     private void updateButtonColor(boolean isChecked) {
         int backColor;
         if (isChecked) {
@@ -282,6 +301,7 @@ public class ItemDetailFragment extends Fragment {
         switchButton.setBackColor(ColorStateList.valueOf(backColor));
     }
 
+    // 获取产品offer历史，如果你是buyer且发过offer
     private void getProductOfferHistory(Integer productId){
         // 在这里可以使用 productId 进行操作
         productOfferParameter productOfferParameter = new productOfferParameter();
@@ -300,7 +320,7 @@ public class ItemDetailFragment extends Fragment {
             }
         });
     }
-
+    // 获取产品offer历史，如果你是buyer且发过offer
     private void handleResponse2(Response response) {
 
         try {
@@ -340,6 +360,7 @@ public class ItemDetailFragment extends Fragment {
         }
     }
 
+    // 获取产品的详情
     private void getProductInformation(Integer productId) {
         // 在这里可以使用 productId 进行操作
         productDetailParameter productDetailParameter = new productDetailParameter();
@@ -358,7 +379,7 @@ public class ItemDetailFragment extends Fragment {
         });
     }
 
-
+    // 开始发送offer的点击，更改页面视图
     public void sendOfferClick(View view){
         hiddenLayout.setVisibility(View.VISIBLE); // 设置为 VISIBLE，使其显示
         confirmButton.setVisibility(View.GONE);
@@ -366,11 +387,17 @@ public class ItemDetailFragment extends Fragment {
         optionNotes.setVisibility(View.VISIBLE);
     }
 
+    @Override
+    public void OnBannerClick(String data, int position) {
+        Log.i("tag", "你点了第"+position+"张轮播图");
+    }
+
+
     public interface IOMessageClick{
         void onClick(String text);
     }
 
-
+    // 获取产品的详情接口的响应函数
     private void handleResponse(Response response) {
         try {
             if (!response.isSuccessful()) {
@@ -396,14 +423,20 @@ public class ItemDetailFragment extends Fragment {
                     @Override
                     public void run() {
                         itemDetailPrice.setText(Double.toString(product.getProductPrice()));
-                        Picasso.get()
-                                .load(imageURL+ product.getProductImage()) // 网络图片的URL
-                                .into(ItemImage);
+
+                    String  imageurl1 =  imageURL+ product.getProductImage();
+                    List<String> imgList = new ArrayList<>();
+                    imgList.add(imageurl1);
+                    imgList.add(imageurl1);
+                    imgList.add(imageurl1);
+
+                    loadBanner(imgList);
 //                        // 如果状态不在售卖且不属于卖家家页面
 //                        if (product.getPriceStatus()!=0 && product.getOwnerId().intValue() != userId){
 //                            itemStatusImg.setVisibility(View.GONE);
 //                            itemCloseImg.setVisibility(View.VISIBLE);
 //                        }
+
 
                     }
                 });
@@ -417,7 +450,25 @@ public class ItemDetailFragment extends Fragment {
         }
     }
 
+    private void loadBanner(List<String> imgList){
 
+        imageBanner.setAdapter(new BannerImageAdapter<String>(imgList) {
+                    @Override
+                    public void onBindView(BannerImageHolder holder, String data, int position, int size) {
+                        holder.imageView.setPadding(20, 20, 20, 20);
+                        //图片加载实现
+                        Glide.with(holder.itemView)
+                                .load(data)
+                                .apply(RequestOptions.bitmapTransform(new RoundedCorners(30)))
+                                .into(holder.imageView);
+                    }
+                })
+                .addBannerLifecycleObserver(this)//添加生命周期观察者
+                .addPageTransformer(new ScaleInTransformer())
+                .isAutoLoop(false)
+                .setBannerGalleryEffect(40,40,20)
+                .setIndicator(new CircleIndicator(getContext()));
+    }
     // 加载seller的商品的offer
     private void loadSellerView(boolean checked){
 
@@ -452,6 +503,7 @@ public class ItemDetailFragment extends Fragment {
 
     }
 
+    // 加载seller的商品的offer
     @SuppressLint("NotifyDataSetChanged")
     private void handleResponse3(Response response) {
         // set data to seller adapter

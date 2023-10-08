@@ -27,8 +27,8 @@
             android:layout_height="90dp"
             android:layout_gravity="end"
             android:paddingRight="10dp"
-            android:visibility="gone"
-            android:src="@drawable/img_20" />
+            android:src="@drawable/img_20"
+            android:visibility="gone" />
 
         <com.kyleduo.switchbutton.SwitchButton
             android:id="@+id/switch_button"
@@ -52,9 +52,8 @@
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:layout_weight="5"
             app:cardCornerRadius="10dp"
             app:cardElevation="5dp">
 
@@ -66,15 +65,14 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="5">
+                    android:layout_height="wrap_content">
 
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
-                        android:layout_weight="5"
+                        android:layout_weight="6"
                         android:orientation="vertical">
 
                         <TextView
@@ -86,11 +84,22 @@
                             android:textSize="23sp"
                             android:textStyle="bold" />
 
+
+                        <com.youth.banner.Banner
+                            android:id="@+id/banner"
+                            android:layout_width="match_parent"
+                            android:layout_height="250dp"
+                            android:clickable="true"
+                            app:banner_indicator_selected_color="#95F2EC"
+                            app:banner_radius="20dp"
+                          />
+
+
                         <TextView
                             android:id="@+id/itemDescription"
                             android:layout_width="match_parent"
-                            android:layout_height="200dp"
-                            android:layout_marginTop="10dp"
+                            android:layout_height="100dp"
+                            android:layout_marginTop="20dp"
                             android:paddingLeft="15dp"
                             android:text="We are proud to present the latest release in our product range - the ABC Bullion gold minted tablet range. Each tablet showcases the signature ABC Bullion squar "
                             android:textColor="@color/textColorSecondary"
@@ -98,13 +107,6 @@
                             android:textStyle="bold" />
 
                     </LinearLayout>
-
-                    <ImageView
-                        android:id="@+id/ItemImage"
-                        android:layout_width="0dp"
-                        android:layout_height="130dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_weight="2.5" />
 
 
                 </LinearLayout>
@@ -328,10 +330,10 @@
                     android:id="@+id/setPrice"
                     android:layout_width="110dp"
                     android:layout_height="40dp"
-                    android:paddingLeft="10dp"
                     android:layout_marginLeft="5dp"
                     android:background="@drawable/edittext_border"
                     android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
                     android:textStyle="bold" />
 
 

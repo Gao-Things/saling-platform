@@ -77,18 +77,16 @@ public class OfferReceivedListAdapter extends RecyclerView.Adapter<OfferReceived
             holder.AcceptButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // 1. resent click  0.reject click
                     mlistener.onClick(position, productOffer.getOfferId(), productOffer.getProductPrice());
                 }
             });
-
-//            holder.rejectClick.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    // 1. resent click  0.reject click
-//                    cancelClickListener.onClick(position, productOffer.getOfferId(), 1);
-//                }
-//            });
+            // 绑定拒绝事件
+            holder.rejectClick.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    cancelClickListener.onClick(position, productOffer.getOfferId(), productOffer.getProductPrice());
+                }
+            });
 
 
         }
@@ -131,8 +129,8 @@ public class OfferReceivedListAdapter extends RecyclerView.Adapter<OfferReceived
             myOfferTime = itemView.findViewById(R.id.myOfferTime);
 
             AcceptButton = itemView.findViewById(R.id.AcceptButton);
-            rejectClick = itemView.findViewById(R.id.AcceptButton);
-            contactClick = itemView.findViewById(R.id.AcceptButton);
+            rejectClick = itemView.findViewById(R.id.rejectClick);
+            contactClick = itemView.findViewById(R.id.contactClick);
 
 
         }
@@ -143,7 +141,7 @@ public class OfferReceivedListAdapter extends RecyclerView.Adapter<OfferReceived
     }
 
     public interface OnCancelClickListener{
-        void onClick(int pos, Integer itemId, int i);
+        void onClick(int pos, Integer itemId, double productPrice);
     }
 
     public List<ProductOffer> getRecordList() {
