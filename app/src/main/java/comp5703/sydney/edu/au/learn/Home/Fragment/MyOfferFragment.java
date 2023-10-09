@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -54,6 +56,15 @@ public class MyOfferFragment extends Fragment {
     private String token;
 
     private Fragment itemDetailFragment;
+
+
+    MaterialCheckBox checkBoxAccepted;
+    MaterialCheckBox checkBoxRejected;
+    MaterialCheckBox checkBoxCancelled;
+    MaterialCheckBox checkBoxPending;
+    MaterialCheckBox checkBoxExpired;
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -65,8 +76,6 @@ public class MyOfferFragment extends Fragment {
         userId = sharedPreferences.getInt("userId", 9999);
         token = sharedPreferences.getString("token", "null");
 
-        // get offer list from back-end
-        getOfferList();
         return rootView;
     }
 
@@ -74,8 +83,30 @@ public class MyOfferFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        itemRecyclerView = view.findViewById(R.id.list_main);
+        checkBoxAccepted = view.findViewById(R.id.checkBoxAccepted);
+        checkBoxRejected = view.findViewById(R.id.checkBoxRejected);
+        checkBoxCancelled = view.findViewById(R.id.checkBoxCancelled);
+        checkBoxPending = view.findViewById(R.id.checkBoxPending);
+        checkBoxExpired = view.findViewById(R.id.checkBoxExpired);
 
+
+        CompoundButton.OnCheckedChangeListener listener = new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                requestBackend();
+            }
+        };
+
+        checkBoxAccepted.setOnCheckedChangeListener(listener);
+        checkBoxRejected.setOnCheckedChangeListener(listener);
+        checkBoxCancelled.setOnCheckedChangeListener(listener);
+        checkBoxPending.setOnCheckedChangeListener(listener);
+        checkBoxExpired.setOnCheckedChangeListener(listener);
+
+
+
+        itemRecyclerView = view.findViewById(R.id.list_main);
+        itemRecyclerView.setNestedScrollingEnabled(false);
         // 创建并设置RecyclerView的LayoutManager
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         itemRecyclerView.setLayoutManager(layoutManager);
@@ -84,13 +115,37 @@ public class MyOfferFragment extends Fragment {
         myOfferListAdapter = new MyOfferListAdapter(getContext(),new ArrayList<Offer>(),clickListener, onCancelClickListener);
         itemRecyclerView.setAdapter(myOfferListAdapter);
 
+        // get offer list from back-end
+        requestBackend();
 
     }
 
 
-    private void getOfferList(){
+    private void requestBackend() {
+
+        boolean accepted = checkBoxAccepted.isChecked();
+        boolean rejected = checkBoxRejected.isChecked();
+        boolean cancelled = checkBoxCancelled.isChecked();
+        boolean pending = checkBoxPending.isChecked();
+        boolean expired = checkBoxExpired.isChecked();
+
+        // send request to filter the offer
+        getOfferList(accepted,rejected,cancelled,pending,expired);
+    }
+
+
+    private void getOfferList(Boolean accepted,
+                              Boolean rejected,
+                              Boolean cancelled,
+                              Boolean pending,
+                              Boolean expired){
         OfferParameter offerParameter = new OfferParameter();
         offerParameter.setUserId(userId);
+        offerParameter.setAccepted(accepted);
+        offerParameter.setCancelled(cancelled);
+        offerParameter.setPending(pending);
+        offerParameter.setRejected(rejected);
+        offerParameter.setExpired(expired);
 
         NetworkUtils.getWithParamsRequest( offerParameter, "/normal/getMyOfferList", token, new Callback() {
             @Override
@@ -254,7 +309,7 @@ public class MyOfferFragment extends Fragment {
                     @SuppressLint("SetTextI18n")
                     @Override
                     public void run() {
-                        getOfferList();
+                        requestBackend();
                         Snackbar.make(rootView, "Your offer has been canceled", Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
 

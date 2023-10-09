@@ -455,19 +455,24 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
         imageBanner.setAdapter(new BannerImageAdapter<String>(imgList) {
                     @Override
                     public void onBindView(BannerImageHolder holder, String data, int position, int size) {
-                        holder.imageView.setPadding(20, 20, 20, 20);
                         //图片加载实现
                         Glide.with(holder.itemView)
                                 .load(data)
                                 .apply(RequestOptions.bitmapTransform(new RoundedCorners(30)))
                                 .into(holder.imageView);
+
+                        holder.imageView.setPadding(0, 40, 0, 40);
+
                     }
+
+
                 })
                 .addBannerLifecycleObserver(this)//添加生命周期观察者
                 .addPageTransformer(new ScaleInTransformer())
-                .isAutoLoop(false)
-                .setBannerGalleryEffect(40,40,20)
+                .isAutoLoop(true)
+                .setBannerGalleryEffect(40,40,30)
                 .setIndicator(new CircleIndicator(getContext()));
+
     }
     // 加载seller的商品的offer
     private void loadSellerView(boolean checked){

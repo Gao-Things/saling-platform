@@ -20,7 +20,7 @@
     <string name="setNewPassword">Enter your new password below and check the hint while setting it</string>
 
     <!-- 在res/values/strings.xml中 -->
-    <string name="underlined_text"><u>Cancel Offer</u></string>
+    <string name="underlined_text"><u>Cancel</u></string>
 
     <string name="reject_text"><u>Reject Offer</u></string>
     <!-- 在res/values/strings.xml中 -->

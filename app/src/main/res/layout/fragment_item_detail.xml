@@ -90,7 +90,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="250dp"
                             android:clickable="true"
-                            app:banner_indicator_selected_color="#95F2EC"
+                            app:banner_indicator_selected_color="@color/darkGreen"
+                            app:banner_indicator_marginTop = "40dp"
+                            app:banner_indicator_gravity ="center"
+                            app:banner_indicator_normal_color = "@color/borderGray"
                             app:banner_radius="20dp"
                           />
 

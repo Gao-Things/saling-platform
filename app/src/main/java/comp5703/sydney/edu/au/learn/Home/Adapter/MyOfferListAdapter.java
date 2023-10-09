@@ -44,7 +44,7 @@ public class MyOfferListAdapter extends RecyclerView.Adapter<MyOfferListAdapter.
         return new MyOfferListAdapter.LinearViewHolder(LayoutInflater.from(mcontext).inflate(R.layout.layout_myoffer_item, parent, false));
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n"})
     @Override
     public void onBindViewHolder(@NonNull LinearViewHolder holder, @SuppressLint("RecyclerView") int position) {
 
@@ -70,26 +70,43 @@ public class MyOfferListAdapter extends RecyclerView.Adapter<MyOfferListAdapter.
                     .load(imageURL+product.getProductImage()) // 网络图片的URL
                     .into(holder.itemImage);
 
-            if (offerStatus == 1){
-                holder.offerAccept.setVisibility(View.VISIBLE);
-
-                holder.offerIsProcessing.setVisibility(View.GONE);
-                holder.offerReject.setVisibility(View.GONE);
-            }
             if (offerStatus==0){
-                holder.offerIsProcessing.setVisibility(View.VISIBLE);
+                holder.offerStatus.setText("Pending");
+                holder.offerStatus.setTextColor(mcontext.getResources().getColor(R.color.yellow));
+                holder.resentButton.setVisibility(View.VISIBLE);
+                holder.cancelClick.setVisibility(View.VISIBLE);
 
-                holder.offerAccept.setVisibility(View.GONE);
-                holder.offerReject.setVisibility(View.GONE);
+            }
+            if (offerStatus == 1){
+                holder.offerStatus.setText("Accepted");
+                holder.offerStatus.setTextColor(mcontext.getResources().getColor(R.color.Green));
+                holder.resentButton.setVisibility(View.INVISIBLE);
+                holder.cancelClick.setVisibility(View.INVISIBLE);
+
             }
 
             if (offerStatus==2){
-                holder.offerReject.setVisibility(View.VISIBLE );
+                holder.offerStatus.setText("Rejected");
+                holder.offerStatus.setTextColor(mcontext.getResources().getColor(R.color.red));
+                holder.resentButton.setVisibility(View.VISIBLE);
+                holder.cancelClick.setVisibility(View.VISIBLE);
 
-                holder.offerAccept.setVisibility(View.GONE);
-                holder.offerIsProcessing.setVisibility(View.GONE);
             }
 
+            if (offerStatus==3){
+                holder.offerStatus.setText("Cancelled");
+                holder.offerStatus.setTextColor(mcontext.getResources().getColor(R.color.black));
+                holder.resentButton.setVisibility(View.INVISIBLE);
+                holder.cancelClick.setVisibility(View.INVISIBLE);
+
+            }
+
+
+            if (offerStatus==4){
+                holder.offerStatus.setText("Expired");
+                holder.offerStatus.setTextColor(mcontext.getResources().getColor(R.color.textColorSecondary));
+
+            }
             // 绑定点击事件
             holder.resentButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -131,15 +148,13 @@ public class MyOfferListAdapter extends RecyclerView.Adapter<MyOfferListAdapter.
 
         private TextView myOfferTime;
 
-        private ImageView offerAccept;
 
-        private LinearLayout offerIsProcessing;
-
-        private ImageView offerReject;
 
         private MaterialButton resentButton;
 
         private TextView cancelClick;
+
+        private TextView offerStatus;
 
         public LinearViewHolder(View itemView){
             super(itemView);
@@ -147,12 +162,11 @@ public class MyOfferListAdapter extends RecyclerView.Adapter<MyOfferListAdapter.
             itemPrice = itemView.findViewById(R.id.itemPrice);
             itemImage = itemView.findViewById(R.id.ItemImage);
             myOfferTime = itemView.findViewById(R.id.myOfferTime);
-            offerAccept = itemView.findViewById(R.id.offerAccept);
-            offerIsProcessing = itemView.findViewById(R.id.offerIsProcessing);
-            offerReject = itemView.findViewById(R.id.offerReject);
 
             resentButton = itemView.findViewById(R.id.resentButton);
             cancelClick = itemView.findViewById(R.id.cancelClick);
+
+            offerStatus = itemView.findViewById(R.id.offerStatus);
         }
     }
 

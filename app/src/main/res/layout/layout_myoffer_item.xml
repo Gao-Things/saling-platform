@@ -5,15 +5,16 @@
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="vertical">
+
     <TextView
         android:id="@+id/myOfferTime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:text="Sep 11 2023 15:00"
         android:layout_marginLeft="10dp"
-        android:textColor="@color/textColorSecondary"/>
+        android:text="Sep 11 2023 15:00"
+        android:textColor="@color/textColorSecondary"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,115 +29,137 @@
             android:layout_weight="4"
             app:cardCornerRadius="10dp"
             app:cardElevation="5dp"
-            app:strokeColor="@color/darkGreen"
-            app:strokeWidth="2dp">
+            >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-              >
+                android:orientation="horizontal">
 
+<!--                左侧图片-->
                 <ImageView
                     android:id="@+id/ItemImage"
                     android:layout_width="0dp"
                     android:layout_height="100dp"
-                    android:layout_weight="1.3"
+                    android:layout_weight="1.5"
                     android:paddingLeft="15dp"
                     android:src="@drawable/img_16" />
 
+<!--                右侧信息-->
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="100dp"
-                    android:gravity="center_vertical"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="2"
-                    android:orientation="vertical">
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:layout_weight="4">
 
-                    <TextView
-                        android:id="@+id/itemName"
-                        android:layout_width="wrap_content"
+<!--                    上边-->
+                    <LinearLayout
                         android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:paddingLeft="18dp"
-                        android:text="item1"
-                        android:textSize="21sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/itemPrice"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:paddingLeft="17dp"
+                        android:layout_width="match_parent"
+                        android:layout_gravity="center"
                         android:layout_marginTop="5dp"
-                        android:layout_width="wrap_content"
-                        android:text="$5"
-                        android:textColor="@color/red"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/itemName"
+                            android:layout_width="0dp"
+                            android:layout_weight="2"
+                            android:gravity="center_vertical"
+                            android:layout_height="match_parent"
+                            android:paddingLeft="13dp"
+                            android:text="item1"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/itemPurity"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:layout_height="match_parent"
+                            android:paddingLeft="5dp"
+                            android:text="24K"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/itemPrice"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:layout_height="match_parent"
+                            android:text="$5"
+                            android:textColor="@color/red"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+
+<!--                    下边-->
+                    <LinearLayout
+                        android:id="@+id/myOfferStatus"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        >
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/resentButton"
+                            style="@style/Widget.MaterialComponents.Button"
+                            android:layout_width="0dp"
+                            android:layout_weight="0.9"
+                            android:layout_height="40dp"
+                            android:gravity="center"
+                            android:text="Resent"
+                            android:textSize="12sp"
+                            android:visibility="invisible"
+                            app:backgroundTint="@color/darkGreen"
+                            app:cornerRadius="12dp" />
+
+                        <TextView
+                            android:id="@+id/cancelClick"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:layout_height="match_parent"
+                            android:paddingLeft="18dp"
+                            android:textSize="15sp"
+                            android:text="@string/underlined_text"
+                            android:visibility="invisible"
+                            android:textColor="@android:color/black" />
+
+                        <TextView
+                            android:id="@+id/offerStatus"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="match_parent"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="18dp"
+                            android:textSize="17sp"
+                            android:text="Pending"
+                            android:textStyle="bold"
+                            android:textColor="@color/yellow" />
+
+                    </LinearLayout>
+
+
 
                 </LinearLayout>
+
+
+
+
 
             </LinearLayout>
 
 
         </com.google.android.material.card.MaterialCardView>
-
-        <LinearLayout
-            android:id="@+id/myOfferStatus"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:gravity="center_vertical"
-            android:orientation="vertical"
-            android:layout_weight="1.5"
-            android:paddingRight="10dp">
-
-            <ImageView
-                android:id="@+id/offerAccept"
-                android:visibility="gone"
-                android:layout_width="match_parent"
-                android:padding="5dp"
-                android:layout_height="match_parent"
-                android:src="@drawable/img_19" />
-
-            <ImageView
-                android:id="@+id/offerReject"
-                android:visibility="gone"
-                android:layout_width="match_parent"
-                android:padding="8dp"
-                android:layout_height="match_parent"
-                android:src="@drawable/reject" />
-            <LinearLayout
-                android:id="@+id/offerIsProcessing"
-                android:visibility="gone"
-                android:layout_width="match_parent"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:layout_height="match_parent">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/resentButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Resent Offer"
-                    style="@style/Widget.MaterialComponents.Button"
-                    app:cornerRadius="12dp"
-                    app:backgroundTint="@color/darkGreen" />
-
-                <TextView
-                    android:id="@+id/cancelClick"
-                    android:layout_marginLeft="6dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/underlined_text"
-                    android:textColor="@android:color/black"/>
-
-            </LinearLayout>
-
-        </LinearLayout>
 
 
     </LinearLayout>
