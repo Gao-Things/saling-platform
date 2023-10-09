@@ -23,6 +23,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -76,12 +77,10 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
 
     private Integer userId;
     private String token;
+    private View rootView;
 
     private LinearLayout generalView;
 
-    private RecyclerView offerList;
-
-    private ProductOfferListAdapter productOfferListAdapter;
 
     private ImageView itemStatusImg;
     private ImageView itemCloseImg;
@@ -94,18 +93,18 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
 
     private Integer productId;
 
-    private TextView emptyText;
-
     private TextView setPrice;
 
     private Banner imageBanner;
 
+    private Button sellerGetOfferBtn;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_item_detail, container, false);
+        rootView = inflater.inflate(R.layout.fragment_item_detail, container, false);
 
-        return view;
+        return rootView;
 
     }
 
@@ -122,22 +121,18 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
         imageBanner = view.findViewById(R.id.banner);
 
         generalView = view.findViewById(R.id.generalView);
-        offerList = view.findViewById(R.id.offerList);
+
         itemStatusImg = view.findViewById(R.id.itemStatusImg);
         itemCloseImg = view.findViewById(R.id.itemCloseImg);
         offerHistory = view.findViewById(R.id.offerHistory);
         offeredPrice = view.findViewById(R.id.offeredPrice);
+        sellerGetOfferBtn = view.findViewById(R.id.sellerGetOfferBtn);
         // 创建并设置RecyclerView的LayoutManager
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        offerList.setLayoutManager(layoutManager);
 
 
         setPrice = view.findViewById(R.id.setPrice);
 
-        // 创建并设置RecyclerView的Adapter
-        productOfferListAdapter = new ProductOfferListAdapter(getContext(),new ArrayList<Offer>(),clickListener);
-        offerList.setAdapter(productOfferListAdapter);
-        emptyText = view.findViewById(R.id.emptyText);
         // get SharedPreferences instance
         SharedPreferences sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences("comp5703", Context.MODE_PRIVATE);
 
@@ -166,10 +161,17 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
         initializeSwitchListener();
 
         send_offer_btn.setOnClickListener(this::submitOffer);
+        sellerGetOfferBtn.setOnClickListener(this::showOfferHistory);
 
+    }
 
-
-
+    private void showOfferHistory(View view) {
+        // 展开bottom view
+        MyBottomSheetDialogFragment bottomSheet = MyBottomSheetDialogFragment.newInstance();
+        Bundle args = new Bundle();
+        args.putInt("productId", productId);
+        bottomSheet.setArguments(args);
+        bottomSheet.show(getParentFragmentManager(), bottomSheet.getTag());
     }
 
 
@@ -474,92 +476,26 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
                 .setIndicator(new CircleIndicator(getContext()));
 
     }
+
     // 加载seller的商品的offer
     private void loadSellerView(boolean checked){
 
+        // 展示商品的offer
+        showOfferHistory(rootView);
         // 在主线程中更新UI
         Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
             @SuppressLint("SetTextI18n")
             @Override
             public void run() {
-
+                itemStatusImg.setVisibility(View.GONE);
                 generalView.setVisibility(View.GONE);
                 switchButton.setVisibility(View.VISIBLE);
-                itemStatusImg.setVisibility(View.GONE);
+                sellerGetOfferBtn.setVisibility(View.VISIBLE);
 
             }
         });
 
-        // send request to get the seller item
-        productParameter productParameter = new productParameter();
-        productParameter.setProductId(productId);
 
-        NetworkUtils.getWithParamsRequest( productParameter, "/normal/getProductOfferList", token, new Callback() {
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                handleResponse3(response);
-            }
-
-            @Override
-            public void onFailure(Call call, IOException e) {
-                handleFailure(e);
-            }
-        });
-
-    }
-
-    // 加载seller的商品的offer
-    @SuppressLint("NotifyDataSetChanged")
-    private void handleResponse3(Response response) {
-        // set data to seller adapter
-        try {
-            if (!response.isSuccessful()) {
-                Log.d(TAG, "Request not successful");
-                return;
-            }
-            String responseBody = response.body().string();
-            JSONObject jsonObject = JSONObject.parseObject(responseBody);
-            int code = jsonObject.getIntValue("code");
-
-            if (code == 200) {
-                JSONArray dataArray = jsonObject.getJSONArray("data");
-
-                if (!dataArray.isEmpty()) {
-
-                    List<Offer> OfferList = dataArray.toJavaList(Offer.class);
-                    // 更新Adapter的数据
-                    productOfferListAdapter.setRecordList(OfferList);
-
-                    // 在主线程中更新UI
-                    Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
-                        @SuppressLint("SetTextI18n")
-                        @Override
-                        public void run() {
-                            offerList.setVisibility(View.VISIBLE);
-                            // 在UI线程上更新Adapter的数据
-                            productOfferListAdapter.notifyDataSetChanged();
-                        }
-                    });
-                }else {
-                    // seller offer为空在主线程中更新UI
-                    Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
-                        @SuppressLint("SetTextI18n")
-                        @Override
-                        public void run() {
-                            emptyText.setVisibility(View.VISIBLE);
-                        }
-                    });
-                }
-
-
-            } else {
-                Log.d(TAG, "Error response code: " + code);
-            }
-        } catch (IOException e) {
-            Log.e(TAG, "IOException: " + e.getMessage());
-        } catch (JSONException e) {
-            Log.e(TAG, "JSONException: " + e.getMessage());
-        }
     }
 
 
@@ -582,11 +518,5 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
     }
 
 
-    ProductOfferListAdapter.OnItemClickListener clickListener = new ProductOfferListAdapter.OnItemClickListener() {
-        @Override
-        public void onClick(int pos, Integer itemId) {
-
-        }
-    };
 
 }

@@ -90,12 +90,11 @@
                             android:layout_width="match_parent"
                             android:layout_height="250dp"
                             android:clickable="true"
+                            app:banner_indicator_gravity="center"
+                            app:banner_indicator_marginTop="40dp"
+                            app:banner_indicator_normal_color="@color/borderGray"
                             app:banner_indicator_selected_color="@color/darkGreen"
-                            app:banner_indicator_marginTop = "40dp"
-                            app:banner_indicator_gravity ="center"
-                            app:banner_indicator_normal_color = "@color/borderGray"
-                            app:banner_radius="20dp"
-                          />
+                            app:banner_radius="20dp" />
 
 
                         <TextView
@@ -354,7 +353,6 @@
                 android:textStyle="bold"
                 android:visibility="gone" />
 
-
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/confirm_button"
                 android:layout_width="130dp"
@@ -382,24 +380,15 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/emptyText"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/sellerGetOfferBtn"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:gravity="center_horizontal"
-            android:text="This product has not received an offer yet"
-            android:textColor="@color/darkGreen"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:visibility="gone" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/offerList"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
-
+            android:visibility="gone"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/custom_button2_background"
+            android:text="Product offer History"
+            android:textColor="@color/lightwhite" />
 
     </LinearLayout>
 

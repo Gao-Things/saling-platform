@@ -28,8 +28,7 @@
             android:layout_weight="4"
             app:cardCornerRadius="10dp"
             app:cardElevation="5dp"
-            app:strokeColor="@color/darkGreen"
-            app:strokeWidth="2dp">
+           >
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -110,56 +109,58 @@
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/myOfferStatus"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:layout_weight="1.5"
+                    android:paddingLeft="20dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:layout_height="match_parent">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/AcceptButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Accept"
+                            android:textSize="14sp"
+                            app:cornerRadius="7dp"
+                            app:backgroundTint="@color/darkGreen" />
+
+                        <TextView
+                            android:id="@+id/rejectClick"
+                            android:layout_marginLeft="6dp"
+                            android:layout_marginTop="4dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/reject_text"
+                            android:textColor="@android:color/black"/>
+
+                        <TextView
+                            android:id="@+id/contactClick"
+                            android:layout_marginLeft="6dp"
+                            android:layout_marginTop="4dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/contact_text"
+                            android:textColor="@color/primaryColor"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
             </LinearLayout>
 
 
         </com.google.android.material.card.MaterialCardView>
 
-        <LinearLayout
-            android:id="@+id/myOfferStatus"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:gravity="center_vertical"
-            android:orientation="vertical"
-            android:layout_weight="1.5"
-            android:paddingRight="10dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:layout_height="match_parent">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/AcceptButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Accept"
-                    android:textSize="14sp"
-                    app:cornerRadius="7dp"
-                    app:backgroundTint="@color/darkGreen" />
-
-                <TextView
-                    android:id="@+id/rejectClick"
-                    android:layout_marginLeft="6dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/reject_text"
-                    android:textColor="@android:color/black"/>
-
-                <TextView
-                    android:id="@+id/contactClick"
-                    android:layout_marginLeft="6dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/contact_text"
-                    android:textColor="@color/primaryColor"/>
-
-            </LinearLayout>
-
-        </LinearLayout>
 
 
     </LinearLayout>
