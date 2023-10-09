@@ -1,13 +1,17 @@
 package com.usyd.capstone.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.usyd.capstone.common.DTO.Notification;
 import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.common.compents.ChatEndpoint;
 import com.usyd.capstone.common.compents.JwtToken;
+import com.usyd.capstone.common.compents.NotificationServer;
 import com.usyd.capstone.entity.NormalUser;
 import com.usyd.capstone.entity.Offer;
 import com.usyd.capstone.entity.PriceThreshold;
 import com.usyd.capstone.entity.Product;
+import com.usyd.capstone.entity.abstractEntities.User;
 import com.usyd.capstone.mapper.NormalUserMapper;
 import com.usyd.capstone.mapper.OfferMapper;
 import com.usyd.capstone.mapper.PriceThresholdMapper;
@@ -234,6 +238,27 @@ public class NormalUserServiceImpl implements NormalUserService {
         if(product.getOwnerId() != sellerId) {
             return Result.fail("Only the product owner can accept the offer!");
         }
+
+
+        // push message to buyer
+        Long buyerId = offer.getBuyerId();
+
+
+        Notification notification = new Notification();
+
+        notification.setOffer(offer);
+
+        // 发送给买家
+        notification.setSendUserType(2);
+
+        // 通知买家offer被接受
+        notification.setMessageType(1);
+
+        String result = JSONObject.toJSONString(notification);
+        // send message to buyer
+        NotificationServer.sendMessage(result, buyerId.intValue());
+
+
 
         offer.setOfferStatus(1);
         offerMapper.updateById(offer);
