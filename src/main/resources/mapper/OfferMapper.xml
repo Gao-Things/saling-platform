@@ -15,6 +15,6 @@
         FROM offer
         LEFT JOIN product
         ON offer.product_id = product.id
-        WHERE product.owner_id = #{ownerId}
+        WHERE product.owner_id = #{ownerId} AND offer.offer_status = 0
     </select>
 </mapper>

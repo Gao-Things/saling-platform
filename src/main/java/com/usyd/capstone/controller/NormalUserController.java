@@ -29,11 +29,30 @@ public class NormalUserController {
 
     // 获取用户所有的offer list
     @GetMapping("/getMyOfferList")
-    public Result getMyOfferList(@RequestParam("userId") Integer userID){
+    public Result getMyOfferList(@ModelAttribute OfferFilter offerFilter){
 
-        List<Offer> userOfferList = offerService.list(
-                new QueryWrapper<Offer>().eq("buyer_id", userID)
-        );
+
+        QueryWrapper<Offer> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("buyer_id", offerFilter.getUserId());
+
+        if (Boolean.TRUE.equals(!offerFilter.getPending())) {
+            queryWrapper.ne("offer_status", 0);
+        }
+        if (Boolean.TRUE.equals(!offerFilter.getAccepted())) {
+            queryWrapper.ne("offer_status", 1);
+        }
+        if (Boolean.TRUE.equals(!offerFilter.getRejected())) {
+            queryWrapper.ne("offer_status", 2);
+        }
+        if (Boolean.TRUE.equals(!offerFilter.getCancelled())) {
+            queryWrapper.ne("offer_status", 3);
+        }
+        if (Boolean.TRUE.equals(!offerFilter.getExpired())) {
+            queryWrapper.ne("offer_status", 4);
+        }
+
+
+        List<Offer> userOfferList = offerService.list(queryWrapper);
 
         return Result.suc(userOfferList);
     }
@@ -48,7 +67,7 @@ public class NormalUserController {
     @GetMapping("/getProductOfferList")
     public Result getProductOfferList(@RequestParam("productId") Integer productId){
         List<Offer> productOfferList = offerService.list(
-                new QueryWrapper<Offer>().eq("product_id", productId)
+                new QueryWrapper<Offer>().eq("product_id", productId).ne("offer_status", 3)
         );
 
         return Result.suc(productOfferList);
@@ -61,6 +80,7 @@ public class NormalUserController {
         List<Offer> productOfferList = offerService.list(
                 new QueryWrapper<Offer>()
                         .eq("product_id", productId)
+                        .ne("offer_status", 3)
                         .eq("buyer_id", userId)
                         .orderByDesc("timestamp")
                         .last("LIMIT 1")
