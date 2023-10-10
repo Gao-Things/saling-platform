@@ -7,7 +7,9 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,6 +17,8 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.widget.TextView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.Objects;
 
 import comp5703.sydney.edu.au.learn.Home.Adapter.FragmentOfferAdapter;
 import comp5703.sydney.edu.au.learn.Home.Fragment.ItemDetailFragment;
@@ -28,11 +32,19 @@ import comp5703.sydney.edu.au.learn.service.MyService;
 
 public class HomeUseActivity extends AppCompatActivity implements ItemDetailFragment.IOMessageClick{
     private static final int REQUEST_CODE_OVERLAY_PERMISSION = 123;
+    private Integer userId;
     @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_use);
+
+
+        SharedPreferences sharedPreferences = this.getSharedPreferences("comp5703", Context.MODE_PRIVATE);
+
+        // get global userID
+        userId = sharedPreferences.getInt("userId", 9999);
+
 
         Toolbar toolbar = findViewById(R.id.simple_toolbar);
         setSupportActionBar(toolbar);
@@ -66,6 +78,8 @@ public class HomeUseActivity extends AppCompatActivity implements ItemDetailFrag
         // 默认加载一个Fragment
         loadFragment(new ItemListFragment());
 
+        // 创建通知service
+        createNotification();
 
     }
 
@@ -77,6 +91,7 @@ public class HomeUseActivity extends AppCompatActivity implements ItemDetailFrag
     }
 
 
+    // 开启websocket连接
     private void createNotification() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
@@ -84,6 +99,7 @@ public class HomeUseActivity extends AppCompatActivity implements ItemDetailFrag
             startActivityForResult(intent, REQUEST_CODE_OVERLAY_PERMISSION);
         }else {
             Intent serviceIntent = new Intent(this, MyService.class);
+            serviceIntent.putExtra("userId", userId);
             startService(serviceIntent);
         }
 
@@ -113,8 +129,6 @@ public class HomeUseActivity extends AppCompatActivity implements ItemDetailFrag
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                // 创建通知
-                createNotification();
             }
         }, delayMillis);
     }

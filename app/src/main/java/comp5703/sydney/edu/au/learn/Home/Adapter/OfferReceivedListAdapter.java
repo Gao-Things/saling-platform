@@ -114,7 +114,7 @@ public class OfferReceivedListAdapter extends RecyclerView.Adapter<OfferReceived
         // 绑定状态按钮
         private MaterialButton AcceptButton;
 
-        private TextView rejectClick;
+        private MaterialButton rejectClick;
 
         private TextView contactClick;
 
@@ -130,7 +130,6 @@ public class OfferReceivedListAdapter extends RecyclerView.Adapter<OfferReceived
 
             AcceptButton = itemView.findViewById(R.id.AcceptButton);
             rejectClick = itemView.findViewById(R.id.rejectClick);
-            contactClick = itemView.findViewById(R.id.contactClick);
 
 
         }

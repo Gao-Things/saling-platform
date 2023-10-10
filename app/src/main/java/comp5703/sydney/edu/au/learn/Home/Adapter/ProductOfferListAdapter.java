@@ -13,6 +13,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.card.MaterialCardView;
+
 import java.util.List;
 
 import comp5703.sydney.edu.au.learn.DTO.Offer;
@@ -48,6 +50,9 @@ public class ProductOfferListAdapter extends RecyclerView.Adapter<ProductOfferLi
             // 获取Product object
             Product product = recordList.get(position).getProduct();
 
+            // get offer status
+            Integer offerStatus = recordList.get(position).getOfferStatus();
+
             // set offer price
             holder.offerPrice.setText(String.valueOf(recordList.get(position).getPrice()));
 
@@ -63,6 +68,32 @@ public class ProductOfferListAdapter extends RecyclerView.Adapter<ProductOfferLi
                     mlistener.onClick(position, product.getId());
                 }
             });
+
+
+
+            if (offerStatus==0){
+                holder.offerStatus.setText("Pending");
+                holder.offerStatus.setTextColor(mcontext.getResources().getColor(R.color.yellow));
+                holder.sellerOfferCard.setCardBackgroundColor(mcontext.getResources().getColor(R.color.yellow));
+
+            }
+            if (offerStatus == 1){
+                holder.offerStatus.setText("Accepted");
+                holder.offerStatus.setTextColor(mcontext.getResources().getColor(R.color.Green));
+                holder.sellerOfferCard.setCardBackgroundColor(mcontext.getResources().getColor(R.color.Green));
+            }
+
+            if (offerStatus==2){
+                holder.offerStatus.setText("Rejected");
+                holder.offerStatus.setTextColor(mcontext.getResources().getColor(R.color.red));
+                holder.sellerOfferCard.setCardBackgroundColor(mcontext.getResources().getColor(R.color.red));
+            }
+
+            if (offerStatus==3){
+                holder.offerStatus.setText("Cancelled");
+                holder.offerStatus.setTextColor(mcontext.getResources().getColor(R.color.black));
+                holder.sellerOfferCard.setCardBackgroundColor(mcontext.getResources().getColor(R.color.black));
+            }
         }
 
 
@@ -79,17 +110,20 @@ public class ProductOfferListAdapter extends RecyclerView.Adapter<ProductOfferLi
 
         private TextView offerPrice;
 
-        private TextView buyerType;
+        private TextView offerStatus;
 
         private TextView offerTime;
+
+        private MaterialCardView sellerOfferCard;
 
 
 
         public LinearViewHolder(View itemView){
             super(itemView);
             offerPrice = itemView.findViewById(R.id.offerPrice);
-            buyerType = itemView.findViewById(R.id.buyerType);
+            offerStatus = itemView.findViewById(R.id.offerStatus);
             offerTime = itemView.findViewById(R.id.offerTime);
+            sellerOfferCard = itemView.findViewById(R.id.sellerOfferCard);
         }
     }
 

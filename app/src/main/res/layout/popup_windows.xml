@@ -33,10 +33,11 @@
                 android:textColor="@color/black"
                 android:textSize="17sp"
                 android:paddingLeft="4dp"
-                android:text="Bitcoin"/>
+                android:text="GGBao"/>
         </LinearLayout>
 
         <TextView
+            android:id="@+id/notificationTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
@@ -46,6 +47,7 @@
             android:textSize="17sp"
             android:text="Hello chloe, your item...."/>
         <TextView
+            android:id="@+id/content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
