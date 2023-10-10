@@ -16,15 +16,16 @@
             android:id="@+id/itemStatusImg"
             android:layout_width="100dp"
             android:layout_height="0dp"
+            android:layout_weight="1"
             android:layout_gravity="end"
-            android:layout_weight="0.6"
             android:paddingRight="10dp"
             android:src="@drawable/img_17" />
 
         <ImageView
             android:id="@+id/itemCloseImg"
-            android:layout_width="130dp"
-            android:layout_height="90dp"
+            android:layout_width="100dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:layout_gravity="end"
             android:paddingRight="10dp"
             android:src="@drawable/img_20"
@@ -193,7 +194,7 @@
                             android:layout_height="0dp"
                             android:layout_weight="1"
                             android:gravity="end"
-                            android:text="Weight"
+                            android:text="Karat"
                             android:textColor="@color/textColorSecondary"
                             android:textSize="17sp" />
 

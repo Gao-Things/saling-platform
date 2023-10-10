@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.view.View;
 import android.widget.TextView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -26,6 +27,7 @@ import comp5703.sydney.edu.au.learn.Home.Fragment.ItemListEditFragment;
 import comp5703.sydney.edu.au.learn.Home.Fragment.ItemListFragment;
 import comp5703.sydney.edu.au.learn.Home.Fragment.MyOfferFragment;
 import comp5703.sydney.edu.au.learn.Home.Fragment.OfferContainerFragment;
+import comp5703.sydney.edu.au.learn.Home.Fragment.ProfileFragment;
 import comp5703.sydney.edu.au.learn.Home.Fragment.SellFragment;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.service.MyService;
@@ -57,18 +59,22 @@ public class HomeUseActivity extends AppCompatActivity implements ItemDetailFrag
                 case R.id.navigation_home:
                     loadFragment(new ItemListFragment());
                     toolbar_title.setText("Home");  // 使用自定义标题
+                    toolbar.setVisibility(View.VISIBLE); // 显示Toolbar
                     return true;
                 case R.id.navigation_sell:
                     loadFragment(new SellFragment());
                     toolbar_title.setText("Selling An Item");  // 使用自定义标题
+                    toolbar.setVisibility(View.VISIBLE); // 显示Toolbar
                     return true;
                 case R.id.navigation_notifications:
                     loadFragment(new ItemDetailFragment());
                     toolbar_title.setText("Notifications");  // 使用自定义标题
+                    toolbar.setVisibility(View.VISIBLE); // 显示Toolbar
                     return true;
                 case R.id.profile:
-                    loadFragment(new OfferContainerFragment());
-                    toolbar_title.setText("My offer");  // 使用自定义标题
+                    loadFragment(new ProfileFragment());
+                    toolbar_title.setText("My Profile");  // 使用自定义标题
+                    toolbar.setVisibility(View.GONE); // 显示Toolbar
                     return true;
 
             }

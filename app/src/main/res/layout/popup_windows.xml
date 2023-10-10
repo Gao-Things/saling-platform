@@ -1,66 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="115dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
 
-    <LinearLayout
-        android:id="@+id/bubbleLayout"
+    android:layout_height="wrap_content">
+
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:paddingTop="10dp"
-        android:background="@color/white"
-        android:paddingLeft="5dp"
-        android:layout_height="match_parent">
-        
+        android:layout_height="90dp"
+        app:cardBackgroundColor="@color/black"
+        app:cardElevation="6dp"
+        android:paddingRight="10dp"
+        android:paddingLeft="10dp"
+        android:layout_margin="5dp"
+        app:cardCornerRadius="20dp"
+        app:strokeWidth="0dp">
+
         <LinearLayout
-            android:paddingTop="5dp"
-            android:paddingLeft="5dp"
-            android:layout_width="wrap_content"
+            android:id="@+id/bubbleLayout"
+            android:layout_width="match_parent"
             android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_height="wrap_content">
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:background="@color/white"
+            android:paddingLeft="5dp"
+            android:layout_height="match_parent">
 
             <ImageView
                 android:id="@+id/logoImageView"
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
                 android:scaleType="centerInside"
-                android:src="@drawable/img_12" /> <!-- 替换为您的 logo 图片资源 -->
+                android:src="@drawable/img_13" />
 
-            <TextView
+            <LinearLayout
+                android:paddingTop="5dp"
+                android:paddingLeft="12dp"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:textSize="17sp"
-                android:paddingLeft="4dp"
-                android:text="GGBao"/>
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/notificationTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        android:text="Hello chloe, your item...."/>
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_baseline_priority_high_24"/>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_baseline_priority_high_24"/>
+
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:text="item3 has reach the setting price ！"/>
+            </LinearLayout>
+
+
+
+
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/notificationTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:layout_marginLeft="44dp"
-            android:textColor="@color/black"
-            android:paddingTop="4dp"
-            android:textSize="17sp"
-            android:text="Hello chloe, your item...."/>
-        <TextView
-            android:id="@+id/content"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:layout_marginLeft="44dp"
-            android:textSize="17sp"
-            android:text="item3 has reach the setting price ！"/>
+    </androidx.cardview.widget.CardView>
 
 
-    </LinearLayout>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:layout_gravity="bottom"
-        android:background="#F6B9B9" />
 
 </FrameLayout>

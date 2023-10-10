@@ -70,6 +70,7 @@ public class MyService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+//        initializeBubbleView("test", "test message, ggbao aaaaaaaa");
     }
 
     @Override
@@ -145,7 +146,7 @@ public class MyService extends Service {
         int statusBarHeight = getStatusBarHeight();
         params.gravity = Gravity.TOP | Gravity.FILL_HORIZONTAL; // 将窗口置于屏幕顶部并充满水平方向
         params.x = 0;
-        params.y = -statusBarHeight; // 将 params.y 设置为负的状态栏高度
+//        params.y = -statusBarHeight; // 将 params.y 设置为负的状态栏高度
         // 使用布局填充器加载自定义布局文件
         LayoutInflater inflater = LayoutInflater.from(this);
         floatingView = inflater.inflate(R.layout.popup_windows, null);
