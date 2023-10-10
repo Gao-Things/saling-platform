@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import javax.persistence.*;
+
 /**
  * <p>
  * 
@@ -19,13 +21,17 @@ import lombok.experimental.Accessors;
  */
 @Getter
 @Setter
+@Entity
 @Accessors(chain = true)
 @TableName("notification")
 public class Notification implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "notification_id", type = IdType.AUTO)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "notification_id", nullable = false)
+    @TableId(value = "notification_id")
     private Integer notificationId;
 
     @TableField("notification_type")

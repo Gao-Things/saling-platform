@@ -436,10 +436,10 @@ public class NormalUserServiceImpl implements NormalUserService {
         notificationDto.setNotificationId(notification.getNotificationId());
         notificationDto.setNotificationContent(message);
 
-        // 发送给买家
+        // 接受此消息用户的类型
         notificationDto.setSendUserType(userType);
 
-        // 通知买家offer被接受
+        // 消息类型
         notificationDto.setMessageType(type);
 
         notificationDto.setOffer(offer);
