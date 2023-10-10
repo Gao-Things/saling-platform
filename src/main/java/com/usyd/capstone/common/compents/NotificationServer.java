@@ -2,6 +2,8 @@ package com.usyd.capstone.common.compents;
 
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.usyd.capstone.entity.Notification;
+import com.usyd.capstone.mapper.NotificationMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -22,13 +24,19 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class NotificationServer {
 
-
+    /**
+     * 用来解决webSocket中无法注入mapper
+     */
+    private static ApplicationContext applicationContext;
     private static final Logger log = LoggerFactory.getLogger(NotificationServer.class);
     /**
      * 记录当前在线连接数
      */
     public static final Map<Integer, Session> sessionMap = new ConcurrentHashMap<>();
 
+    public static void setApplicationContext(ApplicationContext applicationContext) {
+        NotificationServer.applicationContext = applicationContext;
+    }
 
     /**
      * 连接建立成功调用的方法
@@ -36,6 +44,7 @@ public class NotificationServer {
     @OnOpen
     public void onOpen(Session session, @PathParam("userId") Integer userId) {
         sessionMap.put(userId, session);
+        log.info("有新用户加入，userEmail={}, 当前在线人数为：{}", userId, sessionMap.size());
     }
     /**
      * 连接关闭调用的方法
@@ -47,9 +56,24 @@ public class NotificationServer {
 
     @OnMessage
     public void onMessage(String message, Session session, @PathParam("userId") Integer userId) {
+
+        log.info("服务端收到客户端确认={}的消息:{}", userId, message);
         JSONObject obj = JSONUtil.parseObj(message);
+        int status = obj.getInt("ok");
+        Long notificationId = obj.getInt("notificationId").longValue();
+        if (status == 1){
+            // 更新数据库消息列表的状态为已读
+            NotificationMapper notificationMapper = applicationContext.getBean(NotificationMapper.class);
+
+            Notification notificationOld =  notificationMapper.selectById(notificationId);
+
+            notificationOld.setUserIsRead(1);
+
+            notificationMapper.updateById(notificationOld);
+        }
 
     }
+
     @OnError
     public void onError(Session session, Throwable error) {
         log.error("发生错误");
@@ -63,12 +87,14 @@ public class NotificationServer {
         try {
             // 如果用户处于在线状态就进行推送
             if (sessionMap.get(userId)!=null){
+                log.info("服务器发送消息给客户端", message);
                 sessionMap.get(userId).getBasicRemote().sendText(message);
             }
         } catch (Exception e) {
             log.error("服务端发送消息给客户端失败", e);
         }
     }
+
 
 }
 

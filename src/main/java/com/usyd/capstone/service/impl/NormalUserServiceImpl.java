@@ -2,25 +2,18 @@ package com.usyd.capstone.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.usyd.capstone.common.DTO.Notification;
+import com.usyd.capstone.common.DTO.NotificationDTO;
 import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.common.compents.ChatEndpoint;
 import com.usyd.capstone.common.compents.JwtToken;
 import com.usyd.capstone.common.compents.NotificationServer;
-import com.usyd.capstone.entity.NormalUser;
-import com.usyd.capstone.entity.Offer;
-import com.usyd.capstone.entity.PriceThreshold;
-import com.usyd.capstone.entity.Product;
-import com.usyd.capstone.entity.abstractEntities.User;
-import com.usyd.capstone.mapper.NormalUserMapper;
-import com.usyd.capstone.mapper.OfferMapper;
-import com.usyd.capstone.mapper.PriceThresholdMapper;
-import com.usyd.capstone.mapper.ProductMapper;
+import com.usyd.capstone.entity.*;
+import com.usyd.capstone.mapper.*;
 import com.usyd.capstone.service.NormalUserService;
+import com.usyd.capstone.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -38,6 +31,9 @@ public class NormalUserServiceImpl implements NormalUserService {
 
     @Autowired
     private OfferMapper offerMapper;
+
+    @Autowired
+    private NotificationMapper notificationMapper;
 
     @Override
     public Result setPriceThresholdSingle(String token, Long productId, boolean isMinimum, double threshold) {
@@ -240,24 +236,8 @@ public class NormalUserServiceImpl implements NormalUserService {
         }
 
 
-        // push message to buyer
-        Long buyerId = offer.getBuyerId();
-
-
-        Notification notification = new Notification();
-
-        notification.setOffer(offer);
-
-        // 发送给买家
-        notification.setSendUserType(2);
-
-        // 通知买家offer被接受
-        notification.setMessageType(1);
-
-        String result = JSONObject.toJSONString(notification);
-        // send message to buyer
-        NotificationServer.sendMessage(result, buyerId.intValue());
-
+        // send notification
+        sendNotification(1, 2, offer, product, "Hi! your offer has been received");
 
 
         offer.setOfferStatus(1);
@@ -432,6 +412,42 @@ public class NormalUserServiceImpl implements NormalUserService {
             default:
                 return Result.fail("Invalid status input.");
         }
+    }
+
+
+    private void sendNotification(Integer type,
+                                  Integer userType,
+                                  Offer offer,
+                                  Product product,
+                                  String message){
+        Notification notification = new Notification();
+
+        notification.setNotificationType(type);
+        notification.setSendUserType(userType);
+        notification.setSendUserId(offer.getBuyerId().intValue());
+        notification.setUserIsRead(0);
+        notification.setNotificationTimetStamp(System.currentTimeMillis());
+        notification.setNotificationContent(message);
+        notificationMapper.insert(notification);
+
+
+        // push message to buyer
+        NotificationDTO notificationDto = new NotificationDTO();
+        notificationDto.setNotificationId(notification.getNotificationId());
+        notificationDto.setNotificationContent(message);
+
+        // 发送给买家
+        notificationDto.setSendUserType(userType);
+
+        // 通知买家offer被接受
+        notificationDto.setMessageType(type);
+
+        notificationDto.setOffer(offer);
+        notificationDto.setProduct(product);
+
+        String result = JSONObject.toJSONString(notificationDto);
+        // send message to buyer
+        NotificationServer.sendMessage(result, offer.getBuyerId().intValue());
     }
 
 
