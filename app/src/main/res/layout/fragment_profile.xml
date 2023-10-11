@@ -42,6 +42,8 @@
         android:layout_weight="1.3"
         app:cardCornerRadius="20dp"
         android:paddingRight="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         app:cardElevation="4dp"
         >
 
@@ -118,13 +120,13 @@
 
             <TextView
                 android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:layout_height="match_parent"
+                android:paddingLeft="15dp"
                 android:text="My selling"
-                android:textSize="23sp"
-                android:paddingLeft="10dp"
-                />
+                android:textStyle="bold"
+                android:textSize="21sp" />
 
             <ImageView
                 android:layout_width="30dp"
@@ -157,8 +159,9 @@
                 android:gravity="center_vertical"
                 android:layout_height="match_parent"
                 android:text="My offer"
-                android:textSize="23sp"
-                android:paddingLeft="10dp" />
+                android:textStyle="bold"
+                android:textSize="21sp"
+                android:paddingLeft="15dp" />
 
             <ImageView
                 android:layout_width="30dp"
@@ -191,8 +194,9 @@
                 android:gravity="center_vertical"
                 android:layout_height="match_parent"
                 android:text="My Wishlist"
-                android:textSize="23sp"
-                android:paddingLeft="10dp" />
+                android:textStyle="bold"
+                android:textSize="21sp"
+                android:paddingLeft="15dp" />
 
             <ImageView
                 android:layout_width="30dp"
@@ -225,8 +229,9 @@
                 android:gravity="center_vertical"
                 android:layout_height="match_parent"
                 android:text="Setting"
-                android:textSize="23sp"
-                android:paddingLeft="10dp"
+                android:textStyle="bold"
+                android:textSize="21sp"
+                android:paddingLeft="15dp"
                />
 
             <ImageView

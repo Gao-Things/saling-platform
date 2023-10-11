@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import comp5703.sydney.edu.au.learn.DTO.Offer;
@@ -57,9 +59,11 @@ public class ProductOfferListAdapter extends RecyclerView.Adapter<ProductOfferLi
             holder.offerPrice.setText(String.valueOf(recordList.get(position).getPrice()));
 
             Long offerSentTime = recordList.get(position).getTimestamp();
-            String timeElapsed = getTimeElapsed(offerSentTime);
+            Date date = new Date(offerSentTime);
+            SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
+            String formattedDate = sdf.format(date);
 
-            holder.offerTime.setText(timeElapsed);
+            holder.offerTime.setText(formattedDate);
 
             // 绑定点击事件
             holder.itemView.setOnClickListener(new View.OnClickListener() {

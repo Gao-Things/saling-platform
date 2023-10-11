@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 import static comp5703.sydney.edu.au.learn.util.NetworkUtils.imageURL;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -35,6 +36,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.itheima.wheelpicker.WheelPicker;
 import com.squareup.picasso.Picasso;
@@ -49,11 +51,13 @@ import java.util.List;
 import java.util.Objects;
 
 import comp5703.sydney.edu.au.learn.Common.DialogFragment;
+import comp5703.sydney.edu.au.learn.DTO.Product;
 import comp5703.sydney.edu.au.learn.Home.Adapter.ImageAdapter;
 import comp5703.sydney.edu.au.learn.Home.HomeUseActivity;
 import comp5703.sydney.edu.au.learn.MainActivity;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.ItemVO;
+import comp5703.sydney.edu.au.learn.VO.productDetailParameter;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -64,6 +68,8 @@ public class SellFragment extends Fragment {
     private EditText editTitle;
     private EditText editDescription;
     private EditText editWeight;
+    private EditText editPrice;
+
     private AppCompatButton btnSubmit;
     private String uploadImageUrl;
     private AutoCompleteTextView autoCompleteTextView;
@@ -90,6 +96,7 @@ public class SellFragment extends Fragment {
         editTitle = view.findViewById(R.id.editTitle);
         editDescription = view.findViewById(R.id.editDescription);
         editWeight = view.findViewById(R.id.editWeight);
+        editPrice = view.findViewById(R.id.editPrice);
         btnSubmit = view.findViewById(R.id.btnSubmit);
         wheelPicker =  view.findViewById(R.id.wheel1);
 
@@ -140,7 +147,79 @@ public class SellFragment extends Fragment {
         btnSubmit.setOnClickListener(this::submitClick);
 
 
+        // set form if is edit
+        // 在 ItemDetailFragment 中获取传递的整数值
+        Bundle args = getArguments();
+        if (args != null) {
+            Integer productId = args.getInt("productId");
+            setEditProductForm(productId);
+
+        }
+
     }
+
+    private void setEditProductForm(Integer productId) {
+        // 在这里可以使用 productId 进行操作
+        productDetailParameter productDetailParameter = new productDetailParameter();
+        productDetailParameter.setProductId(productId);
+        // send request to backend
+        NetworkUtils.getWithParamsRequest(productDetailParameter, "/public/product/getProductDetail",null, new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                handleEditResponse(response);
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                handleFailure(e);
+            }
+        });
+
+    }
+
+    private void handleEditResponse(Response response) {
+        try {
+            if (!response.isSuccessful()) {
+                Log.d(TAG, "Request not successful");
+                return;
+            }
+
+            String responseBody = response.body().string();
+            JSONObject jsonObject = JSONObject.parseObject(responseBody);
+            int code = jsonObject.getIntValue("code");
+
+            if (code == 200) {
+                Product product = jsonObject.getJSONObject("data").toJavaObject(Product.class);
+
+                // 在主线程中更新UI
+                getActivity().runOnUiThread(new Runnable() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void run() {
+                        editPrice.setText(Double.toString(product.getProductPrice()));
+                        editTitle.setText(product.getProductName());
+                        editDescription.setText(product.getProductDescription());
+                        editWeight.setText( Double.toString( product.getProductWeight()));
+
+                        // 使用ImageAdapter的实例添加新的URL
+                        imageAdapter.addImageUrl(imageURL + product.getProductImage());
+                        imageAdapter.addImageUrl(imageURL + product.getProductImage());
+                        imageAdapter.addImageUrl(imageURL + product.getProductImage());
+                        imageAdapter.addImageUrl(imageURL + product.getProductImage());
+
+                        uploadImageUrl = product.getProductImage();
+                    }
+                });
+            } else {
+                Log.d(TAG, "Error response code: " + code);
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "IOException: " + e.getMessage());
+        } catch (JSONException e) {
+            Log.e(TAG, "JSONException: " + e.getMessage());
+        }
+    }
+
 
     private void openCameraClick(){
         requestCameraPermission();

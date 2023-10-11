@@ -26,6 +26,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -98,6 +99,9 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
     private Banner imageBanner;
 
     private Button sellerGetOfferBtn;
+    private LinearLayout sellerHeaderBar;
+
+    private Button editButton;
 
     @Nullable
     @Override
@@ -112,6 +116,7 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        editButton = view.findViewById(R.id.editButton);
         itemDetailPrice = view.findViewById(R.id.itemDetailPrice);
         confirmButton = view.findViewById(R.id.confirm_button);
         send_offer_btn = view.findViewById(R.id.send_offer_btn);
@@ -127,11 +132,14 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
         offerHistory = view.findViewById(R.id.offerHistory);
         offeredPrice = view.findViewById(R.id.offeredPrice);
         sellerGetOfferBtn = view.findViewById(R.id.sellerGetOfferBtn);
+
+        sellerHeaderBar = view.findViewById(R.id.sellerHeaderBar);
         // 创建并设置RecyclerView的LayoutManager
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
 
 
         setPrice = view.findViewById(R.id.setPrice);
+
 
         // get SharedPreferences instance
         SharedPreferences sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences("comp5703", Context.MODE_PRIVATE);
@@ -162,7 +170,22 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
 
         send_offer_btn.setOnClickListener(this::submitOffer);
         sellerGetOfferBtn.setOnClickListener(this::showOfferHistory);
+        editButton.setOnClickListener(this::editClick);
+    }
 
+    private void editClick(View view) {
+        // 在 FragmentA 中
+        SellFragment sellFragment = new SellFragment();
+
+        // 准备要传递的数据
+        Bundle args = new Bundle();
+        args.putInt("productId", productId); // 这里的 "key" 是你传递数据的键名，"value" 是你要传递的值
+        sellFragment.setArguments(args); // 这是关键步骤！
+        // 执行 Fragment 跳转
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.fl_container, sellFragment); // R.id.fragment_container 是用于放置 Fragment 的容器
+        transaction.addToBackStack(null); // 将 FragmentA 添加到返回栈，以便用户可以返回到它
+        transaction.commit();
     }
 
     private void showOfferHistory(View view) {
@@ -489,7 +512,7 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
             public void run() {
                 itemStatusImg.setVisibility(View.GONE);
                 generalView.setVisibility(View.GONE);
-                switchButton.setVisibility(View.VISIBLE);
+                sellerHeaderBar.setVisibility(View.VISIBLE);
                 sellerGetOfferBtn.setVisibility(View.VISIBLE);
 
             }

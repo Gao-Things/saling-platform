@@ -31,25 +31,42 @@
             android:src="@drawable/img_20"
             android:visibility="gone" />
 
-        <com.kyleduo.switchbutton.SwitchButton
-            android:id="@+id/switch_button"
-            android:layout_width="150dp"
-            android:layout_height="0dp"
-            android:layout_gravity="end"
-            android:layout_weight="0.6"
-            android:paddingRight="10dp"
+        <LinearLayout
+            android:id="@+id/sellerHeaderBar"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
             android:visibility="gone"
+            android:layout_height="0dp"
+            android:layout_weight="1">
 
-            app:kswBackColor="@color/generalGreen"
-            app:kswTextExtra="35sp"
-            app:kswTextOff="Close"
-            app:kswTextOn="Open"
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/editButton"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="20dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/custom_button_background2"
+                android:layout_marginRight="110dp"
+                android:text="edit"
+                android:textColor="@color/white"
+                />
 
-            app:kswThumbColor="@color/white"
-            app:kswThumbHeight="30dp"
-            app:kswThumbMargin="10dp"
-            app:kswThumbRadius="60dp"
-            app:kswThumbWidth="30dp" />
+            <com.kyleduo.switchbutton.SwitchButton
+                android:id="@+id/switch_button"
+                android:layout_width="150dp"
+                android:layout_height="match_parent"
+                android:textColor="@color/black"
+                app:kswBackColor="@color/generalGreen"
+                app:kswTextExtra="35sp"
+                app:kswTextOff="Close"
+                app:kswTextOn="Open"
+                app:kswThumbColor="@color/white"
+                app:kswThumbHeight="30dp"
+                app:kswThumbMargin="10dp"
+                app:kswThumbRadius="60dp"
+                app:kswThumbWidth="30dp" />
+
+        </LinearLayout>
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -88,6 +105,8 @@
 
                         <com.youth.banner.Banner
                             android:id="@+id/banner"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginBottom="20dp"
                             android:layout_width="match_parent"
                             android:layout_height="250dp"
                             android:clickable="true"
