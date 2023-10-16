@@ -82,6 +82,8 @@ public class SellFragment extends Fragment {
 
     private ImageAdapter imageAdapter;
 
+    private Integer productId;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -208,6 +210,7 @@ public class SellFragment extends Fragment {
                         imageAdapter.addImageUrl(imageURL + product.getProductImage());
 
                         uploadImageUrl = product.getProductImage();
+                        productId = product.getId();
                     }
                 });
             } else {
@@ -330,6 +333,10 @@ public class SellFragment extends Fragment {
         Integer userId = sharedPreferences.getInt("userId", 9999);
 
         ItemVO itemVO = new ItemVO();
+
+        if (productId !=null){
+            itemVO.setProductId(productId);
+        }
         itemVO.setItemTitle(itemTitle);
         itemVO.setItemDescription(itemDescription);
         itemVO.setItemWeight(Double.parseDouble(itemWeight));

@@ -27,5 +27,6 @@
     <string name="contact_text"><u>Contact Buyer</u></string>
 
     <string name="cancel_text"><u>Cancel</u></string>
+    <string name="terms_amp_conditions"><![CDATA[Terms & Conditions.]]></string>
 
 </resources>

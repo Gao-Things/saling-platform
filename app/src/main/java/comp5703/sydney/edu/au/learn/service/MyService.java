@@ -70,7 +70,7 @@ public class MyService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-//        initializeBubbleView("test", "test message, ggbao aaaaaaaa");
+        initializeBubbleView("your offter has been accept", " message, ggbao is so good !!!!");
     }
 
     @Override

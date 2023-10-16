@@ -147,12 +147,10 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
         // get global userID
         userId = sharedPreferences.getInt("userId", 9999);
         token = sharedPreferences.getString("token", "null");
-//        confirmButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                listener.onClick("fragment往activity传值");
-//            }
-//        })
+
+        // 初始化 switchButton
+        switchButton = view.findViewById(R.id.switch_button);
+        initializeSwitchListener();
 
         // 在 ItemDetailFragment 中获取传递的整数值
         Bundle args = getArguments();
@@ -163,10 +161,7 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
 
         }
 
-        // 初始化 switchButton
-        switchButton = view.findViewById(R.id.switch_button);
-        switchButton.setChecked(true);
-        initializeSwitchListener();
+
 
         send_offer_btn.setOnClickListener(this::submitOffer);
         sellerGetOfferBtn.setOnClickListener(this::showOfferHistory);
@@ -439,8 +434,14 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
 
                 // 属于卖家页面
                 if (product.getOwnerId().intValue() == userId){
-                    // if the login is the seller
-                    loadSellerView(true);
+
+                    if (product.getProductStatus()!=0){
+                        // if the product is not in processing
+                        loadSellerView(false);
+                    }else {
+                        loadSellerView(true);
+                    }
+
                 }
 
                 // 在主线程中更新UI
@@ -456,11 +457,11 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
                     imgList.add(imageurl1);
 
                     loadBanner(imgList);
-//                        // 如果状态不在售卖且不属于卖家家页面
-//                        if (product.getPriceStatus()!=0 && product.getOwnerId().intValue() != userId){
-//                            itemStatusImg.setVisibility(View.GONE);
-//                            itemCloseImg.setVisibility(View.VISIBLE);
-//                        }
+                        // 如果状态不在售卖且不属于卖家家页面
+                        if (product.getProductStatus()!=0 && product.getOwnerId().intValue() != userId){
+                            itemStatusImg.setVisibility(View.GONE);
+                            itemCloseImg.setVisibility(View.VISIBLE);
+                        }
 
 
                     }
@@ -501,7 +502,7 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
     }
 
     // 加载seller的商品的offer
-    private void loadSellerView(boolean checked){
+    private void loadSellerView(boolean isValid){
 
         // 展示商品的offer
         showOfferHistory(rootView);
@@ -514,6 +515,12 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
                 generalView.setVisibility(View.GONE);
                 sellerHeaderBar.setVisibility(View.VISIBLE);
                 sellerGetOfferBtn.setVisibility(View.VISIBLE);
+
+                if (!isValid){
+                    switchButton.setChecked(false);
+                    updateButtonColor(false);
+                }
+
 
             }
         });

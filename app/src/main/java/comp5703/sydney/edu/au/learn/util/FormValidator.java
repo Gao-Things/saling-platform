@@ -58,7 +58,7 @@ public class FormValidator {
 
     private static boolean isStrongPassword(String password) {
         // 密码强度校验逻辑
-        if (password == null || password.isEmpty()) {
+        if (password == null || password.isEmpty() || password.length()<6 ) {
             return false;
         }
 

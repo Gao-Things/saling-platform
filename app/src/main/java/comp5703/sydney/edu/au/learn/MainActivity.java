@@ -138,7 +138,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (isValid) {
             // 执行提交逻辑
-            verityLoginAction();
+            Login();
+//            verityLoginAction();
         }
 
 
@@ -171,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void verityLoginAction() {
-        assert recaptchaTasksClient != null;
+//        assert recaptchaTasksClient != null;
         recaptchaTasksClient
                 .executeTask(RecaptchaAction.LOGIN)
                 .addOnSuccessListener(

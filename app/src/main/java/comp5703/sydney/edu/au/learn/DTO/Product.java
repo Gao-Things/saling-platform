@@ -19,6 +19,17 @@ public class Product {
 
     private Long ownerId;
 
+    private Integer productStatus;
+
+
+    public Integer getProductStatus() {
+        return productStatus;
+    }
+
+    public void setProductStatus(Integer productStatus) {
+        this.productStatus = productStatus;
+    }
+
     public Long getOwnerId() {
         return ownerId;
     }

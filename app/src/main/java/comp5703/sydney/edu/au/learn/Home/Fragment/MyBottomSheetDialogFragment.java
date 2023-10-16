@@ -3,13 +3,17 @@ package comp5703.sydney.edu.au.learn.Home.Fragment;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,6 +22,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.io.IOException;
@@ -100,6 +106,20 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
         });
     }
 
+//    @Override
+//    public Dialog onCreateDialog(Bundle savedInstanceState) {
+//        Dialog dialog = super.onCreateDialog(savedInstanceState);
+//        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+//            @Override
+//            public void onShow(DialogInterface dialogInterface) {
+//                BottomSheetDialog bottomSheetDialog = (BottomSheetDialog) dialogInterface;
+//
+//                // 这行代码会防止背景变暗
+//                bottomSheetDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+//            }
+//        });
+//        return dialog;
+//    }
 
 
     // 加载seller的商品的offer

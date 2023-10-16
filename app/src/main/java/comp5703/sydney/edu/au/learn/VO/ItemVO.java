@@ -2,12 +2,21 @@ package comp5703.sydney.edu.au.learn.VO;
 
 public class ItemVO {
 
+    private Integer productId;
     private String itemTitle;
     private String itemDescription;
     private double itemWeight;
     private String selectedValue;
     private String imageUrl;
     private Integer userId;
+
+    public Integer getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Integer productId) {
+        this.productId = productId;
+    }
 
     public Integer getUserId() {
         return userId;

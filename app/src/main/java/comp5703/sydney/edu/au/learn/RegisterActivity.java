@@ -14,7 +14,10 @@ import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -56,6 +59,9 @@ public class RegisterActivity extends AppCompatActivity {
 
     private TextView loginTextView;
 
+    private TextView warningText;
+    private WebView webView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,7 +81,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         registerBtn = findViewById(R.id.registerBtn);
         loginTextView = findViewById(R.id.loginTextView);
-
+        warningText = findViewById(R.id.warningText);
 
         registerBtn.setOnClickListener(this::registerClick);
         mAuth = FirebaseAuth.getInstance();
@@ -91,8 +97,21 @@ public class RegisterActivity extends AppCompatActivity {
         // 添加蓝色字体颜色
         spannableString1.setSpan(new ForegroundColorSpan(Color.parseColor("#006104")), 0, text1.length(), 0);
 
+
+        String text2 = "Terms & Conditions";
+        SpannableString spannableString2 = new SpannableString(text2);
+
+        // 添加下划线
+        spannableString2.setSpan(new UnderlineSpan(), 0, text2.length(), 0);
+
+        // 添加蓝色字体颜色
+        spannableString2.setSpan(new ForegroundColorSpan(Color.parseColor("#006104")), 0, text1.length(), 0);
+
         // 将 SpannableString 设置到 TextView
         loginTextView.setText(spannableString1);
+        warningText.setText(spannableString2);
+
+        warningText.setOnClickListener(this::getUserConfirm);
 
         inputLayoutEmail.getEditText().addTextChangedListener(new TextWatcher() {
 
@@ -118,6 +137,40 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         });
+
+    }
+
+    private void getUserConfirm(View view) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_Learn);
+        LayoutInflater inflater = getLayoutInflater();
+        View viewUse = inflater.inflate(R.layout.dialog_webview, null);
+
+        WebView webView = viewUse.findViewById(R.id.webView);
+        Button closeButton = viewUse.findViewById(R.id.closeButton);
+        WebSettings webSettings = webView.getSettings();
+        webSettings.setJavaScriptEnabled(false);
+
+        String content = "<h1>Terms and conditions</h1>"
+                + "<h2>Conditions of use</h2>"
+                + "<p>By using this website, you certify that you have read and reviewed this Agreement and that you agree to comply with its terms. If you do not want to be bound by the terms of this Agreement, you are advised to stop using the website accordingly. Gold trading only grants use and access of this website, its products, and its services to those who have accepted its terms.</p>"
+                + "<h2>Age restriction</h2>"
+                + "<p>You must be at least 18 (eighteen) years of age before you can use this website. By using this website, you warrant that you are at least 18 years of age and you may legally adhere to this Agreement. Gold trading assumes no responsibility for liabilities related to age misrepresentation.</p>";
+
+        String formattedHtml = getFormattedHtml(content);
+        webView.loadData(content, "text/html", "UTF-8");
+
+        builder.setView(viewUse);
+        AlertDialog dialog = builder.create();
+
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
 
     }
 
@@ -184,28 +237,15 @@ public class RegisterActivity extends AppCompatActivity {
 
 
 
-// firebase send email service
+    private String getFormattedHtml(String content) {
+        return "<html><head>"
+                + "<style type=\"text/css\">body{font-family: Arial, sans-serif; padding: 5px;}</style>"
+                + "</head><body>"
+                + content
+                + "</body></html>";
+    }
 
-//    private void sendVerificationEmail(FirebaseUser user) {
-//        if (user != null) {
-//            user.sendEmailVerification()
-//                    .addOnCompleteListener(task -> {
-//                        if (task.isSuccessful()) {
-//
-//                            AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
-//                            builder.setTitle("Successful !!")
-//                                    .setMessage("The vertified Email has been send")
-//                                    .setPositiveButton("Back", (dialogInterface, i) -> {
-//
-//                                    });
-//
-//                            builder.create().show();
-//                        } else {
-//                            Toast.makeText(RegisterActivity.this, "无法发送验证邮件，请稍后再试", Toast.LENGTH_LONG).show();
-//                        }
-//                    });
-//        }
-//    }
+
 
 
 }
