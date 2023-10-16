@@ -104,6 +104,10 @@ public class ProductController {
     @PostMapping("/uploadProduct")
     public Result uploadProduct(@RequestBody productVO productVO){
         Product product = new Product();
+
+        if (productVO.getProductId()!=null){
+            product.setId(Long.valueOf(productVO.getProductId()));
+        }
         product.setCategory(1);
         product.setCurrentTurnOfRecord(0);
         product.setInResettingProcess(false);
@@ -116,7 +120,7 @@ public class ProductController {
         product.setProductUpdateTime(System.currentTimeMillis());
         product.setProductWeight(productVO.getItemWeight());
         product.setOwnerId(Long.valueOf(productVO.getUserId()));
-        if (productService.save(product)){
+        if (productService.saveOrUpdate(product)){
             return Result.suc();
         }else {
             return Result.fail();
