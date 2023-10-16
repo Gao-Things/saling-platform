@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class productVO {
+    private Integer productId;
     private String itemTitle;
     private String itemDescription;
     private double itemWeight;
