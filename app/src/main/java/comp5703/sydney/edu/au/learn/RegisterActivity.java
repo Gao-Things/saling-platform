@@ -19,11 +19,13 @@ import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
@@ -62,6 +64,9 @@ public class RegisterActivity extends AppCompatActivity {
     private TextView warningText;
     private WebView webView;
 
+    private CheckBox privatePolicyCheckBox;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +90,8 @@ public class RegisterActivity extends AppCompatActivity {
 
         registerBtn.setOnClickListener(this::registerClick);
         mAuth = FirebaseAuth.getInstance();
+
+        privatePolicyCheckBox = findViewById(R.id.privatePolicyCheckBox);
 
 
 
@@ -181,6 +188,14 @@ public class RegisterActivity extends AppCompatActivity {
                 & FormValidator.validatePassword(inputLayoutPassword, password.getText().toString());
 
         if (isValid) {
+            // 用户没有确认隐私策略
+            if (!privatePolicyCheckBox.isChecked()){
+
+                Snackbar.make(view, "You need to confirm the user privacy policy", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+                return;
+            }
+
             // 执行提交逻辑
             registerUser(email.getText().toString(),
                     password.getText().toString(),

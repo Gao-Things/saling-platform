@@ -32,22 +32,21 @@
         <LinearLayout
             android:id="@+id/sellerHeaderBar"
             android:layout_width="match_parent"
-            android:orientation="horizontal"
-            android:visibility="gone"
             android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:visibility="gone">
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/editButton"
                 android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_marginLeft="20dp"
                 android:layout_height="50dp"
-                android:background="@drawable/custom_button_background2"
+                android:layout_marginLeft="20dp"
                 android:layout_marginRight="110dp"
+                android:layout_weight="1"
+                android:background="@drawable/custom_button_background2"
                 android:text="edit"
-                android:textColor="@color/white"
-                />
+                android:textColor="@color/white" />
 
             <com.kyleduo.switchbutton.SwitchButton
                 android:id="@+id/switch_button"
@@ -103,10 +102,10 @@
 
                         <com.youth.banner.Banner
                             android:id="@+id/banner"
-                            android:layout_marginTop="20dp"
-                            android:layout_marginBottom="20dp"
                             android:layout_width="match_parent"
                             android:layout_height="250dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginBottom="20dp"
                             android:clickable="true"
                             app:banner_indicator_gravity="center"
                             app:banner_indicator_marginTop="40dp"
@@ -319,6 +318,20 @@
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/confirm_button"
+                android:layout_width="130dp"
+                android:layout_height="50dp"
+                android:layout_gravity="end"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="40dp"
+                android:layout_marginBottom="40dp"
+                android:background="@drawable/custom_button_background"
+                android:text="confirm Offer"
+                android:textColor="@color/lightwhite" />
+
+
             <LinearLayout
                 android:id="@+id/hidden_layout"
                 android:layout_width="match_parent"
@@ -371,29 +384,37 @@
                 android:textStyle="bold"
                 android:visibility="gone" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/confirm_button"
-                android:layout_width="130dp"
-                android:layout_height="50dp"
-                android:layout_gravity="end"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="40dp"
-                android:layout_marginBottom="40dp"
-                android:background="@drawable/custom_button_background"
-                android:text="confirm Offer"
-                android:textColor="@color/lightwhite" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/send_offer_btn"
-                android:layout_width="130dp"
-                android:layout_height="50dp"
-                android:layout_gravity="end"
-                android:layout_marginRight="40dp"
-                android:layout_marginBottom="40dp"
-                android:background="@drawable/custom_button_background"
-                android:text="Send Offer"
-                android:textColor="@color/lightwhite"
-                android:visibility="gone" />
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/send_offer_btn"
+                    android:layout_width="130dp"
+                    android:layout_height="50dp"
+                    android:layout_marginRight="40dp"
+                    android:layout_marginBottom="40dp"
+                    android:background="@drawable/custom_button_background"
+                    android:text="Send Offer"
+                    android:textColor="@color/lightwhite"
+                    android:visibility="gone" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/contactSellerBtn"
+                    android:layout_width="130dp"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginBottom="40dp"
+                    android:background="@drawable/custom_button_background3"
+                    android:text="Contact seller"
+                    android:textColor="@color/lightwhite"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+
 
 
         </LinearLayout>
@@ -401,12 +422,12 @@
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/sellerGetOfferBtn"
             android:layout_width="match_parent"
-            android:visibility="gone"
             android:layout_height="40dp"
             android:layout_marginTop="10dp"
             android:background="@drawable/custom_button2_background"
             android:text="Product offer History"
-            android:textColor="@color/lightwhite" />
+            android:textColor="@color/lightwhite"
+            android:visibility="gone" />
 
     </LinearLayout>
 

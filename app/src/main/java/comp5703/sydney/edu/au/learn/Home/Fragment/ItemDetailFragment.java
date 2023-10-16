@@ -103,6 +103,12 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
 
     private Button editButton;
 
+    private Button contactSellerBtn;
+
+    private ChatFragment chatFragment;
+
+    private Integer sellerId;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -132,6 +138,7 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
         offerHistory = view.findViewById(R.id.offerHistory);
         offeredPrice = view.findViewById(R.id.offeredPrice);
         sellerGetOfferBtn = view.findViewById(R.id.sellerGetOfferBtn);
+        contactSellerBtn = view.findViewById(R.id.contactSellerBtn);
 
         sellerHeaderBar = view.findViewById(R.id.sellerHeaderBar);
         // 创建并设置RecyclerView的LayoutManager
@@ -166,6 +173,30 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
         send_offer_btn.setOnClickListener(this::submitOffer);
         sellerGetOfferBtn.setOnClickListener(this::showOfferHistory);
         editButton.setOnClickListener(this::editClick);
+        contactSellerBtn.setOnClickListener(this::dumpToChatRoom);
+    }
+
+
+    // 跳转到聊天页面
+    private void dumpToChatRoom(View view) {
+        // jump to chat fragment
+        if (chatFragment == null){
+            chatFragment = new ChatFragment();
+        }
+        // 准备要传递的数据
+        Bundle args = new Bundle();
+
+
+        args.putInt("receiverId", sellerId); // 这里的 "key" 是传递数据的键名，"value" 是要传递的值
+        args.putInt("userId", userId);
+        chatFragment.setArguments(args);
+
+        // 执行 Fragment 跳转
+        assert getFragmentManager() != null;
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.fl_container, chatFragment); // R.id.fragment_container 是用于放置 Fragment 的容器
+        transaction.addToBackStack(null); // 将 FragmentA 添加到返回栈，以便用户可以返回到它
+        transaction.commitAllowingStateLoss();
     }
 
     private void editClick(View view) {
@@ -174,7 +205,7 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
 
         // 准备要传递的数据
         Bundle args = new Bundle();
-        args.putInt("productId", productId); // 这里的 "key" 是你传递数据的键名，"value" 是你要传递的值
+        args.putInt("productId", productId); // 这里的 "key" 是传递数据的键名，"value" 是你要传递的值
         sellFragment.setArguments(args); // 这是关键步骤！
         // 执行 Fragment 跳转
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -405,6 +436,7 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
         confirmButton.setVisibility(View.GONE);
         send_offer_btn.setVisibility(View.VISIBLE);
         optionNotes.setVisibility(View.VISIBLE);
+        contactSellerBtn.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -431,6 +463,8 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
 
             if (code == 200) {
                 Product product = jsonObject.getJSONObject("data").toJavaObject(Product.class);
+
+                sellerId = product.getOwnerId().intValue();
 
                 // 属于卖家页面
                 if (product.getOwnerId().intValue() == userId){

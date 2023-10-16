@@ -175,7 +175,7 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/myWishListCardView"
+        android:id="@+id/myMessageCardView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -193,7 +193,7 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:layout_height="match_parent"
-                android:text="My Wishlist"
+                android:text="My Message"
                 android:textStyle="bold"
                 android:textSize="21sp"
                 android:paddingLeft="15dp" />

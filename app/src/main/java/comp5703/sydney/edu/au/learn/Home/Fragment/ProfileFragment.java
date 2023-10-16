@@ -24,6 +24,8 @@ public class ProfileFragment extends Fragment {
     private String token;
 
     private CardView myOfferCardView;
+    
+    private CardView myMessageCardView;
 
     @Nullable
     @Override
@@ -44,9 +46,13 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         myOfferCardView = view.findViewById(R.id.myOfferCardView);
-
+        myMessageCardView = view.findViewById(R.id.myMessageCardView);
         myOfferCardView.setOnClickListener(this::dumpToOfferContainer);
+        myMessageCardView.setOnClickListener(this::dumpToMyMessage);
 
+    }
+
+    private void dumpToMyMessage(View view) {
     }
 
     private void dumpToOfferContainer(View view) {
