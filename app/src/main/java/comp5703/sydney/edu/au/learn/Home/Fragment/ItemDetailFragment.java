@@ -169,11 +169,11 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
         }
 
 
-
         send_offer_btn.setOnClickListener(this::submitOffer);
         sellerGetOfferBtn.setOnClickListener(this::showOfferHistory);
         editButton.setOnClickListener(this::editClick);
         contactSellerBtn.setOnClickListener(this::dumpToChatRoom);
+
     }
 
 

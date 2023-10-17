@@ -1,5 +1,8 @@
 package comp5703.sydney.edu.au.learn.util;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public abstract class TimeCalculateUtil {
 
     public static String getTimeElapsed(Long offerSentTime) {
@@ -16,15 +19,15 @@ public abstract class TimeCalculateUtil {
         long timeDifferenceHours = timeDifferenceMinutes / 60;
         long timeDifferenceDays = timeDifferenceHours / 24;
 
+        SimpleDateFormat sdf;
+
         // 根据时间差的大小来决定显示的格式
-        if (timeDifferenceSeconds < 60) {
-            return timeDifferenceSeconds + " seconds ago";
-        } else if (timeDifferenceMinutes < 60) {
-            return timeDifferenceMinutes + " minutes ago";
-        } else if (timeDifferenceHours < 24) {
-            return timeDifferenceHours + " hours ago";
+        if (timeDifferenceDays < 1) {
+            sdf = new SimpleDateFormat("HH:mm");
+            return sdf.format(new Date(offerSentTime));
         } else {
-            return timeDifferenceDays + " days ago";
+            sdf = new SimpleDateFormat("MM-dd");
+            return sdf.format(new Date(offerSentTime));
         }
     }
 

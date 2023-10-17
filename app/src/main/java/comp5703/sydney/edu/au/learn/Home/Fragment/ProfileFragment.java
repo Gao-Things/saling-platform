@@ -53,6 +53,18 @@ public class ProfileFragment extends Fragment {
     }
 
     private void dumpToMyMessage(View view) {
+
+        MessagesFragment fragmentB = new MessagesFragment();
+
+        // 准备要传递的数据
+        Bundle args = new Bundle();
+        args.putInt("userId", userId); // 这里的 "key" 是你传递数据的键名，"value" 是你要传递的值
+
+        // 执行 Fragment 跳转
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.fl_container, fragmentB); // R.id.fragment_container 是用于放置 Fragment 的容器
+        transaction.addToBackStack(null); // 将 FragmentA 添加到返回栈，以便用户可以返回到它
+        transaction.commit();
     }
 
     private void dumpToOfferContainer(View view) {
