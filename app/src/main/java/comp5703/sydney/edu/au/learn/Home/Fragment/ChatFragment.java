@@ -1,5 +1,9 @@
 package comp5703.sydney.edu.au.learn.Home.Fragment;
 
+import static android.content.ContentValues.TAG;
+import static comp5703.sydney.edu.au.learn.DTO.Message.MessageType.RECEIVED;
+import static comp5703.sydney.edu.au.learn.DTO.Message.MessageType.SENT;
+import static comp5703.sydney.edu.au.learn.util.NetworkUtils.imageURL;
 import static comp5703.sydney.edu.au.learn.util.NetworkUtils.websocketUrl;
 
 import android.os.Bundle;
@@ -9,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,16 +23,26 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import comp5703.sydney.edu.au.learn.DTO.Message;
+import comp5703.sydney.edu.au.learn.DTO.MessageHistory;
+import comp5703.sydney.edu.au.learn.DTO.UserMessage;
 import comp5703.sydney.edu.au.learn.Home.Adapter.ChatAdapter;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.ReceivedMessage;
 import comp5703.sydney.edu.au.learn.VO.ResponseMessage;
 import comp5703.sydney.edu.au.learn.VO.SendMessage;
+import comp5703.sydney.edu.au.learn.VO.userAndRemoteUserIdVO;
+import comp5703.sydney.edu.au.learn.util.NetworkUtils;
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -48,6 +64,14 @@ public class ChatFragment extends Fragment {
 
     private Integer receiverId;
 
+    private String token;
+
+    private ImageView remoteUserAvatar;
+    private TextView remoteUserName;
+
+    private String userAvatarUrl;
+    private String remoteUserAvatarUrl;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -64,6 +88,7 @@ public class ChatFragment extends Fragment {
         if (args != null) {
             userId = args.getInt("userId");
             receiverId = args.getInt("receiverId");
+            token = args.getString("token");
             initWebSocket(userId);
         }
 
@@ -71,6 +96,9 @@ public class ChatFragment extends Fragment {
         chatRecyclerView = view.findViewById(R.id.chatRecyclerView);
         sentBtn = view.findViewById(R.id.sentBtn);
         sendContent = view.findViewById(R.id.myEditText);
+
+        remoteUserAvatar = view.findViewById(R.id.userAvatar);
+        remoteUserName = view.findViewById(R.id.userName);
 
         // 创建并设置RecyclerView的LayoutManager
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -86,17 +114,116 @@ public class ChatFragment extends Fragment {
 
         List<Message> chatData = new ArrayList<>();
 
-//        chatData.add(new Message("你好！", Message.MessageType.SENT));
-//        chatData.add(new Message("你好，有什么可以帮助你的吗？", Message.MessageType.RECEIVED));
-//        chatData.add(new Message("我想知道这附近有什么好吃的餐厅。", Message.MessageType.SENT));
-//        chatData.add(new Message("附近的 XYZ 餐厅非常不错，推荐尝试！", Message.MessageType.RECEIVED));
-//        chatData.add(new Message("谢谢，我去试试看！", Message.MessageType.SENT));
-//        chatData.add(new Message("不用谢，希望你吃得愉快！", Message.MessageType.RECEIVED));
-
         chatAdapter.setMessages(chatData);
+
+        getChatHistoryData();
         chatAdapter.notifyDataSetChanged();
 
 
+    }
+
+
+    // 发送请求获取聊天记录
+    private void getChatHistoryData() {
+        userAndRemoteUserIdVO userAndRemoteUserIdVO = new userAndRemoteUserIdVO();
+        userAndRemoteUserIdVO.setUserId(userId);
+        userAndRemoteUserIdVO.setRemoteUserId(receiverId);
+        NetworkUtils.getWithParamsRequest( userAndRemoteUserIdVO, "/normal/message/getMessageListByUserIdAndRemoteUserId",token, new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                handleResponse(response);
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                handleFailure(e);
+            }
+        });
+    }
+
+    private void handleFailure(IOException e) {
+        System.out.println(e);
+    }
+
+
+    private void handleResponse(Response response) throws IOException {
+
+        boolean flag = false;
+        boolean flag2 = false;
+
+        String responseBody = response.body().string();
+        JSONObject jsonObject = JSONObject.parseObject(responseBody);
+        int code = jsonObject.getIntValue("code");
+
+        if (code == 200) {
+            flag = true;
+            flag2 = true;
+            // 提取 "records" 数组并转换为List
+            JSONArray messageHistoryList = jsonObject.getJSONArray("data");
+
+            List<MessageHistory> recordsListUse = messageHistoryList.toJavaList(MessageHistory.class);
+
+            List<Message> messageList = new ArrayList<>();
+
+
+            for (MessageHistory messageHistory : recordsListUse){
+                // 如果当前数据本地用户是发信人的话，这条消息就渲染为sent,否则就渲染为RECEIVED
+                Message message;
+                if (messageHistory.getFromUserId() == userId){
+
+                    if (flag2){
+                        // 设置本地用户的头像
+                        userAvatarUrl = messageHistory.getFromUserAvatar();
+                        flag2 = false;
+                    }
+
+
+                    message = new Message(messageHistory.getPostMessageContent(), messageHistory.getFromUserAvatar(), SENT);
+                }else {
+
+                    if (flag){
+                        // 设置远程用户的头像,姓名
+                        remoteUserAvatarUrl = messageHistory.getToUserAvatar();
+
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                remoteUserName.setText(messageHistory.getFromUserName());
+                                Picasso.get()
+                                        .load(imageURL + remoteUserAvatarUrl)
+                                        .error(R.drawable.img_5)  // error_image为加载失败时显示的图片
+                                        .into(remoteUserAvatar);
+                            }
+                        });
+
+
+                        flag = false;
+                    }
+
+
+
+                    message = new Message(messageHistory.getPostMessageContent(), messageHistory.getFromUserAvatar(), RECEIVED);
+                }
+                messageList.add(message);
+
+            }
+
+            // 通知adapter数据更新
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    // 更新Adapter的数据
+                    chatAdapter.setMessages(messageList);
+                    // 在UI线程上更新Adapter的数据
+                    chatAdapter.notifyDataSetChanged();
+                }
+            });
+
+
+        } else {
+            Log.d(TAG, "errowwwwwww");
+        }
     }
 
     private void sendMessage(View view) {
@@ -116,7 +243,7 @@ public class ChatFragment extends Fragment {
 
         sendContent.setText("");
         // set send message
-        Message newSentMessage = new Message(sentString,"avatar3.png" ,Message.MessageType.SENT);
+        Message newSentMessage = new Message(sentString,userAvatarUrl , SENT);
         chatAdapter.addMessage(newSentMessage);
         chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1); // 滚动到最新的消息
 

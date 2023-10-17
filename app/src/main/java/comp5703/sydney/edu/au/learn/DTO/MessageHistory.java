@@ -1,6 +1,7 @@
 package comp5703.sydney.edu.au.learn.DTO;
 
-public class UserMessage {
+public class MessageHistory {
+
     private Integer id;
 
     private String postMessageContent;
@@ -12,19 +13,15 @@ public class UserMessage {
     private Long postTime;
 
 
-    private String name;
+    // user table
+    private String fromUserName;
 
-    private String email;
-    private String password;
-    private String avatarUrl;
 
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
+    private String fromUserAvatar;
 
-    public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
-    }
+    private String toUserName;
+
+    private String toUserAvatar;
 
     public Integer getId() {
         return id;
@@ -66,27 +63,35 @@ public class UserMessage {
         this.postTime = postTime;
     }
 
-    public String getName() {
-        return name;
+    public String getFromUserName() {
+        return fromUserName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFromUserName(String fromUserName) {
+        this.fromUserName = fromUserName;
     }
 
-    public String getEmail() {
-        return email;
+    public String getFromUserAvatar() {
+        return fromUserAvatar;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setFromUserAvatar(String fromUserAvatar) {
+        this.fromUserAvatar = fromUserAvatar;
     }
 
-    public String getPassword() {
-        return password;
+    public String getToUserName() {
+        return toUserName;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setToUserName(String toUserName) {
+        this.toUserName = toUserName;
+    }
+
+    public String getToUserAvatar() {
+        return toUserAvatar;
+    }
+
+    public void setToUserAvatar(String toUserAvatar) {
+        this.toUserAvatar = toUserAvatar;
     }
 }

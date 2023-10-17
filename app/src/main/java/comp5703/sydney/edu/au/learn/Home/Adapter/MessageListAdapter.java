@@ -1,5 +1,7 @@
 package comp5703.sydney.edu.au.learn.Home.Adapter;
 
+import static comp5703.sydney.edu.au.learn.util.NetworkUtils.imageURL;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +12,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -50,6 +54,11 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
 
             holder.messageSendTime.setText(TimeCalculateUtil.getTimeElapsed(userMessage.getPostTime()));
 
+
+            Picasso.get()
+                    .load(imageURL + userMessage.getAvatarUrl())
+                    .error(R.drawable.img_5)  // error_image为加载失败时显示的图片
+                    .into(holder.userAvatar);
 
             // 绑定点击事件
             holder.itemView.setOnClickListener(new View.OnClickListener() {
