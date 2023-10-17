@@ -31,6 +31,7 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import comp5703.sydney.edu.au.learn.DTO.Message;
 import comp5703.sydney.edu.au.learn.DTO.MessageHistory;
@@ -78,15 +79,15 @@ public class ChatFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat_view, container, false);
 
-        // 隐藏header
-        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
-
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // 隐藏header
+        Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).hide();
 
         // 在 ItemDetailFragment 中获取传递的整数值
         Bundle args = getArguments();
@@ -101,6 +102,26 @@ public class ChatFragment extends Fragment {
         chatRecyclerView = view.findViewById(R.id.chatRecyclerView);
         sentBtn = view.findViewById(R.id.sentBtn);
         sendContent = view.findViewById(R.id.myEditText);
+
+        sendContent.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    sendContent.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (chatAdapter.getItemCount() >1){
+                                chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1);
+                            }
+                        }
+                    }, 100);
+                }
+            }
+        });
+
+
+
+
 
         remoteUserAvatar = view.findViewById(R.id.userAvatar);
         remoteUserName = view.findViewById(R.id.userName);
@@ -260,6 +281,11 @@ public class ChatFragment extends Fragment {
                     chatAdapter.setMessages(messageList);
                     // 在UI线程上更新Adapter的数据
                     chatAdapter.notifyDataSetChanged();
+
+                    if (messageList.size() >= 5){
+                        chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1);
+                    }
+
                 }
             });
 
@@ -314,8 +340,8 @@ public class ChatFragment extends Fragment {
                 Log.d("Websocket message", "服务器发送的消息：" + text);
 
                 ReceivedMessage receivedMessage = JSON.parseObject(text, ReceivedMessage.class);
-                // set send message
-                Message newSentMessage = new Message(receivedMessage.getText(),"avatar2.png", Message.MessageType.RECEIVED);
+                // set received message
+                Message newSentMessage = new Message(receivedMessage.getText(),remoteUserAvatarUrl, Message.MessageType.RECEIVED);
 
 
                 // 通知adapter数据更新

@@ -9,9 +9,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import comp5703.sydney.edu.au.learn.DTO.Record;
 import comp5703.sydney.edu.au.learn.DTO.UserMessage;
 import comp5703.sydney.edu.au.learn.Home.Adapter.MessageListAdapter;
 import comp5703.sydney.edu.au.learn.R;
@@ -51,6 +53,7 @@ public class MessagesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_messages, container, false);
 
+
         // get SharedPreferences instance
         SharedPreferences sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences("comp5703", Context.MODE_PRIVATE);
 
@@ -64,6 +67,29 @@ public class MessagesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+
+
+        Toolbar toolbar = view.findViewById(R.id.simple_toolbar);
+
+        AppCompatActivity appCompatActivity = (AppCompatActivity) getActivity();
+        if (appCompatActivity != null) {
+            appCompatActivity.setSupportActionBar(toolbar);
+            appCompatActivity.getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+
+        TextView toolbar_title = view.findViewById(R.id.toolbar_title);
+
+        // 确保 toolbar_title 不是 null
+        if (toolbar_title != null) {
+            toolbar_title.setText("Message List");
+        } else {
+            Log.e("MessagesFragment", "toolbar_title is null");
+        }
+
+
+
+
 
         messageListRecyclerView = view.findViewById(R.id.messageListRecyclerView);
 
