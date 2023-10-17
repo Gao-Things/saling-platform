@@ -19,4 +19,6 @@ public interface NormalUserService {
     public Result rejectAnOffer(String token, Long offerId);
 
     public Result openOrCloseOrCancelSale(String token, Long productId, int productStatusNew);
+
+    NormalUser findUserInfoById(Integer userId);
 }

@@ -30,6 +30,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/public/**").permitAll() // 公开访问的API
                 .antMatchers("/chat/**").permitAll()
                 .antMatchers("/notification/**").permitAll()
+                .antMatchers("/imserver/**").permitAll()
                 .antMatchers("/normal/**").hasRole("NORMAL")
                 .antMatchers("/admin/**").hasRole("ADMIN") // 需要ADMIN角色才能访问的URL
 
