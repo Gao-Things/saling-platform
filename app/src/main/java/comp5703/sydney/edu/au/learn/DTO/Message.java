@@ -6,13 +6,23 @@ public class Message {
     }
 
     String content;
+    String avatarUrl;
     MessageType type;
 
-    public Message(String content, MessageType type) {
+
+    public Message(String content, String avatarUrl, MessageType type) {
         this.content = content;
+        this.avatarUrl = avatarUrl;
         this.type = type;
     }
 
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
 
     public String getContent() {
         return content;

@@ -1,5 +1,7 @@
 package comp5703.sydney.edu.au.learn.service;
 
+import static comp5703.sydney.edu.au.learn.util.NetworkUtils.websocketUrl;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -84,7 +86,7 @@ public class MyService extends Service {
 
     private void initWebSocket(Integer userId) {
         Request request = new Request.Builder()
-                .url("ws://192.168.1.101:8082/notification/"+userId)
+                .url(websocketUrl +"/notification/"+userId)
                 .build();
 
         webSocket = client.newWebSocket(request, new WebSocketListener() {
@@ -124,7 +126,7 @@ public class MyService extends Service {
             // Handle other WebSocket events like onClose, onFailure, ...
         });
 
-        client.dispatcher().executorService().shutdown();
+//        client.dispatcher().executorService().shutdown();
     }
 
 

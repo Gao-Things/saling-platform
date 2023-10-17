@@ -16,8 +16,9 @@ public class NetworkUtils {
 
     private static final String TAG = "NetworkUtils";
     // replace with your computer ip address
-    public static final String apiURL = "http://192.168.1.101:8082";
-    public static final String imageURL = "http://192.168.1.101:8083/";
+    public static final String apiURL = "http://192.168.1.6:8082";
+    public static final String websocketUrl = "ws://192.168.1.6:8082";
+    public static final String imageURL = "http://192.168.1.6:8083/";
     private static OkHttpClient client = new OkHttpClient();
 
     public static void postJsonRequest(Object object, String url,@Nullable String token, Callback callback) {

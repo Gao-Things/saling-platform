@@ -86,12 +86,12 @@ public class ChatFragment extends Fragment {
 
         List<Message> chatData = new ArrayList<>();
 
-        chatData.add(new Message("你好！", Message.MessageType.SENT));
-        chatData.add(new Message("你好，有什么可以帮助你的吗？", Message.MessageType.RECEIVED));
-        chatData.add(new Message("我想知道这附近有什么好吃的餐厅。", Message.MessageType.SENT));
-        chatData.add(new Message("附近的 XYZ 餐厅非常不错，推荐尝试！", Message.MessageType.RECEIVED));
-        chatData.add(new Message("谢谢，我去试试看！", Message.MessageType.SENT));
-        chatData.add(new Message("不用谢，希望你吃得愉快！", Message.MessageType.RECEIVED));
+//        chatData.add(new Message("你好！", Message.MessageType.SENT));
+//        chatData.add(new Message("你好，有什么可以帮助你的吗？", Message.MessageType.RECEIVED));
+//        chatData.add(new Message("我想知道这附近有什么好吃的餐厅。", Message.MessageType.SENT));
+//        chatData.add(new Message("附近的 XYZ 餐厅非常不错，推荐尝试！", Message.MessageType.RECEIVED));
+//        chatData.add(new Message("谢谢，我去试试看！", Message.MessageType.SENT));
+//        chatData.add(new Message("不用谢，希望你吃得愉快！", Message.MessageType.RECEIVED));
 
         chatAdapter.setMessages(chatData);
         chatAdapter.notifyDataSetChanged();
@@ -116,7 +116,7 @@ public class ChatFragment extends Fragment {
 
         sendContent.setText("");
         // set send message
-        Message newSentMessage = new Message(sentString, Message.MessageType.SENT);
+        Message newSentMessage = new Message(sentString,"avatar3.png" ,Message.MessageType.SENT);
         chatAdapter.addMessage(newSentMessage);
         chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1); // 滚动到最新的消息
 
@@ -126,7 +126,7 @@ public class ChatFragment extends Fragment {
 
     private void initWebSocket(Integer userId) {
         Request request = new Request.Builder()
-                .url(websocketUrl + "/imserver/"+userId)
+                .url(websocketUrl + "/imserver/" + userId)
                 .build();
 
         webSocket = client.newWebSocket(request, new WebSocketListener() {
@@ -134,28 +134,54 @@ public class ChatFragment extends Fragment {
             public void onOpen(WebSocket webSocket, Response response) {
                 super.onOpen(webSocket, response);
                 // WebSocket connection opened
-                Log.d("Websocket message","websocket连接已打开");
+                Log.d("Websocket message", "websocket连接已打开");
             }
 
             @Override
             public void onMessage(WebSocket webSocket, String text) {
                 super.onMessage(webSocket, text);
                 // Message received from server
-
-                Log.d("Websocket message","服务器发送的消息："+ text);
+                Log.d("Websocket message", "服务器发送的消息：" + text);
 
                 ReceivedMessage receivedMessage = JSON.parseObject(text, ReceivedMessage.class);
-
                 // set send message
-                Message newSentMessage = new Message(receivedMessage.getText(), Message.MessageType.RECEIVED);
-                chatAdapter.addMessage(newSentMessage);
-                chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1); // 滚动到最新的消息
+                Message newSentMessage = new Message(receivedMessage.getText(),"avatar2.png", Message.MessageType.RECEIVED);
+
+
+                // 通知adapter数据更新
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // 更新Adapter的数据
+                        chatAdapter.addMessage(newSentMessage);
+                        chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1); // 滚动到最新的消息
+                    }
+                });
+
 
             }
 
-            // Handle other WebSocket events like onClose, onFailure, ...
-        });
+            @Override
+            public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+                super.onFailure(webSocket, t, response);
+                // Handle connection failures
+                Log.e("Websocket onFailure", "Connection failed: " + t.getMessage());
+            }
 
-        client.dispatcher().executorService().shutdown();
+            @Override
+            public void onClosing(WebSocket webSocket, int code, String reason) {
+                super.onClosing(webSocket, code, reason);
+                // The remote peer initiated a graceful shutdown
+                Log.d("Websocket onClosing", "Remote peer initiated close with code: " + code);
+            }
+
+            @Override
+            public void onClosed(WebSocket webSocket, int code, String reason) {
+                super.onClosed(webSocket, code, reason);
+                // WebSocket has been fully closed
+                Log.d("Websocket onClosed", "WebSocket closed with code: " + code);
+            }
+        });
     }
+
 }
