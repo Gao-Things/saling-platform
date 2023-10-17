@@ -19,14 +19,8 @@ import android.view.View;
 import android.widget.TextView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.Objects;
-
-import comp5703.sydney.edu.au.learn.Home.Adapter.FragmentOfferAdapter;
 import comp5703.sydney.edu.au.learn.Home.Fragment.ItemDetailFragment;
-import comp5703.sydney.edu.au.learn.Home.Fragment.ItemListEditFragment;
 import comp5703.sydney.edu.au.learn.Home.Fragment.ItemListFragment;
-import comp5703.sydney.edu.au.learn.Home.Fragment.MyOfferFragment;
-import comp5703.sydney.edu.au.learn.Home.Fragment.OfferContainerFragment;
 import comp5703.sydney.edu.au.learn.Home.Fragment.ProfileFragment;
 import comp5703.sydney.edu.au.learn.Home.Fragment.SellFragment;
 import comp5703.sydney.edu.au.learn.R;

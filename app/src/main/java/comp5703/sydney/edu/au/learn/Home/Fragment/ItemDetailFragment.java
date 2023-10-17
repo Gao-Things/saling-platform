@@ -189,6 +189,7 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
 
         args.putInt("receiverId", sellerId); // 这里的 "key" 是传递数据的键名，"value" 是要传递的值
         args.putInt("userId", userId);
+        args.putString("token", token);
         chatFragment.setArguments(args);
 
         // 执行 Fragment 跳转

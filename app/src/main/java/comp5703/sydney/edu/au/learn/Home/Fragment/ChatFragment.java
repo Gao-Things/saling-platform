@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,13 +34,13 @@ import java.util.List;
 
 import comp5703.sydney.edu.au.learn.DTO.Message;
 import comp5703.sydney.edu.au.learn.DTO.MessageHistory;
-import comp5703.sydney.edu.au.learn.DTO.UserMessage;
+import comp5703.sydney.edu.au.learn.DTO.User;
 import comp5703.sydney.edu.au.learn.Home.Adapter.ChatAdapter;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.ReceivedMessage;
-import comp5703.sydney.edu.au.learn.VO.ResponseMessage;
 import comp5703.sydney.edu.au.learn.VO.SendMessage;
 import comp5703.sydney.edu.au.learn.VO.userAndRemoteUserIdVO;
+import comp5703.sydney.edu.au.learn.VO.userIdVO;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -76,6 +77,10 @@ public class ChatFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat_view, container, false);
+
+        // 隐藏header
+        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+
         return view;
     }
 
@@ -117,9 +122,80 @@ public class ChatFragment extends Fragment {
         chatAdapter.setMessages(chatData);
 
         getChatHistoryData();
+
+        getUserInfoById(userId, true);
+        getUserInfoById(receiverId, false);
+
         chatAdapter.notifyDataSetChanged();
 
 
+    }
+
+    // 发送请求获取用户头像和姓名
+    private void getUserInfoById(Integer userId, boolean isLocalUser){
+        userIdVO userIdVO = new userIdVO();
+        userIdVO.setUserId(userId);
+        NetworkUtils.getWithParamsRequest( userIdVO, "/normal/message/getUserInfoById",token, new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                handleResponse2(response, isLocalUser);
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                handleFailure(e);
+            }
+        });
+    }
+
+    private void handleResponse2(Response response, boolean isLocalUser) throws IOException {
+
+        String responseBody = response.body().string();
+        JSONObject jsonObject = JSONObject.parseObject(responseBody);
+        int code = jsonObject.getIntValue("code");
+
+        // 提取 "records" 数组并转换为List
+        JSONObject userJson = jsonObject.getJSONObject("data");
+
+        User user = userJson.toJavaObject(User.class);
+
+
+        if (code == 200) {
+
+            // 通知adapter数据更新
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    if (isLocalUser){
+                        // 更新本地user的头像和姓名
+                        userAvatarUrl = user.getAvatarUrl();
+                    }else {
+                        // 设置远程用户的头像,姓名
+                        remoteUserAvatarUrl = user.getAvatarUrl();
+
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                remoteUserName.setText(user.getName());
+                                Picasso.get()
+                                        .load(imageURL + remoteUserAvatarUrl)
+                                        .error(R.drawable.img_5)  // error_image为加载失败时显示的图片
+                                        .into(remoteUserAvatar);
+                            }
+                        });
+                    }
+
+
+
+                }
+            });
+
+
+        } else {
+            Log.d(TAG, "errowwwwwww");
+        }
     }
 
 
@@ -148,16 +224,11 @@ public class ChatFragment extends Fragment {
 
     private void handleResponse(Response response) throws IOException {
 
-        boolean flag = false;
-        boolean flag2 = false;
-
         String responseBody = response.body().string();
         JSONObject jsonObject = JSONObject.parseObject(responseBody);
         int code = jsonObject.getIntValue("code");
 
         if (code == 200) {
-            flag = true;
-            flag2 = true;
             // 提取 "records" 数组并转换为List
             JSONArray messageHistoryList = jsonObject.getJSONArray("data");
 
@@ -171,37 +242,9 @@ public class ChatFragment extends Fragment {
                 Message message;
                 if (messageHistory.getFromUserId() == userId){
 
-                    if (flag2){
-                        // 设置本地用户的头像
-                        userAvatarUrl = messageHistory.getFromUserAvatar();
-                        flag2 = false;
-                    }
-
 
                     message = new Message(messageHistory.getPostMessageContent(), messageHistory.getFromUserAvatar(), SENT);
                 }else {
-
-                    if (flag){
-                        // 设置远程用户的头像,姓名
-                        remoteUserAvatarUrl = messageHistory.getToUserAvatar();
-
-
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                remoteUserName.setText(messageHistory.getFromUserName());
-                                Picasso.get()
-                                        .load(imageURL + remoteUserAvatarUrl)
-                                        .error(R.drawable.img_5)  // error_image为加载失败时显示的图片
-                                        .into(remoteUserAvatar);
-                            }
-                        });
-
-
-                        flag = false;
-                    }
-
-
 
                     message = new Message(messageHistory.getPostMessageContent(), messageHistory.getFromUserAvatar(), RECEIVED);
                 }
