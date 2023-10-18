@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,6 +19,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,6 +45,10 @@ public class ItemListFragment extends Fragment {
 
     private Fragment itemDetailFragment;
 
+    private Fragment searchFragment;
+
+    private EditText searchBox;
+
 
     @Nullable
     @Override
@@ -59,6 +66,7 @@ public class ItemListFragment extends Fragment {
 
         super.onViewCreated(view, savedInstanceState);
         itemRecyclerView = view.findViewById(R.id.list_main);
+//        searchBox = view.findViewById(R.id.search_box);
 
         // 创建并设置RecyclerView的LayoutManager
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -69,8 +77,24 @@ public class ItemListFragment extends Fragment {
         itemListAdapter = new ItemListAdapter(getContext(),new ArrayList<Record>(),clickListener);
         itemRecyclerView.setAdapter(itemListAdapter);
 
+//        searchBox.setOnClickListener(this::dumpToSearchFragment);
 
 
+
+    }
+
+    private void dumpToSearchFragment(View view) {
+        // jump to item detail
+        if (searchFragment == null){
+            searchFragment = new SearchFragment();
+        }
+
+        // 执行 Fragment 跳转
+        assert getFragmentManager() != null;
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.fl_container, searchFragment); // R.id.fragment_container 是用于放置 Fragment 的容器
+        transaction.addToBackStack(null); // 将 FragmentA 添加到返回栈，以便用户可以返回到它
+        transaction.commitAllowingStateLoss();
     }
 
 

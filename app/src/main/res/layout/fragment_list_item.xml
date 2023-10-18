@@ -20,13 +20,13 @@
         android:textStyle="bold"/>
 
         <RelativeLayout
+            android:id="@+id/search_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp">
 
             <!-- 圆角搜索框 -->
             <EditText
-                android:id="@+id/search_box"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:paddingStart="12dp"

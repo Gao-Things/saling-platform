@@ -524,7 +524,7 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        itemDetailPrice.setText(Double.toString(product.getProductPrice()));
+//                        itemDetailPrice.setText(Double.toString(product.getProductPrice()));
 
                     String  imageurl1 =  imageURL+ product.getProductImage();
                     List<String> imgList = new ArrayList<>();
@@ -549,6 +549,8 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
                         if (product.getProductStatus()!=0 && product.getOwnerId().intValue() != userId){
                             itemStatusImg.setVisibility(View.GONE);
                             itemCloseImg.setVisibility(View.VISIBLE);
+                            confirmButton.setVisibility(View.INVISIBLE);
+
                         }
 
 

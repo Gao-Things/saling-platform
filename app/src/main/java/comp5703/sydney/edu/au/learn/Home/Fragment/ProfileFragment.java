@@ -19,6 +19,7 @@ import java.util.Objects;
 import comp5703.sydney.edu.au.learn.MainActivity;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.service.MyService;
+import comp5703.sydney.edu.au.learn.util.DialogUtil;
 
 public class ProfileFragment extends Fragment {
     private View rootView;
@@ -61,8 +62,26 @@ public class ProfileFragment extends Fragment {
     }
 
     private void logout(View view) {
-        // 清除用户数据
-        clearUserData();
+
+        DialogUtil.showCustomDialog(
+                Objects.requireNonNull(getActivity()),
+                getContext(),
+                "Do you confirm to log out ?",
+                v -> {
+                    // Handle the logic for logging out
+                    clearUserData();
+                },null
+                );
+
+    }
+
+    private void clearUserData() {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("comp5703", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("userId");
+        editor.remove("token");
+        editor.apply();
+
 
         // 停止消息推送服务
         Intent serviceIntent = new Intent(getActivity(), MyService.class);
@@ -76,14 +95,6 @@ public class ProfileFragment extends Fragment {
 
         // 关闭当前活动
         Objects.requireNonNull(getActivity()).finish();
-    }
-
-    private void clearUserData() {
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("comp5703", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove("userId");
-        editor.remove("token");
-        editor.apply();
     }
 
 
