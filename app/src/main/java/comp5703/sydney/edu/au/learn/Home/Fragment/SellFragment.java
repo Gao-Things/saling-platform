@@ -8,6 +8,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -19,11 +20,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,8 +39,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputLayout;
 import com.itheima.wheelpicker.WheelPicker;
 import com.squareup.picasso.Picasso;
 
@@ -46,11 +53,13 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 import comp5703.sydney.edu.au.learn.Common.DialogFragment;
+import comp5703.sydney.edu.au.learn.DTO.Offer;
 import comp5703.sydney.edu.au.learn.DTO.Product;
 import comp5703.sydney.edu.au.learn.Home.Adapter.ImageAdapter;
 import comp5703.sydney.edu.au.learn.Home.HomeUseActivity;
@@ -74,6 +83,11 @@ public class SellFragment extends Fragment {
     private String uploadImageUrl;
     private AutoCompleteTextView autoCompleteTextView;
 
+    private AutoCompleteTextView autoCompleteTextView2;
+
+    private TextInputLayout textInputLayout;
+    private TextInputLayout textInputLayout2;
+
     private Uri photoURI;
     private File photoFile;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
@@ -83,6 +97,14 @@ public class SellFragment extends Fragment {
     private ImageAdapter imageAdapter;
 
     private Integer productId;
+
+    private MaterialCheckBox materialCheckBox;
+
+    private TextView chooseUnit;
+
+    private String selectType;
+
+    private Fragment itemDetailFragment;
 
     @Nullable
     @Override
@@ -101,9 +123,42 @@ public class SellFragment extends Fragment {
         editPrice = view.findViewById(R.id.editPrice);
         btnSubmit = view.findViewById(R.id.btnSubmit);
         wheelPicker =  view.findViewById(R.id.wheel1);
+        chooseUnit = view.findViewById(R.id.chooseUnit);
+        materialCheckBox =view.findViewById(R.id.checkBoxHiddenPrice);
+        textInputLayout = view.findViewById(R.id.textInputLayout);
+        textInputLayout2 = view.findViewById(R.id.textInputLayout2);
+
+        String[] items2 = new String[] {"gold", "silver"};
+        ArrayAdapter<String> adapter2 = new ArrayAdapter<>(
+                getContext(),
+                R.layout.my_dropdown_item,  // 使用自定义布局
+                items2
+        );
+
+        autoCompleteTextView2 = view.findViewById(R.id.autoCompleteTextView2);
+        autoCompleteTextView2.setAdapter(adapter2);
+        autoCompleteTextView2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String selectedItem = (String) parent.getItemAtPosition(position);
+                Log.d("AutoComplete", "Selected item: " + selectedItem);
+
+                selectType = selectedItem;
+
+                // 设置第二个 AutoCompleteTextView 的提示文本
+                if (selectType.equals("gold")){
+
+                    autoCompleteTextView.setHint("Please select gold type");
+                }else {
+
+                    autoCompleteTextView.setHint("Please select silver type");
+                }
+
+                textInputLayout.setVisibility(View.VISIBLE);
+            }
+        });
 
         String[] items = new String[] {"24K", "21K", "18K"};
-
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 getContext(),
                 R.layout.my_dropdown_item,  // 使用自定义布局
@@ -112,6 +167,9 @@ public class SellFragment extends Fragment {
 
         autoCompleteTextView = view.findViewById(R.id.autoCompleteTextView);
         autoCompleteTextView.setAdapter(adapter);
+
+
+
 
         // 初始化画廊
         RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
@@ -198,10 +256,31 @@ public class SellFragment extends Fragment {
                     @SuppressLint("SetTextI18n")
                     @Override
                     public void run() {
-                        editPrice.setText(Double.toString(product.getProductPrice()));
+
                         editTitle.setText(product.getProductName());
                         editDescription.setText(product.getProductDescription());
                         editWeight.setText( Double.toString( product.getProductWeight()));
+                        editPrice.setText(Double.toString(product.getProductPrice()));
+
+
+                        //TODO 先暂时设置一个  ，欺骗客户
+                        autoCompleteTextView.setText("Gold 24K");
+
+                        materialCheckBox.setChecked(true);
+
+                        // 禁用这些值，不让用户编辑
+                        editWeight.setEnabled(false);
+
+                        editPrice.setEnabled(false);
+                        autoCompleteTextView.setEnabled(false);
+                        autoCompleteTextView2.setEnabled(false);
+                        textInputLayout.setVisibility(View.VISIBLE);
+                        textInputLayout.setEnabled(false);
+
+                        textInputLayout2.setEnabled(false);
+
+                        wheelPicker.setVisibility(View.INVISIBLE);
+                        chooseUnit.setVisibility(View.VISIBLE);
 
                         // 使用ImageAdapter的实例添加新的URL
                         imageAdapter.addImageUrl(imageURL + product.getProductImage());
@@ -364,9 +443,49 @@ public class SellFragment extends Fragment {
         int code = jsonObject.getIntValue("code");
 
         if (code == 200) {
-            DialogFragment dialogFragment = new DialogFragment();
-            FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-            dialogFragment.show(transaction, "dialog_fragment_tag");
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    LayoutInflater inflater = LayoutInflater.from(getContext());
+                    View customView = inflater.inflate(R.layout.dialog_custom_layout2, null);
+
+                    new MaterialAlertDialogBuilder(getContext(), R.style.AlertDialogCustomTheme)
+                            .setView(customView)
+                            .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // 这是用户点击“确定”按钮后要执行的代码
+
+                                    // 跳转到商品详情页面
+                                    Integer productId = jsonObject.getInteger("data");
+
+                                    // jump to item detail
+                                    if (itemDetailFragment == null){
+                                        itemDetailFragment = new ItemDetailFragment();
+                                    }
+                                    // 准备要传递的数据
+                                    Bundle args = new Bundle();
+                                    args.putInt("productId", productId);
+                                    itemDetailFragment.setArguments(args);
+
+                                    // 执行 Fragment 跳转
+                                    assert getFragmentManager() != null;
+                                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                                    transaction.replace(R.id.fl_container, itemDetailFragment);
+                                    transaction.addToBackStack(null);
+                                    transaction.commitAllowingStateLoss();
+                                }
+                            })
+                            .show();
+
+
+
+                }
+            });
+
+
+
         } else {
 
         }

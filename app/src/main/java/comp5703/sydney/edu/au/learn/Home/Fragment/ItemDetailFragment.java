@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,6 +35,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.Resource;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -60,6 +62,7 @@ import comp5703.sydney.edu.au.learn.DTO.Product;
 import comp5703.sydney.edu.au.learn.Home.Adapter.ProductOfferListAdapter;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.makeAnOfferParameter;
+import comp5703.sydney.edu.au.learn.VO.modifyProductStatusParameter;
 import comp5703.sydney.edu.au.learn.VO.productDetailParameter;
 import comp5703.sydney.edu.au.learn.VO.productOfferParameter;
 import comp5703.sydney.edu.au.learn.VO.productParameter;
@@ -109,6 +112,8 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
 
     private Integer sellerId;
 
+    private Boolean checkButtonFlag = true;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -157,6 +162,7 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
 
         // 初始化 switchButton
         switchButton = view.findViewById(R.id.switch_button);
+
         initializeSwitchListener();
 
         // 在 ItemDetailFragment 中获取传递的整数值
@@ -291,8 +297,11 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
         SwitchButton.OnCheckedChangeListener listener = new SwitchButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                switchButton.setOnCheckedChangeListener(null);
-                showConfirmationDialog(isChecked);
+
+                // 第一次加载页面不会弹出确认框
+                if (!checkButtonFlag){
+                    showConfirmationDialog(isChecked);
+                }
             }
         };
         switchButton.setOnCheckedChangeListener(listener);
@@ -328,6 +337,27 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
             initializeSwitchListener();
 
             // TODO 发送请求，更改商品状态
+            modifyProductStatusParameter modifyProductStatusParameter = new modifyProductStatusParameter();
+            modifyProductStatusParameter.setProductId(productId);
+            if (isChecked){
+                modifyProductStatusParameter.setProductStatusNew(0);
+            }else {
+                modifyProductStatusParameter.setProductStatusNew(1);
+            }
+
+            modifyProductStatusParameter.setToken(token);
+            // send request to backend
+            NetworkUtils.postJsonRequest(modifyProductStatusParameter, "/normal/openOrCloseOrCancelSale",token, new Callback() {
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    handleModifyProductStatusResponse(response);
+                }
+
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    handleFailure(e);
+                }
+            });
 
 
         });
@@ -340,6 +370,17 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
             switchButton.setChecked(!isChecked);
             initializeSwitchListener();
         });
+    }
+
+    private void handleModifyProductStatusResponse(Response response) throws IOException {
+        String responseBody = response.body().string();
+        JSONObject jsonObject = JSONObject.parseObject(responseBody);
+        int code = jsonObject.getIntValue("code");
+        // 修改商品状态成功
+        if (code == 200) {
+            // 刷新产品信息
+            getProductInformation(productId);
+        }
     }
 
     // 更新按钮颜色
@@ -491,6 +532,18 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
                     imgList.add(imageurl1);
                     imgList.add(imageurl1);
 
+
+                    // 如果产品属于编辑状态就锁死编辑按钮
+                    if (product.getProductStatus()==0){
+                        editButton.setBackground(getResources().getDrawable(R.drawable.edit_button_disabled));
+                        editButton.setTextColor(getResources().getColor(R.color.black));
+                        editButton.setEnabled(false);
+                    }else {
+                        editButton.setBackground(getResources().getDrawable(R.drawable.custom_button_background2));
+                        editButton.setEnabled(true);
+                    }
+
+
                     loadBanner(imgList);
                         // 如果状态不在售卖且不属于卖家家页面
                         if (product.getProductStatus()!=0 && product.getOwnerId().intValue() != userId){
@@ -554,7 +607,14 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
                 if (!isValid){
                     switchButton.setChecked(false);
                     updateButtonColor(false);
+                }else {
+                    switchButton.setChecked(true);
+                    updateButtonColor(true);
+
                 }
+
+                // 第一次加载完swich button后就需要用户确认是否改变状态
+                checkButtonFlag = false;
 
 
             }

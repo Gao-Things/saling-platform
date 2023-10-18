@@ -72,12 +72,6 @@ public class MessagesFragment extends Fragment {
 
         Toolbar toolbar = view.findViewById(R.id.simple_toolbar);
 
-        AppCompatActivity appCompatActivity = (AppCompatActivity) getActivity();
-        if (appCompatActivity != null) {
-            appCompatActivity.setSupportActionBar(toolbar);
-            appCompatActivity.getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
-
         TextView toolbar_title = view.findViewById(R.id.toolbar_title);
 
         // 确保 toolbar_title 不是 null

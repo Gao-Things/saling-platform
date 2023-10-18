@@ -1,6 +1,7 @@
 package comp5703.sydney.edu.au.learn.Home.Fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,7 +15,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import java.util.Objects;
+
+import comp5703.sydney.edu.au.learn.MainActivity;
 import comp5703.sydney.edu.au.learn.R;
+import comp5703.sydney.edu.au.learn.service.MyService;
 
 public class ProfileFragment extends Fragment {
     private View rootView;
@@ -26,6 +30,8 @@ public class ProfileFragment extends Fragment {
     private CardView myOfferCardView;
     
     private CardView myMessageCardView;
+
+    private CardView logout;
 
     @Nullable
     @Override
@@ -47,10 +53,40 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         myOfferCardView = view.findViewById(R.id.myOfferCardView);
         myMessageCardView = view.findViewById(R.id.myMessageCardView);
+        logout = view.findViewById(R.id.logout);
         myOfferCardView.setOnClickListener(this::dumpToOfferContainer);
         myMessageCardView.setOnClickListener(this::dumpToMyMessage);
+        logout.setOnClickListener(this::logout);
 
     }
+
+    private void logout(View view) {
+        // 清除用户数据
+        clearUserData();
+
+        // 停止消息推送服务
+        Intent serviceIntent = new Intent(getActivity(), MyService.class);
+        getActivity().stopService(serviceIntent);
+
+
+        // 重定向到登录页面
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+
+        // 关闭当前活动
+        Objects.requireNonNull(getActivity()).finish();
+    }
+
+    private void clearUserData() {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("comp5703", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("userId");
+        editor.remove("token");
+        editor.apply();
+    }
+
+
 
     private void dumpToMyMessage(View view) {
 

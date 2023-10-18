@@ -64,13 +64,36 @@
             android:paddingStart="13dp"
             tools:ignore="RtlSymmetry" />
 
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout2"
+            style="@style/MyCustomTextInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="Select Metal Type"
+            app:endIconTint="@color/darkGreen">
+
+            <AutoCompleteTextView
+                android:id="@+id/autoCompleteTextView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/background_light"
+                android:editable="false"
+                android:inputType="none"
+                android:popupBackground="@color/white" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout"
             style="@style/MyCustomTextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:hint="Choose gold type"
+            android:visibility="gone"
             app:endIconTint="@color/darkGreen">
 
             <AutoCompleteTextView
@@ -119,6 +142,20 @@
                 app:wheel_cyclic="true"
                 app:wheel_item_text_color="@color/black"
                 app:wheel_selected_item_text_color="@color/darkGreen" />
+
+
+            <TextView
+                android:id="@+id/chooseUnit"
+                android:gravity="center_vertical"
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:paddingLeft="10dp"
+                android:layout_height="match_parent"
+                android:textSize="21sp"
+                android:textColor="@color/textColorSecondary"
+                android:text="g"
+                android:visibility="gone"
+                />
 
 
             <!--属性解释:

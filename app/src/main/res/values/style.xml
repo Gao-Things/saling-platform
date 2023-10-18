@@ -53,6 +53,9 @@
         <item name="boxCornerRadiusBottomEnd">8dp</item>
         <item name="android:textColorHint">@color/textColorSecondary</item>
     </style>
+    <style name="AlertDialogCustomTheme" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="android:background">@color/white</item>
+    </style>
 
 
 

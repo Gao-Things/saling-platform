@@ -6,6 +6,9 @@ import static comp5703.sydney.edu.au.learn.DTO.Message.MessageType.SENT;
 import static comp5703.sydney.edu.au.learn.util.NetworkUtils.imageURL;
 import static comp5703.sydney.edu.au.learn.util.NetworkUtils.websocketUrl;
 
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -195,7 +198,6 @@ public class ChatFragment extends Fragment {
                         // 设置远程用户的头像,姓名
                         remoteUserAvatarUrl = user.getAvatarUrl();
 
-
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -351,6 +353,17 @@ public class ChatFragment extends Fragment {
                         // 更新Adapter的数据
                         chatAdapter.addMessage(newSentMessage);
                         chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1); // 滚动到最新的消息
+
+                        try {
+                            // 获取系统默认的通知音频的 URI
+                            Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                            Ringtone ringtone = RingtoneManager.getRingtone(getActivity(), notificationSound);
+                            ringtone.play();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+
                     }
                 });
 
