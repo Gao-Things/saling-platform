@@ -194,7 +194,7 @@ public class SellFragment extends Fragment {
 
         wheelPicker.setMaximumWidthTextPosition(2);
         wheelPicker.setItemSpace(20);  // 假设5是一个合适的可见项数
-        // 设置选定项目的监听器
+        // 设置选定项目的监听器,111111
         wheelPicker.setOnItemSelectedListener(new WheelPicker.OnItemSelectedListener() {
             @Override
             public void onItemSelected(WheelPicker picker, Object data, int position) {
