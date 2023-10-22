@@ -1,30 +1,41 @@
 package com.usyd.capstone.service;
+import com.usyd.capstone.common.DTO.LoginResponse;
+import com.usyd.capstone.common.Enums.ROLE;
 import com.usyd.capstone.common.VO.MakeOrUpdateAnOfferRequest;
 import com.usyd.capstone.common.VO.AcceptOrCancelOrRejectAnOfferRequest;
 import com.usyd.capstone.common.VO.OpenOrCloseOrCancelSaleRequest;
 import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.CapstoneApplication;
+import com.usyd.capstone.common.compents.JwtToken;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.*;
+import javax.annotation.Resource;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = CapstoneApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class NormalUserServiceTest {
-    @Autowired
+    @Resource
     private NormalUserService normalUserService; // 注入服务
 
     @Test
     public void makeOrUpdateAnOffer() {
+        ROLE role;
+        role = ROLE.ROLE_SUPER;
+        String token = JwtToken.generateToken(3L, "123456", role);
 
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setId(3L);
+        loginResponse.setRole(3);
         MakeOrUpdateAnOfferRequest request = new MakeOrUpdateAnOfferRequest(); // 请确保类名正确
-        request.setToken("sampleToken");
+        request.setToken(token);
         request.setProductId(1L);
         request.setNote("sampleNote");
-        request.setPrice(100.0);
+        request.setPrice(99);
         Result result = normalUserService.makeOrUpdateAnOffer(
                 request.getToken(),
                 request.getProductId(),
@@ -32,25 +43,24 @@ public class NormalUserServiceTest {
                 request.getPrice()
         );
 
+
         // 对结果进行验证
         assertNotNull(result);
 //        assertEquals("Cannot parse the token!", result.getData());
-//
-//        // Add any additional assertions based on your expected results.
-//        assertEquals("Cannot find the user account or product!", result.getData());
-//        assertEquals("The user account isn't active!", result.getData());
-//        assertEquals("You cannot buy your own items!", result.getData());
-//        assertEquals("The product isn't for sale!", result.getData());
-
-
-
     }
 
     @Test
     public void acceptAnOffer() {
+        ROLE role;
+        role = ROLE.ROLE_SUPER;
+        String token = JwtToken.generateToken(2L, "123456", role);
+
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setId(2L);
+        loginResponse.setRole(3);
         AcceptOrCancelOrRejectAnOfferRequest request = new AcceptOrCancelOrRejectAnOfferRequest();
-        request.setToken("sampleToken");
-        request.setOfferId(1L);
+        request.setToken(token);
+        request.setOfferId(9L);
 
         Result result = normalUserService.acceptAnOffer(request.getToken(), request.getOfferId());
 
@@ -61,9 +71,16 @@ public class NormalUserServiceTest {
 
     @Test
     public void cancelAnOffer() {
+        ROLE role;
+        role = ROLE.ROLE_SUPER;
+        String token = JwtToken.generateToken(2L, "123456", role);
+
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setId(2L);
+        loginResponse.setRole(3);
         AcceptOrCancelOrRejectAnOfferRequest request = new AcceptOrCancelOrRejectAnOfferRequest();
-        request.setToken("sampleToken");
-        request.setOfferId(1L);
+        request.setToken(token);
+        request.setOfferId(8L);
 
         Result result = normalUserService.cancelAnOffer(request.getToken(), request.getOfferId());
 
@@ -74,9 +91,16 @@ public class NormalUserServiceTest {
 
     @Test
     public void rejectAnOffer() {
+        ROLE role;
+        role = ROLE.ROLE_SUPER;
+        String token = JwtToken.generateToken(2L, "123456", role);
+
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setId(2L);
+        loginResponse.setRole(3);
         AcceptOrCancelOrRejectAnOfferRequest request = new AcceptOrCancelOrRejectAnOfferRequest();
-        request.setToken("sampleToken");
-        request.setOfferId(1L);
+        request.setToken(token);
+        request.setOfferId(7L);
 
         Result result = normalUserService.rejectAnOffer(request.getToken(), request.getOfferId());
 
@@ -85,13 +109,20 @@ public class NormalUserServiceTest {
 
     @Test
     public void openOrCloseOrCancelSale() {
+        ROLE role;
+        role = ROLE.ROLE_SUPER;
+        String token = JwtToken.generateToken(2L, "123456", role);
+
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setId(2L);
+        loginResponse.setRole(3);
         OpenOrCloseOrCancelSaleRequest request = new OpenOrCloseOrCancelSaleRequest();
-        request.setToken("sampleToken");
+        request.setToken(token);
         request.setProductId(1L);
         request.setProductStatusNew(1); // Assuming 1 represents some valid status.
 
         Result result = normalUserService.openOrCloseOrCancelSale(request.getToken(), request.getProductId(), request.getProductStatusNew());
-
+        assertNotNull(result);
 
     }
 }
