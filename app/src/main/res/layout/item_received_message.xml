@@ -14,21 +14,36 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:src="@drawable/avatar3" />
-        <TextView
-            android:id="@+id/tvMessage"
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/chat_bubble"
-            android:textColor="#000000"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="2dp"
-            android:textSize="18sp"
-            android:maxWidth="200dp"
-            android:text="xxxxxxxx"
-            android:lineSpacingExtra="2dp"
-            android:padding="7dp"/>
+            android:layout_marginLeft="7dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/chat_bubble2"
+                android:textColor="#FFFFFF"
+                android:maxWidth="200dp"
+                android:textSize="18sp"
+                android:text="xxxxxxxxccccasdasxx"
+                android:lineSpacingExtra="2dp"
+                android:padding="7dp" />
+
+            <TextView
+                android:id="@+id/tvTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:textColor="@color/textColorBlackGray"
+                android:textSize="12sp"
+                android:text="6:03 PM"
+                android:paddingEnd="10dp"
+                android:paddingBottom="5dp" />
+        </LinearLayout>
 
     </LinearLayout>
-
-
 </LinearLayout>

@@ -9,19 +9,39 @@
         android:padding="8dp"
         android:gravity="end|top"> <!-- 这里增加了 top 对齐 -->
 
-        <TextView
-            android:id="@+id/tvMessage"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/chat_bubble2"
-            android:textColor="#FFFFFF"
-            android:maxWidth="200dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginTop="6dp"
-            android:textSize="18sp"
-            android:text="xxxxxxxxxasdasdasdasdasxx"
-            android:lineSpacingExtra="2dp"
-            android:padding="7dp"/>
+            android:layout_marginRight="7dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/chat_bubble2"
+                android:textColor="#FFFFFF"
+                android:maxWidth="200dp"
+                android:textSize="18sp"
+                android:text="xxxxxxxxccccasdasxx"
+                android:lineSpacingExtra="2dp"
+                android:padding="7dp" />
+
+            <TextView
+                android:id="@+id/tvTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:textColor="@color/textColorBlackGray"
+                android:textSize="12sp"
+                android:text="6:03 PM"
+                android:paddingEnd="10dp"
+                android:paddingBottom="5dp" />
+        </LinearLayout>
+
+
+
+
 
         <ImageView
             android:id="@+id/userAvatar"

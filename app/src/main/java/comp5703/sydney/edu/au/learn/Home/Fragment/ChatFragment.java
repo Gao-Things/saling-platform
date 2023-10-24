@@ -32,8 +32,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import comp5703.sydney.edu.au.learn.DTO.Message;
@@ -266,10 +269,10 @@ public class ChatFragment extends Fragment {
                 if (messageHistory.getFromUserId() == userId){
 
 
-                    message = new Message(messageHistory.getPostMessageContent(), messageHistory.getFromUserAvatar(), SENT);
+                    message = new Message(messageHistory.getPostMessageContent(), messageHistory.getFromUserAvatar(), SENT, formatTimeStamp(messageHistory.getPostTime()));
                 }else {
 
-                    message = new Message(messageHistory.getPostMessageContent(), messageHistory.getFromUserAvatar(), RECEIVED);
+                    message = new Message(messageHistory.getPostMessageContent(), messageHistory.getFromUserAvatar(), RECEIVED, formatTimeStamp(messageHistory.getPostTime()));
                 }
                 messageList.add(message);
 
@@ -313,14 +316,28 @@ public class ChatFragment extends Fragment {
         webSocket.send(jsonString);
 
         sendContent.setText("");
+
         // set send message
-        Message newSentMessage = new Message(sentString,userAvatarUrl , SENT);
+
+        Message newSentMessage = new Message(sentString,userAvatarUrl , SENT, formatTimeStamp(System.currentTimeMillis()));
         chatAdapter.addMessage(newSentMessage);
         chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1); // 滚动到最新的消息
 
 
     }
 
+    private String formatTimeStamp(Long currentTimeMillis){
+
+        // 创建一个 Date 对象
+        Date date = new Date(currentTimeMillis);
+
+        // 使用 SimpleDateFormat 来格式化日期为12小时制
+        SimpleDateFormat sdf = new SimpleDateFormat("h:mm a", Locale.US);
+        String formattedTime = sdf.format(date);
+
+        return formattedTime;
+
+    }
 
     private void initWebSocket(Integer userId) {
         Request request = new Request.Builder()
@@ -343,7 +360,7 @@ public class ChatFragment extends Fragment {
 
                 ReceivedMessage receivedMessage = JSON.parseObject(text, ReceivedMessage.class);
                 // set received message
-                Message newSentMessage = new Message(receivedMessage.getText(),remoteUserAvatarUrl, Message.MessageType.RECEIVED);
+                Message newSentMessage = new Message(receivedMessage.getText(),remoteUserAvatarUrl, Message.MessageType.RECEIVED, formatTimeStamp(System.currentTimeMillis()));
 
 
                 // 通知adapter数据更新

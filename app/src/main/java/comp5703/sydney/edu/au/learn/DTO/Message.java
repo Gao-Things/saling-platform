@@ -7,13 +7,15 @@ public class Message {
 
     String content;
     String avatarUrl;
+    String postTime;
     MessageType type;
 
 
-    public Message(String content, String avatarUrl, MessageType type) {
+    public Message(String content, String avatarUrl, MessageType type, String postTime) {
         this.content = content;
         this.avatarUrl = avatarUrl;
         this.type = type;
+        this.postTime = postTime;
     }
 
     public String getAvatarUrl() {
@@ -38,5 +40,13 @@ public class Message {
 
     public void setType(MessageType type) {
         this.type = type;
+    }
+
+    public String getPostTime() {
+        return postTime;
+    }
+
+    public void setPostTime(String postTime) {
+        this.postTime = postTime;
     }
 }

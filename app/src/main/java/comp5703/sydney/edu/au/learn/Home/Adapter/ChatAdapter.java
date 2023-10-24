@@ -7,7 +7,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -63,10 +65,16 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public class SentViewHolder extends RecyclerView.ViewHolder {
         TextView tvMessage;
         ImageView userAvatar;
+        TextView tvTime;
+
+
+
         public SentViewHolder(View itemView) {
             super(itemView);
             tvMessage = itemView.findViewById(R.id.tvMessage);
             userAvatar = itemView.findViewById(R.id.userAvatar);
+            tvTime = itemView.findViewById(R.id.tvTime);
+
 
         }
 
@@ -77,6 +85,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     .load(imageURL + message.getAvatarUrl())
                     .error(R.drawable.img_5)  // error_image为加载失败时显示的图片
                     .into(userAvatar);
+            tvTime.setText(message.getPostTime());
 
         }
     }
@@ -84,11 +93,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public class ReceivedViewHolder extends RecyclerView.ViewHolder {
         TextView tvMessage;
         ImageView userAvatar;
+        TextView tvTime;
+
 
         public ReceivedViewHolder(View itemView) {
             super(itemView);
             tvMessage = itemView.findViewById(R.id.tvMessage);
             userAvatar = itemView.findViewById(R.id.userAvatar);
+            tvTime = itemView.findViewById(R.id.tvTime);
         }
 
         public void bind(Message message) {
@@ -98,6 +110,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     .load(imageURL + message.getAvatarUrl())
                     .error(R.drawable.img_5)  // error_image为加载失败时显示的图片
                     .into(userAvatar);
+
+            tvTime.setText(message.getPostTime());
         }
     }
 
