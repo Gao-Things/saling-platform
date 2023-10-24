@@ -14,10 +14,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +45,12 @@ public class ProductController {
 
     @Autowired
     private ExchangeRateUsdService exchangeRateUsdService;
+
+    @Autowired
+    private S3Client s3Client;
+
+    @Value("${aws.s3.bucket}")
+    private String s3Bucket;
 
     @GetMapping("/currencyList")
     public Result getCurrencyList(){
@@ -79,27 +90,38 @@ public class ProductController {
         }
 
         try {
-        // 确保上传目录存在，如果不存在则创建
-            File dir = new File(uploadDir);
-            if (!dir.exists()) {
-                dir.mkdirs();
+            // 获取文件的原始名字
+            String originalFilename = file.getOriginalFilename();
+            String fileExtension = originalFilename.contains(".") ? originalFilename.substring(originalFilename.lastIndexOf(".")) : "";
+
+            // 1. 使用LocalDateTime获取当前时间戳
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+
+            // 2. 将时间戳添加到文件名中
+            String key = timestamp + "_" + originalFilename;
+
+            // 3. 获取文件的MIME类型
+            String contentType = file.getContentType();
+            if (contentType == null) {
+                contentType = "application/octet-stream"; // default
             }
 
-            // 生成新的文件名，将时间戳添加到原始文件名中
-            String originalFileName = file.getOriginalFilename();
-            assert originalFileName != null;
-            String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
-            String fileNameWithoutExtension = originalFileName.substring(0, originalFileName.lastIndexOf("."));
-            String newFileName = fileNameWithoutExtension + System.currentTimeMillis() + fileExtension;
-            String filePath = uploadDir + File.separator + newFileName;
-            File dest = new File(filePath);
-            file.transferTo(dest);
-            // 返回成功响应
-            return Result.suc(newFileName);
+            PutObjectRequest objectRequest = PutObjectRequest.builder()
+                    .bucket(s3Bucket)
+                    .key(key)
+                    .contentType(contentType)
+                    .build();
+
+            software.amazon.awssdk.core.sync.RequestBody requestBody = software.amazon.awssdk.core.sync.RequestBody.fromBytes(file.getBytes());
+            s3Client.putObject(objectRequest, requestBody);
+
+            return Result.suc(key);
+
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to upload file to S3", e);
         }
     }
+
 
     @PostMapping("/uploadProduct")
     public Result uploadProduct(@RequestBody productVO productVO){

@@ -18,9 +18,9 @@ spring:
   datasource:
     #mysql
     driverClassName: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/capstone?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
-    username: root
-    password: 123
+    url: jdbc:mysql://ec2-54-164-121-116.compute-1.amazonaws.com/capstone?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: capstone
+    password: yyf991210
     dbcp2:
       max-total: 150
       max-idle: 10
