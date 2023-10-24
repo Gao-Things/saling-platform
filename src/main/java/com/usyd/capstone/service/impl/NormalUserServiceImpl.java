@@ -414,6 +414,13 @@ public class NormalUserServiceImpl implements NormalUserService {
         }
     }
 
+    @Override
+    public NormalUser findUserInfoById(Integer userId) {
+
+        NormalUser normalUser = normalUserMapper.selectById(userId);
+        return normalUser;
+    }
+
 
     private void sendNotification(Integer type,
                                   Integer userType,

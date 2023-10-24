@@ -1,5 +1,6 @@
 package com.usyd.capstone.service;
 
+import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.entity.Message;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -13,4 +14,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface MessageService extends IService<Message> {
 
+    Result getMessageListByUserId(Integer userId);
+
+    Result getMessageListByUserIdAndRemoteUserId(Integer userId, Integer remoteUserId);
 }

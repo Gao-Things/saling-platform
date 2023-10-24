@@ -24,6 +24,9 @@ public class NormalUser extends NotSuperUser implements Serializable {
 
     private String phone;
 
+    @TableField("avatar_url")
+    private String avatarUrl;
+
     @OneToMany(mappedBy = "owner")
     @TableField(exist = false)
     @com.github.dreamyoung.mprelation.OneToMany

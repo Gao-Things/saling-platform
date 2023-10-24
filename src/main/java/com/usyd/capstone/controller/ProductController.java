@@ -143,7 +143,7 @@ public class ProductController {
         product.setProductWeight(productVO.getItemWeight());
         product.setOwnerId(Long.valueOf(productVO.getUserId()));
         if (productService.saveOrUpdate(product)){
-            return Result.suc();
+            return Result.suc(product.getId());
         }else {
             return Result.fail();
         }
