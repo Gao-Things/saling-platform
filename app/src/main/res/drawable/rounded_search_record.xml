@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 边框为灰色 -->
+    <stroke
+        android:width="2dp"
+        android:color="@color/borderGray"/>
+
+    <!-- 背景为透明 -->
+    <solid android:color="@android:color/transparent"/>
+
+    <corners android:radius="12dp"/>
+
+    <padding
+        android:left="13dp"
+        android:top="8dp"
+        android:right="13dp"
+        android:bottom="8dp"/>
+</shape>

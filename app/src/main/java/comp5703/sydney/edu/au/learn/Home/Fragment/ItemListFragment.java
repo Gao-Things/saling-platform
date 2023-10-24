@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -66,7 +67,7 @@ public class ItemListFragment extends Fragment {
 
         super.onViewCreated(view, savedInstanceState);
         itemRecyclerView = view.findViewById(R.id.list_main);
-//        searchBox = view.findViewById(R.id.search_box);
+        searchBox = view.findViewById(R.id.search_box);
 
         // 创建并设置RecyclerView的LayoutManager
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -77,7 +78,7 @@ public class ItemListFragment extends Fragment {
         itemListAdapter = new ItemListAdapter(getContext(),new ArrayList<Record>(),clickListener);
         itemRecyclerView.setAdapter(itemListAdapter);
 
-//        searchBox.setOnClickListener(this::dumpToSearchFragment);
+        searchBox.setOnClickListener(this::dumpToSearchFragment);
 
 
 

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingTop="10dp"
+        android:paddingLeft="20dp"
+        android:paddingBottom="10dp">
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/topContent"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="The 24K gold with cheap price"
+                android:drawableLeft="@drawable/circle_shape"
+                android:drawablePadding="24dp"
+                android:textSize="19sp" />
+
+            <ImageView
+                android:id="@+id/hotImage"
+                android:visibility="gone"
+                android:layout_width="30dp"
+                android:layout_marginLeft="10dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/hot"/>
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/hotNumber"
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
+            android:textColor="@color/textColorSecondary"
+            android:gravity="center_vertical"
+            android:text="100W"
+            android:textSize="19sp" />
+
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
