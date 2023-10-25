@@ -32,6 +32,8 @@ public class ProfileFragment extends Fragment {
     
     private CardView myMessageCardView;
 
+    private CardView settingCardView;
+
     private CardView logout;
 
     @Nullable
@@ -54,9 +56,11 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         myOfferCardView = view.findViewById(R.id.myOfferCardView);
         myMessageCardView = view.findViewById(R.id.myMessageCardView);
+        settingCardView = view.findViewById(R.id.settingCardView);
         logout = view.findViewById(R.id.logout);
         myOfferCardView.setOnClickListener(this::dumpToOfferContainer);
         myMessageCardView.setOnClickListener(this::dumpToMyMessage);
+        settingCardView.setOnClickListener(this::dumpToSetting);
         logout.setOnClickListener(this::logout);
 
     }
@@ -128,4 +132,16 @@ public class ProfileFragment extends Fragment {
         transaction.addToBackStack(null); // 将 FragmentA 添加到返回栈，以便用户可以返回到它
         transaction.commit();
     }
+
+    private void dumpToSetting(View view) {
+        // 在 FragmentA 中
+        SettingFragment fragmentB = new SettingFragment();
+
+        // 执行 Fragment 跳转
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.fl_container, fragmentB); // R.id.fragment_container 是用于放置 Fragment 的容器
+        transaction.addToBackStack(null); // 将 FragmentA 添加到返回栈，以便用户可以返回到它
+        transaction.commit();
+    }
+
 }

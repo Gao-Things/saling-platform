@@ -21,7 +21,7 @@
     <color name="lightwhite">#F2FEED</color>
     <color name="withoutSelect">#B9C1D9</color>
     <color name="popWindowsBackground">#FFFFFF</color>
-    
+    <color name="lineColor">#F1F1F1</color>
     <color name="cardViewColorGray">#3B3943</color>
     <color name="cardViewColorPurple">#725AD1</color>
     <color name="cardViewColorBlue">#29A4EA</color>

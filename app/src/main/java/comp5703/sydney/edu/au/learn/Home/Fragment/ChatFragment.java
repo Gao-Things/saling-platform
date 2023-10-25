@@ -372,10 +372,13 @@ public class ChatFragment extends Fragment {
                         chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1); // 滚动到最新的消息
 
                         try {
+                            // TODO 暂时先从本地获取刚刚设置的音频
+
                             // 获取系统默认的通知音频的 URI
                             Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                             Ringtone ringtone = RingtoneManager.getRingtone(getActivity(), notificationSound);
                             ringtone.play();
+
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
