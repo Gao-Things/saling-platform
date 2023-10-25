@@ -3,7 +3,7 @@
     <!-- 边框为灰色 -->
     <stroke
         android:width="2dp"
-        android:color="@color/borderGray"/>
+        android:color="@color/bodergray"/>
 
     <!-- 背景为透明 -->
     <solid android:color="@android:color/transparent"/>

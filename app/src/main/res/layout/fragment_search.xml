@@ -28,6 +28,7 @@
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:drawableStart="@drawable/ic_baseline_search_24"
+            android:drawableEnd="@drawable/ic_baseline_cancel_24"
             android:hint="  Search..."
             android:background="@drawable/rounded_search_box"/>
 
@@ -47,6 +48,7 @@
 
 
     <LinearLayout
+        android:id="@+id/searchHistoryText"
         android:layout_width="match_parent"
         android:orientation="horizontal"
         android:layout_marginTop="10dp"
@@ -70,8 +72,6 @@
 
 
 
-
-
     </LinearLayout>
 
 
@@ -89,6 +89,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:id="@+id/searchTopText"
         android:orientation="horizontal"
         android:layout_marginTop="10dp"
         android:layout_height="40dp">
@@ -114,6 +115,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/searchResult"
         android:visibility="gone"
+        android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </LinearLayout>

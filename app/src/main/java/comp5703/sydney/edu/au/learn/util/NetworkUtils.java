@@ -99,6 +99,32 @@ public class NetworkUtils {
     }
 
 
+    public static void getWithParamsRequest(Map<String, String> parameterMap, String url, @Nullable String token, Callback callback) {
+
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(apiURL + url).newBuilder();
+
+        // 添加查询参数
+        if (parameterMap != null) {
+            for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
+                urlBuilder.addQueryParameter(entry.getKey(), entry.getValue());
+            }
+        }
+
+        String useUrl = urlBuilder.build().toString();
+
+        Request.Builder requestBuilder = new Request.Builder()
+                .url(useUrl);
+
+        // 检查token是否不为空，然后添加到请求头
+        if (token != null && !token.isEmpty()) {
+            requestBuilder.addHeader("Authorization", "Bearer " + token);
+        }
+
+        Request request = requestBuilder.build();
+
+        client.newCall(request).enqueue(callback);
+    }
+
 
 
     public static void postRequest(String url, Callback callback) {
