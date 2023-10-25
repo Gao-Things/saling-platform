@@ -100,6 +100,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         // 添加下划线
         spannableString1.setSpan(new UnderlineSpan(), 0, text1.length(), 0);
+        
 
         // 添加蓝色字体颜色
         spannableString1.setSpan(new ForegroundColorSpan(Color.parseColor("#006104")), 0, text1.length(), 0);
@@ -117,7 +118,7 @@ public class RegisterActivity extends AppCompatActivity {
         // 将 SpannableString 设置到 TextView
         loginTextView.setText(spannableString1);
         warningText.setText(spannableString2);
-
+        // 绑定用户隐私策略的按钮
         warningText.setOnClickListener(this::getUserConfirm);
 
         inputLayoutEmail.getEditText().addTextChangedListener(new TextWatcher() {

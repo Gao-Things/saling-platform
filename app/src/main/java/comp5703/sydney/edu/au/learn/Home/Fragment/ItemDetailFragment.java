@@ -159,6 +159,9 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
         // get global userID
         userId = sharedPreferences.getInt("userId", 9999);
         token = sharedPreferences.getString("token", "null");
+        
+//          userId = sharedPreferences.getInt("userId", 9999);
+//         token = sharedPreferences.getString("token", "null");
 
         // 初始化 switchButton
         switchButton = view.findViewById(R.id.switch_button);
