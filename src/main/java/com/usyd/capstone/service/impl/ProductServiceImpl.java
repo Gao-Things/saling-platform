@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.usyd.capstone.common.DTO.ProductUserDTO;
 import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.common.DTO.productAdmin;
 import com.usyd.capstone.common.utils.pageUtil;
@@ -112,6 +113,11 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         productAdmin.setPriceUpdateTime(priceUpdateTime);
         productAdmin.setPriceUpdateRecord(priceUpdateRecord);
         return Result.suc(productAdmin);
+    }
+
+    @Override
+    public List<ProductUserDTO> listProduct() {
+       return   productMapper.listProduct();
     }
 
 }

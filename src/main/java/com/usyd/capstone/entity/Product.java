@@ -54,6 +54,9 @@ public class Product implements Serializable {
     @TableField("product_weight")
     private Double productWeight;
 
+    @TableField("purity")
+    private String purity;
+
     @TableField(exist = false)
     @Transient
     private double productExchangePrice;

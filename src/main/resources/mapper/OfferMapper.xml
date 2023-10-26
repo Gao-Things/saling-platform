@@ -5,16 +5,21 @@
     <resultMap id="OfferProductDTO" type="com.usyd.capstone.common.DTO.OfferProductDTO">
         <result column="offer_id" property="offerId"/>  <!-- 映射 offer.id 到 offerId -->
         <result column="product_id" property="productId"/>  <!-- 映射 product.id 到 productId -->
+        <result column="buyer_name" property="buyerName"/>
     </resultMap>
     <select id="getOfferListBySellerId" resultMap="OfferProductDTO">
         SELECT
             offer.id as offer_id,
             product.id as product_id,
+            normal_user.name as buyer_name,
             offer.*,
             product.*
         FROM offer
-        LEFT JOIN product
-        ON offer.product_id = product.id
-        WHERE product.owner_id = #{ownerId} AND offer.offer_status = 0
+                 LEFT JOIN product
+                           ON offer.product_id = product.id
+                 LEFT JOIN normal_user
+                           ON offer.buyer_id = normal_user.id
+        WHERE product.owner_id = #{ownerId} AND offer.offer_status = 0;
+
     </select>
 </mapper>

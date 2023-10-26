@@ -4,6 +4,7 @@ package com.usyd.capstone.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.usyd.capstone.common.DTO.ProductUserDTO;
 import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.common.DTO.productAdmin;
 import com.usyd.capstone.common.VO.productVO;
@@ -58,27 +59,9 @@ public class ProductController {
     }
 
     @GetMapping("/productList")
-    public Result getProductsWithPrices(@RequestParam(required = false) String targetCurrency,
-                                        @RequestParam int pageSize, @RequestParam int pageNum) {
-
-
-        Page<productAdmin> page = new Page<>();
-        page.setCurrent(pageNum);
-        page.setSize(pageSize);
-        Map<String, Object> resultMap = new HashMap<>();
-        String useCurrency;
-        if (targetCurrency==null || targetCurrency.isEmpty()){
-            useCurrency = "USD";
-        }else {
-            useCurrency = targetCurrency;
-        }
-
-
-        IPage productList = productService.getProductListByCurrency(useCurrency, pageNum, pageSize);
-
-        resultMap.put("CurrencyUnit", targetCurrency);
-        resultMap.put("ProductList", productList);
-        return Result.suc(resultMap);
+    public Result getProductsWithPrices() {
+        List<ProductUserDTO> productList = productService.listProduct();
+        return Result.suc(productList);
     }
     @Value("${upload.dir}") // 从配置文件获取上传目录
     private String uploadDir;
@@ -130,17 +113,20 @@ public class ProductController {
         if (productVO.getProductId()!=null){
             product.setId(Long.valueOf(productVO.getProductId()));
         }
-        product.setCategory(1);
+
         product.setCurrentTurnOfRecord(0);
         product.setInResettingProcess(false);
-        product.setPriceStatus(1);
+
+        product.setPriceStatus(productVO.getHiddenPrice());
+        product.setCategory(productVO.getItemCategory());
         product.setProductCreateTime(System.currentTimeMillis());
         product.setProductDescription(productVO.getItemDescription());
         product.setProductImage(productVO.getImageUrl());
         product.setProductName(productVO.getItemTitle());
-        product.setProductPrice(400);
+        product.setProductPrice(productVO.getItemPrice());
         product.setProductUpdateTime(System.currentTimeMillis());
         product.setProductWeight(productVO.getItemWeight());
+        product.setPurity(productVO.getItemPurity());
         product.setOwnerId(Long.valueOf(productVO.getUserId()));
         if (productService.saveOrUpdate(product)){
             return Result.suc(product.getId());

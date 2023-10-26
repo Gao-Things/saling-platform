@@ -17,5 +17,14 @@
     <sql id="Base_Column_List">
         id, product_name, product_price, product_Imafe, product_create_time, product_update_time, product_description
     </sql>
+    <resultMap id="OfferProductDTO" type="com.usyd.capstone.common.DTO.ProductUserDTO">
+    </resultMap>
+    <select id="listProduct" resultType="com.usyd.capstone.common.DTO.ProductUserDTO">
+        SELECT product.*,
+               normal_user.*
+        FROM product
+                 LEFT JOIN normal_user
+                           ON product.owner_id = normal_user.id
+    </select>
 
 </mapper>

@@ -5,7 +5,7 @@ import lombok.Data;
 
 
 @Data
-public class OfferProductDTO {
+public class    OfferProductDTO {
 
     private Long offerId;
 
@@ -30,5 +30,7 @@ public class OfferProductDTO {
     private String productImage;
 
     private String productDescription;
+
+    private String buyerName;
 
 }

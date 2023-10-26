@@ -8,7 +8,12 @@ public class productVO {
     private String itemTitle;
     private String itemDescription;
     private double itemWeight;
-    private String selectedValue;
+
     private String imageUrl;
     private Integer userId;
+
+    private Integer itemCategory;
+    private Integer hiddenPrice;
+    private String itemPurity;
+    private double itemPrice;
 }
