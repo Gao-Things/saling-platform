@@ -17,14 +17,16 @@ public class NetworkUtils {
     private static final String TAG = "NetworkUtils";
     // AWS connect detail
 
-    public static final String apiURL = "http://54.174.215.130:8082";
-    public static final String websocketUrl = "ws://54.174.215.130:8082";
+    public static final String apiURL = "http://capstone-loadbalancer-2005125113.us-east-1.elb.amazonaws.com";
+    public static final String websocketUrl = "ws://capstone-loadbalancer-2005125113.us-east-1.elb.amazonaws.com";
     public static final String imageURL = "https://capstone-file-store.s3.amazonaws.com/";
 
     // local connect detail
 //    public static final String apiURL = "http://192.168.1.6:8082";
 //    public static final String websocketUrl = "ws://192.168.1.6:8082";
 //    public static final String imageURL = "http://192.168.1.6:8083/";
+
+
     private static OkHttpClient client = new OkHttpClient();
 
     public static void postJsonRequest(Object object, String url,@Nullable String token, Callback callback) {
