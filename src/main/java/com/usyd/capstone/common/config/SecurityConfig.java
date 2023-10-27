@@ -28,6 +28,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/public/**").permitAll() // 公开访问的API
+                .antMatchers("/actuator/health").permitAll()
                 .antMatchers("/chat/**").permitAll()
                 .antMatchers("/notification/**").permitAll()
                 .antMatchers("/imserver/**").permitAll()
