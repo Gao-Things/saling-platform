@@ -15,6 +15,19 @@
     <sql id="Base_Column_List">
         id, post_message_content, from_user_id, to_user_id, post_time
     </sql>
+    <update id="updateDeleteUserIdByCondition">
+        UPDATE message
+        SET deleted_user_id =
+                CASE
+                    WHEN deleted_user_id = #{remoteUserId} THEN 0
+                    ELSE #{userId}
+                    END
+        WHERE
+            (from_user_id = #{userId} AND to_user_id = #{remoteUserId})
+           OR
+            (from_user_id = #{remoteUserId} AND to_user_id = #{userId})
+    </update>
+
 
     <resultMap id="MessageUserDTO" type="com.usyd.capstone.common.DTO.MessageUserDTO"/>
     <select id="getMessageListByUserId" resultMap="MessageUserDTO">
@@ -31,14 +44,18 @@
                      GREATEST(from_user_id, to_user_id) as user2,
                      MAX(id) as last_message_id
                  FROM message
-                 WHERE from_user_id = #{userId} OR to_user_id = #{userId}
+                 WHERE (from_user_id = #{userId} OR to_user_id = #{userId})
+                   AND deleted_user_id != #{userId}
+                   AND deleted_user_id != 0
                  GROUP BY user1, user2
              ) as sub
-                JOIN message m ON m.id = sub.last_message_id
-                LEFT JOIN normal_user nu ON nu.id = CASE
-                WHEN m.from_user_id = #{userId} THEN m.to_user_id
-                ELSE m.from_user_id
-            END;
+                 JOIN message m ON m.id = sub.last_message_id
+                 LEFT JOIN normal_user nu ON nu.id = CASE
+                                                         WHEN m.from_user_id = #{userId} THEN m.to_user_id
+                                                         ELSE m.from_user_id
+            END
+        WHERE m.deleted_user_id != #{userId} AND m.deleted_user_id != 0;
+
 
     </select>
 
@@ -61,8 +78,13 @@
                  LEFT JOIN normal_user AS to_user
                            ON message.to_user_id = to_user.id
         WHERE
-            (message.from_user_id = #{userId} AND message.to_user_id = #{remoteUserId})
-           OR (message.from_user_id = #{remoteUserId} AND message.to_user_id = #{userId})
+            (
+                    (message.from_user_id = #{userId} AND message.to_user_id = #{remoteUserId})
+                    OR
+                    (message.from_user_id = #{remoteUserId} AND message.to_user_id = #{userId})
+                )
+          AND message.deleted_user_id != #{userId}
+          AND message.deleted_user_id != 0
         ORDER BY message.id ASC;
 
     </select>

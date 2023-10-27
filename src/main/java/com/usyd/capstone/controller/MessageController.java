@@ -30,6 +30,14 @@ public class MessageController {
         return messageService.getMessageListByUserId(userId);
     }
 
+    // 根据用户id删除所有相关聊天记录
+    @GetMapping("/deleteMessageHistoryByUserIdAndRemoteUserId")
+    public Result deleteMessageHistoryByUserIdAndRemoteUserId(
+            @RequestParam("userId") Integer userId,
+            @RequestParam("remoteUserId") Integer remoteUserId){
+
+        return messageService.deleteMessageHistoryByUserIdAndRemoteUserId(userId, remoteUserId);
+    }
 
     @GetMapping("/getMessageListByUserIdAndRemoteUserId")
     public Result getMessageListByUserIdAndRemoteUserId(

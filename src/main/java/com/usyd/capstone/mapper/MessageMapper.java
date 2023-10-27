@@ -23,4 +23,6 @@ public interface MessageMapper extends BaseMapper<Message> {
     List<MessageUserDTO> getMessageListByUserId(Integer userId);
 
     List<MessageHistoryDTO> getMessageListByUserIdAndRemoteUserId(Integer userId, Integer remoteUserId);
+
+    Boolean updateDeleteUserIdByCondition(Integer userId, Integer remoteUserId);
 }
