@@ -17,4 +17,6 @@ public interface MessageService extends IService<Message> {
     Result getMessageListByUserId(Integer userId);
 
     Result getMessageListByUserIdAndRemoteUserId(Integer userId, Integer remoteUserId);
+
+    Result deleteMessageHistoryByUserIdAndRemoteUserId(Integer userId, Integer remoteUserId);
 }

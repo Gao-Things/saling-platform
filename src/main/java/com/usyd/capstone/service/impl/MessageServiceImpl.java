@@ -33,4 +33,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
 
         return Result.suc(messageMapper.getMessageListByUserIdAndRemoteUserId(userId, remoteUserId));
     }
+
+    @Override
+    public Result deleteMessageHistoryByUserIdAndRemoteUserId(Integer userId, Integer remoteUserId) {
+        return Result.suc(messageMapper.updateDeleteUserIdByCondition(userId, remoteUserId));
+    }
 }

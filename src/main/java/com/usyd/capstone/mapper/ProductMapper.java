@@ -1,8 +1,11 @@
 package com.usyd.capstone.mapper;
 
+import com.usyd.capstone.common.DTO.ProductUserDTO;
 import com.usyd.capstone.entity.Product;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * <p>
@@ -15,4 +18,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface ProductMapper extends BaseMapper<Product> {
 
+    List<ProductUserDTO> listProduct();
 }
