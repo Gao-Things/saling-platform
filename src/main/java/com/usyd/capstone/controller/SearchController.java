@@ -51,17 +51,22 @@ public class SearchController {
     @PostMapping("/saveSearchHistory")
     public Result saveSearchHistory(@RequestBody Search search){
 
-      Search oldSearchResult =  searchService.getOne(
-                new QueryWrapper<Search>().eq("search_content", search.getSearchContent())
-        );
+        Product product = productService.getById(search.getProductId());
+        if(product != null) {
+            product.setSearchCount(product.getSearchCount() + 1);
+            Search oldSearchResult = searchService.getOne(
+                    new QueryWrapper<Search>().eq("search_content", search.getSearchContent())
+            );
 
-        if (oldSearchResult == null){
-            return Result.suc(searchService.save(search));
-        }else {
+            if (oldSearchResult == null) {
+                return Result.suc(searchService.save(search));
+            } else {
 
-            search.setSearchId(oldSearchResult.getSearchId());
-            return Result.suc(searchService.saveOrUpdate(search));
+                search.setSearchId(oldSearchResult.getSearchId());
+                return Result.suc(searchService.saveOrUpdate(search));
+            }
         }
+        return Result.fail("The product isn't existed");
     }
 
     /**

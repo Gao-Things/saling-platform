@@ -3,8 +3,9 @@ package com.usyd.capstone.common.VO;
 import lombok.Data;
 
 @Data
-public class productVO {
+public class ProductVO {
     private Integer productId;
+    private Integer category;
     private String itemTitle;
     private String itemDescription;
     private double itemWeight;

@@ -178,7 +178,7 @@ public class NormalUserServiceImpl implements NormalUserService {
             }
 
             if(offer.getOfferStatus() == 4) {
-                return Result.fail("The offer had been out of date!(The product has been sold or cancelled)");
+                return Result.fail("The offer had been expired!(The product has been sold or cancelled)");
             }
 
             offer.setOfferStatus(0);
@@ -433,7 +433,7 @@ public class NormalUserServiceImpl implements NormalUserService {
         notification.setSendUserType(userType);
         notification.setSendUserId(offer.getBuyerId().intValue());
         notification.setUserIsRead(0);
-        notification.setNotificationTimetStamp(System.currentTimeMillis());
+        notification.setNotificationTimestamp(System.currentTimeMillis());
         notification.setNotificationContent(message);
         notificationMapper.insert(notification);
 

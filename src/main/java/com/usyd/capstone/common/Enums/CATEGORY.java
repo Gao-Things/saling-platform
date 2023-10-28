@@ -6,7 +6,9 @@ import lombok.Getter;
 public enum CATEGORY {
     UNDEFINED(0,"undefined"),
     CRYPTOCURRENCY(1, "cryptocurrency"),
-    PRECIOUS_METAL(2, "precious metals"); //贵金属，之前的命名有误
+    PRECIOUS_METAL(2, "precious metals"), //贵金属，之前的命名有误
+    GOLD(3, "gold"),
+    SILVER(4, "silver");
 
     private int value;
     private String name;
@@ -24,6 +26,10 @@ public enum CATEGORY {
                 return CRYPTOCURRENCY;
             case 2:
                 return PRECIOUS_METAL;
+            case 3:
+                return GOLD;
+            case 4:
+                return SILVER;
 
         }
         return null;
@@ -37,6 +43,10 @@ public enum CATEGORY {
                 return CRYPTOCURRENCY;
             case "rare metal":
                 return PRECIOUS_METAL;
+            case "gold":
+                return GOLD;
+            case "silver":
+                return SILVER;
 
         }
         return null;
