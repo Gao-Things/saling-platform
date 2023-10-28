@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.common.VO.*;
 import com.usyd.capstone.entity.Offer;
+import com.usyd.capstone.entity.UserSetting;
 import com.usyd.capstone.service.NormalUserService;
 import com.usyd.capstone.service.OfferService;
+import com.usyd.capstone.service.UserSettingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +22,9 @@ public class NormalUserController {
 
     @Autowired
     private OfferService offerService;
+
+    @Autowired
+    private UserSettingService userSettingService;
 
     @GetMapping("/hello")
     public String hello(){
@@ -88,6 +93,33 @@ public class NormalUserController {
 
         return Result.suc(productOfferList);
     }
+
+
+    @GetMapping("/getUserSetting")
+    public Result getUserSetting(@RequestParam("userId") Integer userId){
+
+      UserSetting userSetting = userSettingService.getOne(
+                new QueryWrapper<UserSetting>().eq("userId", userId)
+        );
+
+        return Result.suc(userSetting);
+    }
+
+    @PostMapping("/updateUserSetting")
+    public Result updateUserSetting(@RequestBody UserSetting userSetting){
+
+        if (userSetting.getUserId() == null){
+            return Result.fail();
+        }
+
+        Integer settingId =  userSettingService.getOne(
+                new QueryWrapper<UserSetting>().eq("userId", userSetting.getUserId())
+        ).getUserSettingId();
+
+        userSetting.setUserSettingId(settingId);
+        return Result.suc(userSettingService.updateById(userSetting));
+    }
+
 
     @PostMapping("/setPriceThreshold")
     public Result setPriceThreshold(@RequestBody SetPriceThresholdRequest setPriceThresholdRequest) {

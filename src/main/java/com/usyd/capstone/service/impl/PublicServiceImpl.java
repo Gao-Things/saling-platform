@@ -14,11 +14,13 @@ import com.usyd.capstone.entity.NormalUser;
 import com.usyd.capstone.common.VO.EmailAddress;
 import com.usyd.capstone.common.VO.UpdatePasswordParameter;
 import com.usyd.capstone.common.VO.UserLogin;
+import com.usyd.capstone.entity.UserSetting;
 import com.usyd.capstone.entity.abstractEntities.NotSuperUser;
 import com.usyd.capstone.entity.abstractEntities.User;
 import com.usyd.capstone.mapper.AdminUserMapper;
 import com.usyd.capstone.mapper.NormalUserMapper;
 import com.usyd.capstone.mapper.SuperUserMapper;
+import com.usyd.capstone.mapper.UserSettingMapper;
 import com.usyd.capstone.service.PublicService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,9 @@ public class PublicServiceImpl extends ServiceImpl<NormalUserMapper, NormalUser>
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserSettingMapper userSettingMapper;
 
     @Autowired
     private SendEmail sentEmail;
@@ -151,10 +156,28 @@ public class PublicServiceImpl extends ServiceImpl<NormalUserMapper, NormalUser>
             notSuperUserNew.setRegistrationTimestamp(registrationTimeStamp);
             notSuperUserNew.setPassword(passwordToken);
             notSuperUserNew.setActivationStatus(false);
-            sentEmail.sentRegistrationEmail(email, registrationTimeStamp, passwordToken, userRole);
+
+            /**
+             *  暂时注释发邮件方法
+             */
+//            sentEmail.sentRegistrationEmail(email, registrationTimeStamp, passwordToken, userRole);
 
             // 可以直接调用mybatisplus的insert方法
             mapper.insert(notSuperUserNew);
+
+
+            /**
+             * 插入用户设置默认值
+             */
+            UserSetting userSetting = new UserSetting();
+            userSetting.setUserId(Math.toIntExact(notSuperUserNew.getId()));
+            userSetting.setChooseTone("elegant");
+            userSetting.setMessageToneOpen(1);
+            userSetting.setNotificationOpen(0);
+            userSetting.setMessageReceived(1);
+            userSettingMapper.insert(userSetting);
+
+
 
             return new Result(200, "Registration successful! The verification link will be " +
                     "sent to " + text + " E-mail box.", 0L, null, null);
