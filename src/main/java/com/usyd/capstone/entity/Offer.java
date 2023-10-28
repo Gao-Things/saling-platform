@@ -55,7 +55,7 @@ public class Offer {
     private String note;
 
     @TableField("offer_status")
-    private int offerStatus; //0: send 1: accepted 2: rejected 3:cancelled 4:out of date
+    private int offerStatus; //0: send 1: accepted 2: rejected 3:cancelled 4:expired
 
     @TableField("timestamp")
     private long timestamp;

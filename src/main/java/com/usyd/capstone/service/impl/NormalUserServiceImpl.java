@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.usyd.capstone.common.DTO.NotificationDTO;
 import com.usyd.capstone.common.DTO.Result;
-import com.usyd.capstone.common.compents.ChatEndpoint;
 import com.usyd.capstone.common.compents.JwtToken;
 import com.usyd.capstone.common.compents.NotificationServer;
 import com.usyd.capstone.entity.*;
@@ -166,7 +165,7 @@ public class NormalUserServiceImpl implements NormalUserService {
             notificationContent.append(" has made an new offer to your item: ");
             notificationContent.append(product.getProductName());
             notificationContent.append(".");
-            int notificationStatus = ChatEndpoint.sendMessage(product.getOwnerId(),notificationContent.toString());
+            sendNotification(3, 1, offer, product, notificationContent.toString());
 
 
             return Result.suc("An new offer has been made.");
@@ -178,7 +177,7 @@ public class NormalUserServiceImpl implements NormalUserService {
             }
 
             if(offer.getOfferStatus() == 4) {
-                return Result.fail("The offer had been out of date!(The product has been sold or cancelled)");
+                return Result.fail("The offer had been expired!(The product has been sold or cancelled)");
             }
 
             offer.setOfferStatus(0);
@@ -192,7 +191,7 @@ public class NormalUserServiceImpl implements NormalUserService {
             notificationContent.append(" has update his offer to your item: ");
             notificationContent.append(product.getProductName());
             notificationContent.append(".");
-            int notificationStatus = ChatEndpoint.sendMessage(product.getOwnerId(),notificationContent.toString());
+            sendNotification(4, 1, offer, product, notificationContent.toString());
 
 
             return Result.suc("The offer has been updated.");
@@ -236,9 +235,6 @@ public class NormalUserServiceImpl implements NormalUserService {
         }
 
 
-        // send notification
-        sendNotification(1, 2, offer, product, "Hi! your offer has been received");
-
 
         offer.setOfferStatus(1);
         offerMapper.updateById(offer);
@@ -251,6 +247,13 @@ public class NormalUserServiceImpl implements NormalUserService {
         offers.forEach(offer1 -> {
             offer1.setOfferStatus(4);
             offerMapper.updateById(offer1);
+            StringBuilder notificationContent = new StringBuilder();
+            notificationContent.append("The seller, ");
+            notificationContent.append(seller.getName());
+            notificationContent.append(", has accepted another offer about the item: ");
+            notificationContent.append(product.getProductName());
+            notificationContent.append(". Therefore, your relevant offer is expired.");
+            sendNotification(6, 2, offer, product, notificationContent.toString());
         });
 
         StringBuilder notificationContent = new StringBuilder();
@@ -259,8 +262,7 @@ public class NormalUserServiceImpl implements NormalUserService {
         notificationContent.append(", has accepted your offer about the item: ");
         notificationContent.append(product.getProductName());
         notificationContent.append(".");
-        int notificationStatus = ChatEndpoint.sendMessage(offer.getBuyerId(),notificationContent.toString());
-
+        sendNotification(1, 2, offer, product, notificationContent.toString());
         return Result.suc("The offer has been accepted.");
     }
 
@@ -303,7 +305,7 @@ public class NormalUserServiceImpl implements NormalUserService {
         notificationContent.append(" has cancelled his offer to your item: ");
         notificationContent.append(product.getProductName());
         notificationContent.append(".");
-        int notificationStatus = ChatEndpoint.sendMessage(product.getOwnerId(),notificationContent.toString());
+        sendNotification(5, 1, offer, product, notificationContent.toString());
 
         return Result.suc("The offer has been cancelled.");
     }
@@ -345,7 +347,7 @@ public class NormalUserServiceImpl implements NormalUserService {
         notificationContent.append(", has rejected your offer about the item: ");
         notificationContent.append(product.getProductName());
         notificationContent.append(".");
-        int notificationStatus = ChatEndpoint.sendMessage(offer.getBuyerId(),notificationContent.toString());
+        sendNotification(2, 2, offer, product, notificationContent.toString());
 
         return Result.suc("The offer has been rejected.");
     }
@@ -399,9 +401,17 @@ public class NormalUserServiceImpl implements NormalUserService {
                     productMapper.updateById(product);
                     List<Offer> offers = offerMapper.selectList(new QueryWrapper<Offer>()
                             .eq("product_id", productId));
+                    NormalUser seller = normalUserMapper.selectById(product.getId());
                     offers.forEach(offer -> {
                         offer.setOfferStatus(4);
                         offerMapper.updateById(offer);
+                        StringBuilder notificationContent = new StringBuilder();
+                        notificationContent.append("The seller, ");
+                        notificationContent.append(seller.getName());
+                        notificationContent.append(", has withdraw the sale about the item: ");
+                        notificationContent.append(product.getProductName());
+                        notificationContent.append(". Therefore, your relevant offer is expired.");
+                        sendNotification(6, 2, offer, product, notificationContent.toString());
                     });
                     return Result.suc("The item, " + product.getProductName() + " is cancelled.");
                 }
@@ -433,7 +443,7 @@ public class NormalUserServiceImpl implements NormalUserService {
         notification.setSendUserType(userType);
         notification.setSendUserId(offer.getBuyerId().intValue());
         notification.setUserIsRead(0);
-        notification.setNotificationTimetStamp(System.currentTimeMillis());
+        notification.setNotificationTimestamp(System.currentTimeMillis());
         notification.setNotificationContent(message);
         notificationMapper.insert(notification);
 
@@ -454,7 +464,10 @@ public class NormalUserServiceImpl implements NormalUserService {
 
         String result = JSONObject.toJSONString(notificationDto);
         // send message to buyer
-        NotificationServer.sendMessage(result, offer.getBuyerId().intValue());
+        if(type == 1)
+            NotificationServer.sendMessage(result, product.getOwnerId().intValue());
+        else
+            NotificationServer.sendMessage(result, offer.getBuyerId().intValue());
     }
 
 

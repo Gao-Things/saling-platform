@@ -38,7 +38,7 @@ public class Notification implements Serializable {
     private Integer notificationType;
 
     /**
-     * 1:seler 2:buyer
+     * 1:seller 2:buyer
      */
     @TableField("send_user_type")
     private Integer sendUserType;
@@ -49,8 +49,8 @@ public class Notification implements Serializable {
     @TableField("notification_content")
     private String notificationContent;
 
-    @TableField("notification_timet_stamp")
-    private Long notificationTimetStamp;
+    @TableField("notification_timestamp")
+    private Long notificationTimestamp;
 
     @TableField("user_is_read")
     private Integer userIsRead;

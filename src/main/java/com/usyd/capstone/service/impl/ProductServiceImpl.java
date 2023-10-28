@@ -1,9 +1,7 @@
 package com.usyd.capstone.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.usyd.capstone.common.DTO.ProductUserDTO;
 import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.common.DTO.productAdmin;
@@ -17,14 +15,13 @@ import com.usyd.capstone.mapper.ProductPriceRecordMapper;
 import com.usyd.capstone.service.ProductService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -117,7 +114,39 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
     @Override
     public List<ProductUserDTO> listProduct() {
-       return   productMapper.listProduct();
+        return productMapper.listProduct();
+    }
+    @Override
+    public Result getProductListAfterFiltered(String filter1, Integer value1, String filter2, String value2) {
+        List<Product> productListAfterFiltered = null;
+        if(filter1 != null)
+        {
+            if(filter2 == null)
+                productListAfterFiltered = productMapper.selectList(new QueryWrapper<Product>()
+                        .eq(filter1, value1));
+            else
+                productListAfterFiltered = productMapper.selectList(new QueryWrapper<Product>()
+                        .eq(filter1, value1)
+                        .eq(filter2, value2));
+        }
+
+        if (productListAfterFiltered.isEmpty())
+        {
+            return Result.fail("invalid input or no product has been found");
+        }
+        else
+        {
+            return Result.suc(productListAfterFiltered);
+        }
+    }
+
+    @Override
+    public Result getTop10Products() {
+        List<Product> top10Products = productMapper.selectList(new QueryWrapper<Product>()
+                .eq("product_status", 0)
+                .orderByDesc("search_count")
+                .last("LIMIT 10"));
+        return Result.suc(top10Products);
     }
 
 }

@@ -9,7 +9,8 @@ public class NotificationDTO {
 
     private Integer notificationId;
     /**
-     * 1.accept offer  2.reject offer
+     * 1.accept an offer 2.reject an offer 3.send an offer 4.update an offer
+     * 5.cancel an offer 6.an offer is expired
      */
     private Integer messageType;
 

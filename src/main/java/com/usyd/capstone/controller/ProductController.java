@@ -1,13 +1,14 @@
 package com.usyd.capstone.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.usyd.capstone.common.DTO.ProductUserDTO;
 import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.common.DTO.productAdmin;
-import com.usyd.capstone.common.VO.productVO;
+import com.usyd.capstone.common.Enums.CATEGORY;
+import com.usyd.capstone.common.Enums.PURITY;
+import com.usyd.capstone.common.VO.ProductVO;
 import com.usyd.capstone.entity.Product;
 import com.usyd.capstone.service.ExchangeRateUsdService;
 import com.usyd.capstone.service.ProductService;
@@ -107,14 +108,23 @@ public class ProductController {
 
 
     @PostMapping("/uploadProduct")
-    public Result uploadProduct(@RequestBody productVO productVO){
-        Product product = new Product();
+    public Result uploadProduct(@RequestBody ProductVO productVO){
+        Product product;
 
         if (productVO.getProductId()!=null){
-            product.setId(Long.valueOf(productVO.getProductId()));
+            product = productService.getById(productVO.getProductId());
         }
+        else
+        {
+            product = new Product();
+            product.setCurrentTurnOfRecord(0);
+        }
+        product.setCategory(productVO.getCategory());
 
-        product.setCurrentTurnOfRecord(0);
+        if(product.getCategoryEnum() == null)
+        {
+            return Result.fail("invalid category");
+        }
         product.setInResettingProcess(false);
 
         product.setPriceStatus(productVO.getHiddenPrice());
@@ -127,7 +137,12 @@ public class ProductController {
         product.setProductUpdateTime(System.currentTimeMillis());
         product.setProductWeight(productVO.getItemWeight());
         product.setPurity(productVO.getItemPurity());
+        if(product.getCategoryEnum() == null)
+        {
+            return Result.fail("invalid purity");
+        }
         product.setOwnerId(Long.valueOf(productVO.getUserId()));
+        product.setSearchCount(0);
         if (productService.saveOrUpdate(product)){
             return Result.suc(product.getId());
         }else {
@@ -143,6 +158,27 @@ public class ProductController {
             return Result.suc(productService.getById(productID));
         }
         return Result.fail();
+    }
+
+    @GetMapping("/getProductList/BySingleFilter")
+    public Result getProductListAfterFiltered(@RequestParam("filter") String filter, @RequestParam("value") Integer value){
+
+
+        return productService.getProductListAfterFiltered(filter, value,null,null);
+    }
+
+    @GetMapping("/getProductList/ByDoubleFilter")
+    public Result getProductListAfterFiltered(@RequestParam("filter1") String filter1, @RequestParam("value1") Integer value1,
+                                              @RequestParam("filter2") String filter2, @RequestParam("value2") String value2){
+
+        return productService.getProductListAfterFiltered(filter1, value1, filter2, value2);
+    }
+
+    @GetMapping("/getProductList/top10Products")
+    public Result getTop10Products(){
+
+        Result result =  productService.getTop10Products();
+        return result;
     }
 
 

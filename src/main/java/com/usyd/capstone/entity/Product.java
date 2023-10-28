@@ -8,8 +8,10 @@ import java.util.Set;
 
 import com.github.dreamyoung.mprelation.EntityMapper;
 import com.usyd.capstone.common.Enums.CATEGORY;
+import com.usyd.capstone.common.Enums.PURITY;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.parameters.P;
 
 import javax.persistence.*;
 
@@ -54,9 +56,6 @@ public class Product implements Serializable {
     @TableField("product_weight")
     private Double productWeight;
 
-    @TableField("purity")
-    private String purity;
-
     @TableField(exist = false)
     @Transient
     private double productExchangePrice;
@@ -84,6 +83,7 @@ public class Product implements Serializable {
 
     public void setCategory(int categoryValue) {
         this.category = CATEGORY.findByValue(categoryValue);
+        this.categoryValue = categoryValue;
     }
 
     public int getCategory() {
@@ -136,4 +136,34 @@ public class Product implements Serializable {
     @com.github.dreamyoung.mprelation.OneToMany
     @com.github.dreamyoung.mprelation.JoinColumn(name = "id", referencedColumnName = "product_id")
     private Set<Offer> offers;
+
+    @Column(name = "purity")
+    @TableField(exist = false)
+    private String purityName;
+
+    @TableField("purity")
+    @Transient
+    private PURITY purity;
+    public void setPurity(int purityValue) {
+        this.purity = PURITY.findByValue(purityValue);
+    }
+
+    public void setPurity(String purityName) {
+        this.purity = PURITY.findByName(purityName);
+        this.purityName = purityName;
+    }
+
+    public String getPurity() {
+        return purity.getName();
+    }
+
+    public PURITY getPurityEnum() {
+        return purity;
+    }
+
+    public int getPurityValue() {
+        return purity.getValue();
+    }
+    @TableField("search_count")
+    private int searchCount;
 }
