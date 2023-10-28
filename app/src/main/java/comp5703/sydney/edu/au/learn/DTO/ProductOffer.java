@@ -12,6 +12,16 @@ public class ProductOffer {
     private double productPrice;
     private String productImage;
     private String productDescription;
+    private String buyerName;
+
+
+    public String getBuyerName() {
+        return buyerName;
+    }
+
+    public void setBuyerName(String buyerName) {
+        this.buyerName = buyerName;
+    }
 
     public Integer getOfferId() {
         return offerId;

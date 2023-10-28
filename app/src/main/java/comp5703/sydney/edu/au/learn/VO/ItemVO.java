@@ -6,9 +6,14 @@ public class ItemVO {
     private String itemTitle;
     private String itemDescription;
     private double itemWeight;
-    private String selectedValue;
+
     private String imageUrl;
     private Integer userId;
+
+    private Integer itemCategory;
+    private Integer hiddenPrice;
+    private String itemPurity;
+    private double itemPrice;
 
     public Integer getProductId() {
         return productId;
@@ -16,14 +21,6 @@ public class ItemVO {
 
     public void setProductId(Integer productId) {
         this.productId = productId;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
     }
 
     public String getItemTitle() {
@@ -38,6 +35,10 @@ public class ItemVO {
         return itemDescription;
     }
 
+    public void setItemDescription(String itemDescription) {
+        this.itemDescription = itemDescription;
+    }
+
     public double getItemWeight() {
         return itemWeight;
     }
@@ -46,24 +47,51 @@ public class ItemVO {
         this.itemWeight = itemWeight;
     }
 
-    public void setItemDescription(String itemDescription) {
-        this.itemDescription = itemDescription;
-    }
-
-
-    public String getSelectedValue() {
-        return selectedValue;
-    }
-
-    public void setSelectedValue(String selectedValue) {
-        this.selectedValue = selectedValue;
-    }
-
     public String getImageUrl() {
         return imageUrl;
     }
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public Integer getItemCategory() {
+        return itemCategory;
+    }
+
+    public void setItemCategory(Integer itemCategory) {
+        this.itemCategory = itemCategory;
+    }
+
+    public Integer getHiddenPrice() {
+        return hiddenPrice;
+    }
+
+    public void setHiddenPrice(Integer hiddenPrice) {
+        this.hiddenPrice = hiddenPrice;
+    }
+
+    public String getItemPurity() {
+        return itemPurity;
+    }
+
+    public void setItemPurity(String itemPurity) {
+        this.itemPurity = itemPurity;
+    }
+
+    public double getItemPrice() {
+        return itemPrice;
+    }
+
+    public void setItemPrice(double itemPrice) {
+        this.itemPrice = itemPrice;
     }
 }

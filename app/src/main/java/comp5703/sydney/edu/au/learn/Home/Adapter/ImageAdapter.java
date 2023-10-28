@@ -29,16 +29,33 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         this.listener = listener;
     }
 
+    private static OnImageLongClickListener longClickListener;
+
+    public void setOnImageLongClickListener(OnImageLongClickListener listener) {
+        this.longClickListener = listener;
+    }
+
+
     @SuppressLint("NotifyDataSetChanged")
     public void addImageUrl(String imageUrl) {
-        imagePaths.add(imageUrl);
-        notifyDataSetChanged(); // 通知数据已经改变，以便刷新RecyclerView
+        if (imagePaths.size() <= 5) {
+            imagePaths.add(imageUrl);
+            notifyDataSetChanged();
+        }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void removeImageUrl(int position) {
+        if (position >= 0 && position < imagePaths.size()) {
+            imagePaths.remove(position);
+            notifyDataSetChanged();
+        }
     }
 
 
     @Override
     public int getItemViewType(int position) {
-        if (position == imagePaths.size()) {
+        if (imagePaths.size() < 6 && position == imagePaths.size()) {
             return TYPE_ADD;
         }
         return TYPE_IMAGE;
@@ -70,7 +87,8 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        return imagePaths.size() + 1;  // +1 for the add icon
+        // 如果图片数量大于等于6，那么总数就是图片的数量，否则就是图片的数量+1（因为加上了add icon）
+        return imagePaths.size() >= 6 ? imagePaths.size() : imagePaths.size() + 1;
     }
 
     static class ImageViewHolder extends RecyclerView.ViewHolder {
@@ -78,6 +96,15 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         ImageViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.imageView);
+            imageView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if (longClickListener != null) {
+                        longClickListener.onImageLongClick(getAdapterPosition());
+                    }
+                    return true;  // 为了表示长按事件被处理了
+                }
+            });
         }
     }
 
@@ -102,5 +129,10 @@ public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public interface OnAddImageClickListener {
         void onAddImageClick();
     }
+
+    public interface OnImageLongClickListener {
+        void onImageLongClick(int position);
+    }
+
 
 }

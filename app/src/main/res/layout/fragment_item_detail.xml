@@ -236,17 +236,17 @@
                             android:layout_height="0dp"
                             android:layout_weight="1"
                             android:gravity="end"
-                            android:text="Price"
+                            android:text="Post time"
                             android:textColor="@color/textColorSecondary"
                             android:textSize="17sp" />
 
                         <TextView
-                            android:id="@+id/itemDetailPrice"
+                            android:id="@+id/itemPostTime"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
                             android:layout_weight="1"
                             android:gravity="end"
-                            android:text="Hidden"
+                            android:text="8/7"
                             android:textColor="@color/red"
                             android:textSize="17sp"
                             android:textStyle="bold" />

@@ -26,6 +26,8 @@ import org.w3c.dom.Text;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import comp5703.sydney.edu.au.learn.DTO.ProductUser;
 import comp5703.sydney.edu.au.learn.DTO.Record;
 import comp5703.sydney.edu.au.learn.Home.Adapter.ItemListAdapter;
 import comp5703.sydney.edu.au.learn.R;
@@ -75,7 +77,7 @@ public class ItemListFragment extends Fragment {
 
 
         // 创建并设置RecyclerView的Adapter
-        itemListAdapter = new ItemListAdapter(getContext(),new ArrayList<Record>(),clickListener);
+        itemListAdapter = new ItemListAdapter(getContext(),new ArrayList<ProductUser>(),clickListener);
         itemRecyclerView.setAdapter(itemListAdapter);
 
         searchBox.setOnClickListener(this::dumpToSearchFragment);
@@ -100,11 +102,8 @@ public class ItemListFragment extends Fragment {
 
 
     private void getRecordList(){
-        productListParameter productListParameter = new productListParameter();
-        productListParameter.setPageNum(1);
-        productListParameter.setPageSize(20);
 
-        NetworkUtils.getWithParamsRequest( productListParameter, "/public/product/productList",null, new Callback() {
+        NetworkUtils.getRequest("/public/product/productList", new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 handleResponse(response);
@@ -123,23 +122,18 @@ public class ItemListFragment extends Fragment {
         String responseBody = response.body().string();
         JSONObject jsonObject = JSONObject.parseObject(responseBody);
         int code = jsonObject.getIntValue("code");
-        JSONObject dataObject = jsonObject.getJSONObject("data").getJSONObject("ProductList");
+        JSONArray recordsArray = jsonObject.getJSONArray("data");
 
-        // 提取 "records" 数组并转换为List
-        JSONArray recordsArray = dataObject.getJSONArray("records");
-
-        List<Record> recordsListUse = recordsArray.toJavaList(Record.class);
+        List<ProductUser> recordsListUse = recordsArray.toJavaList(ProductUser.class);
 
         if (code == 200) {
-
-           recordList = recordsListUse;
 
            // 通知adapter数据更新
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     // 更新Adapter的数据
-                    itemListAdapter.setRecordList(recordList);
+                    itemListAdapter.setRecordList(recordsListUse);
                     // 在UI线程上更新Adapter的数据
                     itemListAdapter.notifyDataSetChanged();
                 }
@@ -177,5 +171,13 @@ public class ItemListFragment extends Fragment {
 
         }
     };
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        itemRecyclerView = null;
+        searchBox = null;
+    }
+
 
 }

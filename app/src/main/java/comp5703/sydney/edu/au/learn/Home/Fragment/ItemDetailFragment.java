@@ -3,6 +3,8 @@ package comp5703.sydney.edu.au.learn.Home.Fragment;
 import static android.content.ContentValues.TAG;
 
 import static comp5703.sydney.edu.au.learn.util.NetworkUtils.imageURL;
+import static comp5703.sydney.edu.au.learn.util.TimeCalculateUtil.convertTimestampToDate;
+import static comp5703.sydney.edu.au.learn.util.TimeCalculateUtil.getTimeDifference;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -72,7 +74,6 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class ItemDetailFragment extends Fragment implements OnBannerListener<String> {
-    private TextView itemDetailPrice;
     private Button confirmButton;
     private IOMessageClick listener;
     private Button send_offer_btn;
@@ -114,6 +115,19 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
 
     private Boolean checkButtonFlag = true;
 
+
+    // 基础的商品信息
+
+    private TextView itemName;
+    private TextView itemDescription;
+    private TextView itemWeight;
+    private TextView itemType;
+    private TextView itemPurity;
+    private TextView itemPostTime;
+    private TextView offerTime;
+
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -128,7 +142,6 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
         super.onViewCreated(view, savedInstanceState);
 
         editButton = view.findViewById(R.id.editButton);
-        itemDetailPrice = view.findViewById(R.id.itemDetailPrice);
         confirmButton = view.findViewById(R.id.confirm_button);
         send_offer_btn = view.findViewById(R.id.send_offer_btn);
         hiddenLayout = view.findViewById(R.id.hidden_layout);
@@ -144,6 +157,17 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
         offeredPrice = view.findViewById(R.id.offeredPrice);
         sellerGetOfferBtn = view.findViewById(R.id.sellerGetOfferBtn);
         contactSellerBtn = view.findViewById(R.id.contactSellerBtn);
+
+
+        // 设置商品基础信息
+        itemName = view.findViewById(R.id.itemName);
+        itemDescription = view.findViewById(R.id.itemDescription);
+        itemWeight = view.findViewById(R.id.itemWeight);
+        itemType = view.findViewById(R.id.itemType);
+        itemPurity = view.findViewById(R.id.itemPurity);
+        itemPostTime = view.findViewById(R.id.itemPostTime);
+        offerTime = view.findViewById(R.id.offerTime);
+
 
         sellerHeaderBar = view.findViewById(R.id.sellerHeaderBar);
         // 创建并设置RecyclerView的LayoutManager
@@ -495,6 +519,7 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
     }
 
     // 获取产品的详情接口的响应函数
+    @SuppressLint("SetTextI18n")
     private void handleResponse(Response response) {
         try {
             if (!response.isSuccessful()) {
@@ -510,6 +535,8 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
                 Product product = jsonObject.getJSONObject("data").toJavaObject(Product.class);
 
                 sellerId = product.getOwnerId().intValue();
+
+
 
                 // 属于卖家页面
                 if (product.getOwnerId().intValue() == userId){
@@ -527,13 +554,29 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-//                        itemDetailPrice.setText(Double.toString(product.getProductPrice()));
 
-                    String  imageurl1 =  imageURL+ product.getProductImage();
-                    List<String> imgList = new ArrayList<>();
-                    imgList.add(imageurl1);
-                    imgList.add(imageurl1);
-                    imgList.add(imageurl1);
+
+                        /**
+                         *  TODO 把基础产品信息显示出来
+                         */
+                        itemName.setText(product.getProductName());
+                        itemDescription.setText(product.getProductDescription());
+                        itemPurity.setText(product.getPurity());
+
+                        if (product.getCategory() ==1){
+                            itemType.setText("gold");
+                        }else {
+                            itemType.setText("sliver");
+                        }
+
+                        itemWeight.setText(product.getProductWeight() + " g");
+
+                        String formattedDate = convertTimestampToDate(product.getProductCreateTime());
+                        itemPostTime.setText(formattedDate);
+
+
+                        offerTime.setText(getTimeDifference( product.getProductCreateTime()));
+
 
 
                     // 如果产品属于编辑状态就锁死编辑按钮
@@ -546,8 +589,15 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
                         editButton.setEnabled(true);
                     }
 
+                        // 把图片链接字符串转回数组
+                        String[] items = product.getProductImage().substring(1, product.getProductImage().length() - 1).split(", ");
 
-                    loadBanner(imgList);
+                        List<String> imageUrlList = new ArrayList<>();
+                        for (String item : items) {
+                            imageUrlList.add( imageURL +item);
+                        }
+
+                        loadBanner(imageUrlList);
                         // 如果状态不在售卖且不属于卖家家页面
                         if (product.getProductStatus()!=0 && product.getOwnerId().intValue() != userId){
                             itemStatusImg.setVisibility(View.GONE);

@@ -12,6 +12,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -30,7 +31,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
@@ -44,6 +47,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.itheima.wheelpicker.WheelPicker;
 import com.squareup.picasso.Picasso;
@@ -68,6 +72,7 @@ import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.ItemVO;
 import comp5703.sydney.edu.au.learn.VO.productDetailParameter;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
+import comp5703.sydney.edu.au.learn.util.WeightConverter;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -80,7 +85,7 @@ public class SellFragment extends Fragment {
     private EditText editPrice;
 
     private AppCompatButton btnSubmit;
-    private String uploadImageUrl;
+    private List<String> uploadImageUrls = new ArrayList<>();
     private AutoCompleteTextView autoCompleteTextView;
 
     private AutoCompleteTextView autoCompleteTextView2;
@@ -92,6 +97,11 @@ public class SellFragment extends Fragment {
     private File photoFile;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
     private static final int REQUEST_IMAGE_CAPTURE = 2;
+
+
+    private static final int REQUEST_GALLERY_PERMISSION = 3;
+    private static final int REQUEST_GALLERY_IMAGE = 4;
+
     WheelPicker wheelPicker;
 
     private ImageAdapter imageAdapter;
@@ -106,11 +116,15 @@ public class SellFragment extends Fragment {
 
     private Fragment itemDetailFragment;
 
+    private String userChooseUnit = "g";
+
+
+    private View rootView;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_sell, container, false);
-        return view;
+        rootView = inflater.inflate(R.layout.fragment_sell, container, false);
+        return rootView;
     }
 
     @Override
@@ -137,6 +151,10 @@ public class SellFragment extends Fragment {
 
         autoCompleteTextView2 = view.findViewById(R.id.autoCompleteTextView2);
         autoCompleteTextView2.setAdapter(adapter2);
+
+
+        // 这个布局控制选择商品种类
+        autoCompleteTextView = view.findViewById(R.id.autoCompleteTextView);
         autoCompleteTextView2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -148,25 +166,40 @@ public class SellFragment extends Fragment {
                 // 设置第二个 AutoCompleteTextView 的提示文本
                 if (selectType.equals("gold")){
 
+                    // 用户选择商品类型为金子
                     autoCompleteTextView.setHint("Please select gold type");
+
+
+                    String[] items = new String[] {"24K", "21K", "18K"};
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                            getContext(),
+                            R.layout.my_dropdown_item,  // 使用自定义布局
+                            items
+                    );
+                    autoCompleteTextView.setAdapter(adapter);
                 }else {
 
+                    // 用户选择商品类型为银
                     autoCompleteTextView.setHint("Please select silver type");
+
+
+                    String[] items = new String[] {"999", "925", "alloy"};
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                            getContext(),
+                            R.layout.my_dropdown_item,  // 使用自定义布局
+                            items
+                    );
+
+                    autoCompleteTextView.setAdapter(adapter);
                 }
 
+                autoCompleteTextView.setText("");   // 清除文本
+                autoCompleteTextView.clearFocus();  // 清除焦点
                 textInputLayout.setVisibility(View.VISIBLE);
             }
         });
 
-        String[] items = new String[] {"24K", "21K", "18K"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                getContext(),
-                R.layout.my_dropdown_item,  // 使用自定义布局
-                items
-        );
 
-        autoCompleteTextView = view.findViewById(R.id.autoCompleteTextView);
-        autoCompleteTextView.setAdapter(adapter);
 
 
 
@@ -185,6 +218,26 @@ public class SellFragment extends Fragment {
             }
         });
 
+        // 删除图片的逻辑
+        imageAdapter.setOnImageLongClickListener(new ImageAdapter.OnImageLongClickListener() {
+            @Override
+            public void onImageLongClick(int position) {
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // 实际的删除逻辑
+                        if (position >= 0 && position < uploadImageUrls.size()) {
+                            uploadImageUrls.remove(position);
+                            imageAdapter.removeImageUrl(position);
+                        }
+                    }
+                });
+
+            }
+        });
+
+
 
         // 设置数据
         List<String> data = Arrays.asList("g", "kg", "oz");
@@ -200,6 +253,9 @@ public class SellFragment extends Fragment {
             public void onItemSelected(WheelPicker picker, Object data, int position) {
                 // 处理选定项目的事件
                 System.out.println(position +":::"+data);
+                userChooseUnit = data.toString();
+
+
             }
         });
 
@@ -261,11 +317,8 @@ public class SellFragment extends Fragment {
                         editDescription.setText(product.getProductDescription());
                         editWeight.setText( Double.toString( product.getProductWeight()));
                         editPrice.setText(Double.toString(product.getProductPrice()));
-
-
-                        //TODO 先暂时设置一个  ，欺骗客户
-                        autoCompleteTextView.setText("Gold 24K");
-
+                        autoCompleteTextView.setText(product.getPurity());
+                        userChooseUnit = "g";
                         materialCheckBox.setChecked(true);
 
                         // 禁用这些值，不让用户编辑
@@ -282,13 +335,20 @@ public class SellFragment extends Fragment {
                         wheelPicker.setVisibility(View.INVISIBLE);
                         chooseUnit.setVisibility(View.VISIBLE);
 
-                        // 使用ImageAdapter的实例添加新的URL
-                        imageAdapter.addImageUrl(imageURL + product.getProductImage());
-                        imageAdapter.addImageUrl(imageURL + product.getProductImage());
-                        imageAdapter.addImageUrl(imageURL + product.getProductImage());
-                        imageAdapter.addImageUrl(imageURL + product.getProductImage());
 
-                        uploadImageUrl = product.getProductImage();
+                        // 把图片链接字符串转回数组
+                        String[] items = product.getProductImage().substring(1, product.getProductImage().length() - 1).split(", ");
+
+                        List<String> imageNameList = new ArrayList<>();
+                        for (String item : items) {
+                            // 将图片数组插入adapter
+                            imageAdapter.addImageUrl(imageURL + item);
+                            imageNameList.add(item);
+                        }
+
+
+                        uploadImageUrls = imageNameList;
+
                         productId = product.getId();
                     }
                 });
@@ -304,7 +364,25 @@ public class SellFragment extends Fragment {
 
 
     private void openCameraClick(){
-        requestCameraPermission();
+        CharSequence[] items = {"Take picture", "Select from gallery"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Please choose the picture source");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case 0: // 拍照
+                        requestCameraPermission();
+                        break;
+                    case 1: // 从相册选择
+                        requestGalleryPermission();
+                        break;
+                }
+            }
+        });
+        builder.show();
+
     }
 
     private void requestCameraPermission() {
@@ -316,6 +394,15 @@ public class SellFragment extends Fragment {
         }
     }
 
+    private void requestGalleryPermission() {
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_GALLERY_PERMISSION);
+        } else {
+            launchGallery();
+        }
+    }
+
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -324,9 +411,26 @@ public class SellFragment extends Fragment {
                 launchCamera();
             } else {
                 // 权限被拒绝，添加额外的处理逻辑。
+                Snackbar.make(rootView, "You need to enable camera permissions for subsequent operations", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        }
+
+        // 请求相册时候结果的处理
+        if (requestCode == REQUEST_GALLERY_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                launchGallery();
+            } else {
+                // 权限被拒绝，添加额外的处理逻辑。
+                Snackbar.make(rootView, "You need to enable album permissions to proceed.", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+
             }
         }
     }
+
+
+
 
     private void launchCamera() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -344,43 +448,67 @@ public class SellFragment extends Fragment {
 
     }
 
+    private void launchGallery() {
+        Intent pickPhoto = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(pickPhoto, REQUEST_GALLERY_IMAGE);
+    }
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            uploadPhoto(photoFile);
 
-            NetworkUtils.postFormDataRequest(photoFile, "xxx", new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    Log.e(TAG, "Exception: " + e.getMessage());
+        }else if (requestCode == REQUEST_GALLERY_IMAGE && resultCode == Activity.RESULT_OK) {
+            if (data != null) {
+                Uri selectedImage = data.getData();
+                String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                Cursor cursor = getActivity().getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+                if (cursor != null) {
+                    cursor.moveToFirst();
+                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                    String filePath = cursor.getString(columnIndex);
+                    cursor.close();
+                    File file = new File(filePath);
+
+                    uploadPhoto(file);
                 }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    String responseBody = response.body().string();
-                    JSONObject jsonObject = JSONObject.parseObject(responseBody);
-                    int code = jsonObject.getIntValue("code");
-                    if (code == 200){
-                        String imageUrl = jsonObject.getString("data");
-                        uploadImageUrl = imageUrl;
-
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                // 使用ImageAdapter的实例添加新的URL
-                                imageAdapter.addImageUrl(imageURL + uploadImageUrl);
-                            }
-                        });
-
-                    }
-                }
-            });
-
-
+            }
         }
     }
 
+    private void uploadPhoto(File photoFile){
+        NetworkUtils.postFormDataRequest(photoFile, "xxx", new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(TAG, "Exception: " + e.getMessage());
+            }
 
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                JSONObject jsonObject = JSONObject.parseObject(responseBody);
+                int code = jsonObject.getIntValue("code");
+                if (code == 200){
+                    String useImageUrl = jsonObject.getString("data");
+
+                    // 往image数组里添加图片链接
+                    uploadImageUrls.add(useImageUrl);
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // 使用ImageAdapter的实例添加新的URL
+                            imageAdapter.addImageUrl(imageURL + useImageUrl);
+                        }
+                    });
+
+                }
+            }
+        });
+
+    }
 
     private File createImageFile() throws IOException {
         // 创建一个唯一的文件名
@@ -402,8 +530,25 @@ public class SellFragment extends Fragment {
         // weight
         String itemWeight = editWeight.getText().toString();
 
+
+        // 根据单元进行重量转化
+        double standWeight;
+        if (userChooseUnit.equals("oz")){
+            standWeight = WeightConverter.ozToGrams(Double.parseDouble(itemWeight));
+        }else if (userChooseUnit.equals("kg")){
+            standWeight = WeightConverter.kgToGrams(Double.parseDouble(itemWeight));
+
+        }else {
+            standWeight = Double.parseDouble(itemWeight);
+        }
+
         // drop box value
-        String selectedValue = autoCompleteTextView.getText().toString();
+        String selectedCategory = autoCompleteTextView2.getText().toString();  // 获取选择的种类，比如“gold”或“silver”
+        String selectedPurity = autoCompleteTextView.getText().toString();     // 获取对应的纯度，如"24K"、"999"等
+
+        String itemPrice = editPrice.getText().toString();
+
+        boolean hiddenPrice = materialCheckBox.isChecked();
 
         // get SharedPreferences instance
         SharedPreferences sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences("comp5703", Context.MODE_PRIVATE);
@@ -411,6 +556,11 @@ public class SellFragment extends Fragment {
         // get global userID
         Integer userId = sharedPreferences.getInt("userId", 9999);
 
+
+        /**
+         *
+         * 上传product的表单
+         */
         ItemVO itemVO = new ItemVO();
 
         if (productId !=null){
@@ -418,9 +568,24 @@ public class SellFragment extends Fragment {
         }
         itemVO.setItemTitle(itemTitle);
         itemVO.setItemDescription(itemDescription);
-        itemVO.setItemWeight(Double.parseDouble(itemWeight));
-        itemVO.setSelectedValue(selectedValue);
-        itemVO.setImageUrl(uploadImageUrl);
+        itemVO.setItemWeight(standWeight);
+        itemVO.setItemPrice(Double.parseDouble(itemPrice));
+        itemVO.setItemPurity(selectedPurity);
+
+        if (selectedCategory.equals("gold")){
+            itemVO.setItemCategory(1);
+        }else {
+            itemVO.setItemCategory(2);
+        }
+
+        if (hiddenPrice){
+            itemVO.setHiddenPrice(1);
+        }else {
+            itemVO.setHiddenPrice(0);
+        }
+
+        // 将图片url数组转为字符串
+        itemVO.setImageUrl(uploadImageUrls.toString());
         itemVO.setUserId(userId);
 
         NetworkUtils.postJsonRequest(itemVO, "/public/product/uploadProduct", null, new Callback() {

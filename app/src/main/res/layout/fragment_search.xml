@@ -20,11 +20,11 @@
 
         <!-- 圆角搜索框 -->
         <EditText
-            android:id="@+id/search_box"
+            android:id="@+id/searchBox"
             android:layout_width="wrap_content"
             android:layout_height="45dp"
             android:layout_alignParentStart="true"
-            android:layout_toStartOf="@+id/cancel_button"
+            android:layout_toStartOf="@+id/cancelButton"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:drawableStart="@drawable/ic_baseline_search_24"
@@ -34,7 +34,7 @@
 
         <!-- Cancel Button -->
         <TextView
-            android:id="@+id/cancel_button"
+            android:id="@+id/cancelButton"
             android:layout_width="wrap_content"
             android:layout_height="45dp"
             android:layout_alignParentEnd="true"
@@ -64,6 +64,7 @@
             android:layout_marginLeft="10dp"/>
 
         <ImageView
+            android:id="@+id/deleteHistory"
             android:layout_width="40dp"
             android:layout_height="match_parent"
             android:layout_marginRight="20dp"

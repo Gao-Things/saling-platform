@@ -1,8 +1,12 @@
 package comp5703.sydney.edu.au.learn.util;
 
+import android.content.SharedPreferences;
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +14,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+import comp5703.sydney.edu.au.learn.DTO.UserSetting;
 import okhttp3.*;
 
 public class NetworkUtils {
@@ -17,14 +22,14 @@ public class NetworkUtils {
     private static final String TAG = "NetworkUtils";
     // AWS connect detail
 
-    public static final String apiURL = "http://capstone-loadbalancer-2005125113.us-east-1.elb.amazonaws.com";
-    public static final String websocketUrl = "ws://capstone-loadbalancer-2005125113.us-east-1.elb.amazonaws.com";
+//    public static final String apiURL = "http://capstone-loadbalancer-2005125113.us-east-1.elb.amazonaws.com";
+//    public static final String websocketUrl = "ws://capstone-loadbalancer-2005125113.us-east-1.elb.amazonaws.com";
     public static final String imageURL = "https://capstone-file-store.s3.amazonaws.com/";
 
     // local connect detail
-//    public static final String apiURL = "http://192.168.1.6:8082";
-//    public static final String websocketUrl = "ws://192.168.1.6:8082";
-//    public static final String imageURL = "http://192.168.1.6:8083/";
+    public static final String apiURL = "http://192.168.1.6:8082";
+    public static final String websocketUrl = "ws://192.168.1.6:8082";
+
 
 
     private static OkHttpClient client = new OkHttpClient();
@@ -67,7 +72,7 @@ public class NetworkUtils {
 
     public static void getRequest(String url, Callback callback) {
         Request request = new Request.Builder()
-                .url(url)
+                .url(apiURL + url)
                 .build();
 
         client.newCall(request).enqueue(callback);
@@ -160,6 +165,49 @@ public class NetworkUtils {
         }
 
         return paramMap;
+    }
+
+
+    public static void updateUserSetting( SharedPreferences sharedPreferences) {
+        String token = sharedPreferences.getString("token", "null");
+        UserSetting userSetting = new UserSetting();
+        userSetting.setUserId(sharedPreferences.getInt("userId", 9999));
+        userSetting.setChooseTone(sharedPreferences.getString("chooseTone", "Elegant"));
+
+        if (sharedPreferences.getBoolean("notificationOpen", false)){
+            userSetting.setNotificationOpen(1);
+        }else {
+            userSetting.setNotificationOpen(0);
+        }
+
+        if (sharedPreferences.getBoolean("messageReceived", false)){
+            userSetting.setMessageReceived(1);
+        }else {
+            userSetting.setMessageReceived(0);
+        }
+
+        if (sharedPreferences.getBoolean("messageToneOpen", false)){
+            userSetting.setMessageToneOpen(1);
+        }else {
+            userSetting.setMessageToneOpen(0);
+        }
+
+        NetworkUtils.postJsonRequest(userSetting, "/normal/updateUserSetting", token, new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                String responseBody = response.body().string();
+                JSONObject jsonObject = JSONObject.parseObject(responseBody);
+                int code = jsonObject.getIntValue("code");
+                Log.d("更新成功", String.valueOf(code));
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("用户设置更新失败", e.toString());
+            }
+        });
+
     }
 
 }

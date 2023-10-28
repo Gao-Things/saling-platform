@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,11 +17,9 @@ import com.google.android.material.button.MaterialButton;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import comp5703.sydney.edu.au.learn.DTO.Offer;
-import comp5703.sydney.edu.au.learn.DTO.Product;
 import comp5703.sydney.edu.au.learn.DTO.ProductOffer;
 import comp5703.sydney.edu.au.learn.R;
 
@@ -65,13 +62,21 @@ public class OfferReceivedListAdapter extends RecyclerView.Adapter<OfferReceived
             String formattedDate = sdf.format(new Date(timeStamp));
 
             holder.itemName.setText(productOffer.getProductName());
-            holder.itemPrice.setText(Double.toString(productOffer.getProductPrice()));
+            holder.buyerUsername.setText(productOffer.getBuyerName());
+            holder.itemPrice.setText("$" + productOffer.getProductPrice());
             holder.myOfferTime.setText(formattedDate);
+
+            // 把图片链接字符串转回list
+            String[] items = productOffer.getProductImage().substring(1, productOffer.getProductImage().length() - 1).split(", ");
+
+            List<String> imageUrlList = new ArrayList<>();
+            for (String item : items) {
+                imageUrlList.add(item);
+            }
+
             Picasso.get()
-                    .load(imageURL+productOffer.getProductImage()) // 网络图片的URL
+                    .load(imageURL+imageUrlList.get(0)) // 网络图片的URL,加载第一张图片
                     .into(holder.itemImage);
-
-
 
             // 绑定点击事件
             holder.AcceptButton.setOnClickListener(new View.OnClickListener() {
@@ -118,6 +123,8 @@ public class OfferReceivedListAdapter extends RecyclerView.Adapter<OfferReceived
 
         private TextView contactClick;
 
+        private TextView buyerUsername;
+
 
 
         @SuppressLint("CutPasteId")
@@ -131,6 +138,7 @@ public class OfferReceivedListAdapter extends RecyclerView.Adapter<OfferReceived
             AcceptButton = itemView.findViewById(R.id.AcceptButton);
             rejectClick = itemView.findViewById(R.id.rejectClick);
 
+            buyerUsername = itemView.findViewById(R.id.buyerUsername);
 
         }
     }

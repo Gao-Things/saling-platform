@@ -3,7 +3,9 @@ package comp5703.sydney.edu.au.learn.Home.Fragment;
 import static android.content.ContentValues.TAG;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,10 +15,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,6 +37,7 @@ import comp5703.sydney.edu.au.learn.Home.Adapter.MessageListAdapter;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.userIdVO;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -97,6 +102,53 @@ public class MessagesFragment extends Fragment {
         messageListRecyclerView.setAdapter(messageListAdapter);
 
         getMessageList();
+
+
+
+        ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0,  ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage("Are you sure you want to delete it ？")
+                        .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // 这里写删除数据的代码
+                                messageListAdapter.deleteItem(viewHolder.getAdapterPosition(), token, userId);
+
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // 撤消滑动效果
+                                messageListAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
+                            }
+                        })
+                        .setCancelable(false);  // 这里设置对话框为不可取消;
+                builder.create().show();
+            }
+
+            @Override
+            public void onChildDraw (Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive){
+                new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                        .addBackgroundColor(ContextCompat.getColor(getActivity(), R.color.red))
+                        .addActionIcon(R.drawable.ic_baseline_delete_24)
+                        .addSwipeLeftLabel("Delete")
+                        .setSwipeLeftLabelTextSize(1,17)
+                        .setSwipeLeftLabelColor(ContextCompat.getColor(getActivity(), R.color.white)) //设置字体颜色
+                        .create()
+                        .decorate();
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
+        };
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
+        itemTouchHelper.attachToRecyclerView(messageListRecyclerView);
+
+
 
     }
 

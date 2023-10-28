@@ -4,23 +4,29 @@ import static comp5703.sydney.edu.au.learn.util.NetworkUtils.imageURL;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-
-import comp5703.sydney.edu.au.learn.DTO.Record;
 import comp5703.sydney.edu.au.learn.DTO.UserMessage;
 import comp5703.sydney.edu.au.learn.R;
+import comp5703.sydney.edu.au.learn.VO.userAndRemoteUserIdVO;
+import comp5703.sydney.edu.au.learn.util.NetworkUtils;
 import comp5703.sydney.edu.au.learn.util.TimeCalculateUtil;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.LinearViewHolder>{
 
@@ -76,8 +82,9 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                     mlistener.onClick(position, remoteUserId);
                 }
             });
-        }
 
+
+        }
 
 
     }
@@ -107,6 +114,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
             userAvatar = itemView.findViewById(R.id.userAvatar);
             messageSendTime = itemView.findViewById(R.id.messageDate);
 
+
         }
     }
 
@@ -121,4 +129,34 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
     public void setRecordList(List<UserMessage> userMessageList) {
         this.userMessageList = userMessageList;
     }
+
+    public void deleteItem(int position, String token, Integer userId) {
+        // 删除数据
+        userAndRemoteUserIdVO userAndRemoteUserIdVO = new userAndRemoteUserIdVO();
+        userAndRemoteUserIdVO.setUserId(userId);
+
+        if (userId != userMessageList.get(position).getFromUserId()){
+            userAndRemoteUserIdVO.setRemoteUserId(userMessageList.get(position).getFromUserId());
+        }else {
+            userAndRemoteUserIdVO.setRemoteUserId(userMessageList.get(position).getToUserId());
+        }
+
+        NetworkUtils.getWithParamsRequest( userAndRemoteUserIdVO, "/normal/message/deleteMessageHistoryByUserIdAndRemoteUserId",token, new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+            }
+        });
+
+        userMessageList.remove(position);
+        notifyItemRemoved(position);
+
+    }
+
+
+
+
 }

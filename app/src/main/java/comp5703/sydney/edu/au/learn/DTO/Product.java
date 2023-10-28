@@ -17,10 +17,29 @@ public class Product {
 
     private double productWeight;
 
+    private String purity;
+
     private Long ownerId;
 
     private Integer productStatus;
 
+    private Integer category;
+
+    public Integer getCategory() {
+        return category;
+    }
+
+    public void setCategory(Integer category) {
+        this.category = category;
+    }
+
+    public String getPurity() {
+        return purity;
+    }
+
+    public void setPurity(String purity) {
+        this.purity = purity;
+    }
 
     public Integer getProductStatus() {
         return productStatus;

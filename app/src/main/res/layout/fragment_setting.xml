@@ -36,12 +36,12 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="400dp"
+            android:layout_height="450dp"
             android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="200dp"
                 android:orientation="vertical">
 
                 <androidx.cardview.widget.CardView
@@ -65,7 +65,7 @@
                             android:layout_weight="1"
                             android:gravity="center_vertical"
                             android:paddingLeft="15dp"
-                            android:text="Message pop-up"
+                            android:text="Notification pop-up"
                             android:textSize="21sp"
                             android:textStyle="bold" />
 
@@ -91,7 +91,7 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
+                    android:layout_height="2dp"
                     android:background="@color/lineColor"
                     />
                 <androidx.cardview.widget.CardView
@@ -137,6 +137,62 @@
 
 
                 </androidx.cardview.widget.CardView>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="@color/lineColor"
+                    />
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/MessageToneOpen"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:background="@color/backgroundGreen"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="15dp"
+                            android:text="Message tone"
+                            android:textSize="21sp"
+                            android:textStyle="bold" />
+
+                        <com.kyleduo.switchbutton.SwitchButton
+                            android:id="@+id/switchMessageToneOpen"
+                            android:layout_width="100dp"
+                            android:layout_height="match_parent"
+                            android:textColor="@color/black"
+
+                            app:kswBackColor="@color/generalGreen"
+                            app:kswTextExtra="20sp"
+                            app:kswTextOff="Close"
+                            app:kswTextOn="Open"
+                            app:kswThumbColor="@color/white"
+                            app:kswThumbHeight="30dp"
+                            app:kswThumbMargin="5dp"
+                            app:kswThumbRadius="60dp"
+                            app:kswThumbWidth="30dp" />
+
+                    </LinearLayout>
+
+
+                </androidx.cardview.widget.CardView>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="@color/lineColor"
+                    />
+
             </LinearLayout>
 
 
@@ -168,7 +224,7 @@
                             android:layout_weight="1"
                             android:gravity="center_vertical"
                             android:paddingLeft="15dp"
-                            android:text="Message tone"
+                            android:text="Change tone"
                             android:textSize="21sp"
                             android:textStyle="bold" />
 
@@ -194,7 +250,7 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
+                    android:layout_height="2dp"
                     android:background="@color/lineColor"
                     />
 
@@ -234,7 +290,7 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
+                    android:layout_height="2dp"
                     android:background="@color/lineColor"
                     />
                 <androidx.cardview.widget.CardView
@@ -270,6 +326,12 @@
 
 
                 </androidx.cardview.widget.CardView>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="@color/lineColor"
+                    />
 
             </LinearLayout>
 

@@ -72,10 +72,12 @@
                             android:textStyle="bold" />
 
                         <ImageView
-                            android:gravity="center_vertical"
-                            android:layout_width="30dp"
+                            android:id="@+id/chooseImg"
+                            android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_marginRight="10dp"
+                            android:gravity="center_vertical"
+                            android:visibility="gone"
                             android:src="@drawable/ic_baseline_done_24" />
 
                     </LinearLayout>
@@ -113,11 +115,12 @@
                             android:textStyle="bold" />
 
                         <ImageView
+                            android:id="@+id/chooseImg2"
                             android:gravity="center_vertical"
                             android:layout_width="30dp"
-                            android:visibility="gone"
                             android:layout_height="match_parent"
                             android:layout_marginRight="10dp"
+                            android:visibility="gone"
                             android:src="@drawable/ic_baseline_done_24" />
 
                     </LinearLayout>
@@ -154,11 +157,12 @@
                             android:textStyle="bold" />
 
                         <ImageView
+                            android:id="@+id/chooseImg3"
                             android:gravity="center_vertical"
                             android:layout_width="30dp"
                             android:layout_height="match_parent"
-                            android:visibility="gone"
                             android:layout_marginRight="10dp"
+                            android:visibility="gone"
                             android:src="@drawable/ic_baseline_done_24" />
 
                     </LinearLayout>
@@ -196,6 +200,7 @@
                             android:textStyle="bold" />
 
                         <ImageView
+                            android:id="@+id/chooseImg4"
                             android:gravity="center_vertical"
                             android:layout_width="30dp"
                             android:layout_height="match_parent"
@@ -238,11 +243,12 @@
                             android:textStyle="bold" />
 
                         <ImageView
+                            android:id="@+id/chooseImg5"
                             android:gravity="center_vertical"
                             android:layout_width="30dp"
                             android:layout_height="match_parent"
-                            android:visibility="gone"
                             android:layout_marginRight="10dp"
+                            android:visibility="gone"
                             android:src="@drawable/ic_baseline_done_24" />
 
                     </LinearLayout>

@@ -11,7 +11,7 @@
     <color name="textColorBlackGray">#434343</color> <!-- 灰色 -->
     <color name="buttonBackground">#E0E0E0</color> <!-- 按钮背景色 -->
     <color name="backgroundGreen">#FDFFF9</color>
-    <color name="bodergray">#C9E8E8E8</color>
+    <color name="bodergray">#E9FBFBFB</color>
     <color name="lightGreen">#9A437D28</color>
     <color name="Green">#0CB400</color>
     <color name="generalGreen">#008005</color>
@@ -21,7 +21,7 @@
     <color name="lightwhite">#F2FEED</color>
     <color name="withoutSelect">#B9C1D9</color>
     <color name="popWindowsBackground">#FFFFFF</color>
-    <color name="lineColor">#F1F1F1</color>
+    <color name="lineColor">#E4E7E7E7</color>
     <color name="cardViewColorGray">#3B3943</color>
     <color name="cardViewColorPurple">#725AD1</color>
     <color name="cardViewColorBlue">#29A4EA</color>

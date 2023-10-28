@@ -49,23 +49,33 @@ public class SearchResultListAdapter extends RecyclerView.Adapter<SearchResultLi
             String productName = product.getProductName();
             String productDetail = product.getProductDescription();
 
-            if (searchQuery != null && !searchQuery.isEmpty() && productName.toLowerCase().contains(searchQuery.toLowerCase())) {
-                int startIndex = productName.toLowerCase().indexOf(searchQuery.toLowerCase());
-                int endIndex = startIndex + searchQuery.length();
+            if (searchQuery != null && !searchQuery.isEmpty()) {
+                int startIndex;
+                int endIndex;
+                String targetText;
+                if (productName.toLowerCase().contains(searchQuery.toLowerCase())) {
+                    startIndex = productName.toLowerCase().indexOf(searchQuery.toLowerCase());
+                    endIndex = startIndex + searchQuery.length();
+                    targetText = productName;
+                } else {
+                    startIndex = productDetail.toLowerCase().indexOf(searchQuery.toLowerCase());
+                    endIndex = startIndex + searchQuery.length();
+                    targetText = productDetail;
+                }
 
-                SpannableString spannableString = new SpannableString(productName);
-                ForegroundColorSpan redSpan = new ForegroundColorSpan(Color.RED);
-                spannableString.setSpan(redSpan, startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                holder.searchResult.setText(spannableString);
+                if (startIndex != -1) { // Make sure the search query exists in the string
+                    SpannableString spannableString = new SpannableString(targetText);
+                    ForegroundColorSpan redSpan = new ForegroundColorSpan(Color.RED);
+                    spannableString.setSpan(redSpan, startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    holder.searchResult.setText(spannableString);
+                } else {
+                    holder.searchResult.setText(targetText); // Just set the text without highlighting if search query not found
+                }
             } else {
-                int startIndex = productDetail.toLowerCase().indexOf(searchQuery.toLowerCase());
-                int endIndex = startIndex + searchQuery.length();
-
-                SpannableString spannableString = new SpannableString(productDetail);
-                ForegroundColorSpan redSpan = new ForegroundColorSpan(Color.RED);
-                spannableString.setSpan(redSpan, startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                holder.searchResult.setText(spannableString);
+                // Handle case where searchQuery is null or empty if needed
+                holder.searchResult.setText(productDetail); // Default behavior
             }
+
 
 
 
@@ -73,7 +83,7 @@ public class SearchResultListAdapter extends RecyclerView.Adapter<SearchResultLi
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mlistener.onClick(position, productList.get(position).getProductName());
+                    mlistener.onClick(position, productList.get(position).getId());
                 }
             });
         }
@@ -104,7 +114,7 @@ public class SearchResultListAdapter extends RecyclerView.Adapter<SearchResultLi
     }
 
     public interface OnItemClickListener{
-        void onClick(int pos, String topContent);
+        void onClick(int pos, Integer productId);
     }
 
     public List<Product> getRecordList() {

@@ -3,6 +3,7 @@ package comp5703.sydney.edu.au.learn.Home.Fragment;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -141,28 +142,33 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
                 if (!dataArray.isEmpty()) {
 
                     List<Offer> OfferList = dataArray.toJavaList(Offer.class);
-                    // 更新Adapter的数据
-                    productOfferListAdapter.setRecordList(OfferList);
+                    Activity activity = getActivity();
+                    if(activity != null) {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                // 更新Adapter的数据
+                                productOfferListAdapter.setRecordList(OfferList);
+                                offerList.setVisibility(View.VISIBLE);
+                                // 在UI线程上更新Adapter的数据
+                                productOfferListAdapter.notifyDataSetChanged();
+                            }
 
-                    // 在主线程中更新UI
-                    Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
-                        @SuppressLint("SetTextI18n")
-                        @Override
-                        public void run() {
-                            offerList.setVisibility(View.VISIBLE);
-                            // 在UI线程上更新Adapter的数据
-                            productOfferListAdapter.notifyDataSetChanged();
-                        }
-                    });
+                        });
+                    }
+
                 }else {
                     // seller offer为空在主线程中更新UI
-                    Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
-                        @SuppressLint("SetTextI18n")
-                        @Override
-                        public void run() {
-                            emptyText.setVisibility(View.VISIBLE);
-                        }
-                    });
+                    Activity activity = getActivity();
+                    if(activity != null) {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                emptyText.setVisibility(View.VISIBLE);
+                            }
+
+                        });
+                    }
                 }
 
 

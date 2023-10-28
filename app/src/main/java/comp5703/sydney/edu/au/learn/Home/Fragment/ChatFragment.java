@@ -6,6 +6,8 @@ import static comp5703.sydney.edu.au.learn.DTO.Message.MessageType.SENT;
 import static comp5703.sydney.edu.au.learn.util.NetworkUtils.imageURL;
 import static comp5703.sydney.edu.au.learn.util.NetworkUtils.websocketUrl;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -80,11 +82,14 @@ public class ChatFragment extends Fragment {
     private String userAvatarUrl;
     private String remoteUserAvatarUrl;
 
+    SharedPreferences sharedPreferences;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat_view, container, false);
-
+        // get SharedPreferences instance
+        sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences("comp5703", Context.MODE_PRIVATE);
         return view;
     }
 
@@ -372,11 +377,10 @@ public class ChatFragment extends Fragment {
                         chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1); // 滚动到最新的消息
 
                         try {
-                            // TODO 暂时先从本地获取刚刚设置的音频
+                            // 获取设置的音频
+                            Ringtone ringtone = getUserSettingTone();
 
-                            // 获取系统默认的通知音频的 URI
-                            Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                            Ringtone ringtone = RingtoneManager.getRingtone(getActivity(), notificationSound);
+                            assert ringtone != null;
                             ringtone.play();
 
                         } catch (Exception e) {
@@ -411,6 +415,37 @@ public class ChatFragment extends Fragment {
                 Log.d("Websocket onClosed", "WebSocket closed with code: " + code);
             }
         });
+    }
+
+    private Ringtone getUserSettingTone() {
+        Ringtone ringtone;
+        String toneChoice = sharedPreferences.getString("chooseTone", null);
+
+        switch (toneChoice) {
+            // 获取系统默认的通知音频的 URI
+            case "playful":
+                Uri customSound2 = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.meng);
+                ringtone = RingtoneManager.getRingtone(getActivity(), customSound2);
+                break;
+
+            case "crisp":
+                Uri customSound = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.y831);
+                ringtone = RingtoneManager.getRingtone(getActivity(), customSound);
+                break;
+
+            case "electronic":
+                Uri customSound3 = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.m888);
+                ringtone = RingtoneManager.getRingtone(getActivity(), customSound3);
+                break;
+
+            default:
+                Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                ringtone = RingtoneManager.getRingtone(getActivity(), defaultSound);
+                break;
+        }
+
+
+        return ringtone;
     }
 
 }

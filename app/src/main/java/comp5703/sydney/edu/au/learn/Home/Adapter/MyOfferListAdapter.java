@@ -18,6 +18,7 @@ import com.google.android.material.button.MaterialButton;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -66,9 +67,19 @@ public class MyOfferListAdapter extends RecyclerView.Adapter<MyOfferListAdapter.
             holder.itemName.setText(product.getProductName());
             holder.itemPrice.setText(Double.toString(product.getProductPrice()));
             holder.myOfferTime.setText(formattedDate);
+
+            // 把图片链接字符串转回list
+            String[] items = product.getProductImage().substring(1, product.getProductImage().length() - 1).split(", ");
+
+            List<String> imageUrlList = new ArrayList<>();
+            for (String item : items) {
+                imageUrlList.add(item);
+            }
+
             Picasso.get()
-                    .load(imageURL+product.getProductImage()) // 网络图片的URL
+                    .load(imageURL+imageUrlList.get(0)) // 网络图片的URL,加载第一张图片
                     .into(holder.itemImage);
+
 
             if (offerStatus==0){
                 holder.offerStatus.setText("Pending");

@@ -2,6 +2,8 @@ package comp5703.sydney.edu.au.learn.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 public abstract class TimeCalculateUtil {
 
@@ -28,6 +30,33 @@ public abstract class TimeCalculateUtil {
         } else {
             sdf = new SimpleDateFormat("MM-dd");
             return sdf.format(new Date(offerSentTime));
+        }
+    }
+
+    public static String convertTimestampToDate(long timestamp) {
+        Date date = new Date(timestamp);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM", Locale.ENGLISH);  // 使用英语作为地区设置
+        return sdf.format(date);
+    }
+
+    public static String getTimeDifference(long timestamp) {
+        long now = System.currentTimeMillis();
+        long diff = now - timestamp;
+
+        if (diff < TimeUnit.MINUTES.toMillis(1)) {
+            return diff / 1000 + " S";
+        } else if (diff < TimeUnit.HOURS.toMillis(1)) {
+            long minutes = TimeUnit.MILLISECONDS.toMinutes(diff);
+            long seconds = TimeUnit.MILLISECONDS.toSeconds(diff) - TimeUnit.MINUTES.toSeconds(minutes);
+            return minutes + " M " + seconds + " S";
+        } else if (diff < TimeUnit.DAYS.toMillis(1)) {
+            long hours = TimeUnit.MILLISECONDS.toHours(diff);
+            long remainDiff = diff - TimeUnit.HOURS.toMillis(hours);
+            long minutes = TimeUnit.MILLISECONDS.toMinutes(remainDiff);
+            return hours + " H " + minutes + " M";
+        } else {
+            long days = TimeUnit.MILLISECONDS.toDays(diff);
+            return days + " Day";
         }
     }
 
