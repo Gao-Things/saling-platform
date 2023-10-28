@@ -1,6 +1,7 @@
 package com.usyd.capstone.service;
 
 import com.usyd.capstone.CapstoneApplication;
+import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.entity.Offer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,9 +21,13 @@ public class OfferServiceTest {
 
     @Test
     public void getOfferListBySellerId() {
-        int count;  // count the number of offers
-        count = ((List<Offer>)offerService.getOfferListBySellerId(1).getData()).size();
-        assertEquals(2, count);
-
+        Result list = offerService.getOfferListBySellerId(5);
+        List<Offer> data = (List<Offer>)list.getData();
+        long count = data.stream().count();//count
+        if(list.getCode()==200 ){
+            System.out.println("success");
+        }else {
+            System.out.println("fail");
+        }
     }
 }

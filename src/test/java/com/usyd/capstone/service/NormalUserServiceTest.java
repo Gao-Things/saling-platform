@@ -33,7 +33,7 @@ public class NormalUserServiceTest {
         loginResponse.setRole(3);
         MakeOrUpdateAnOfferRequest request = new MakeOrUpdateAnOfferRequest(); // 请确保类名正确
         request.setToken(token);
-        request.setProductId(1L);
+        request.setProductId(38L);
         request.setNote("sampleNote");
         request.setPrice(99);
         Result result = normalUserService.makeOrUpdateAnOffer(
@@ -60,7 +60,7 @@ public class NormalUserServiceTest {
         loginResponse.setRole(3);
         AcceptOrCancelOrRejectAnOfferRequest request = new AcceptOrCancelOrRejectAnOfferRequest();
         request.setToken(token);
-        request.setOfferId(9L);
+        request.setOfferId(12L);
 
         Result result = normalUserService.acceptAnOffer(request.getToken(), request.getOfferId());
 
@@ -80,7 +80,7 @@ public class NormalUserServiceTest {
         loginResponse.setRole(3);
         AcceptOrCancelOrRejectAnOfferRequest request = new AcceptOrCancelOrRejectAnOfferRequest();
         request.setToken(token);
-        request.setOfferId(8L);
+        request.setOfferId(12L);
 
         Result result = normalUserService.cancelAnOffer(request.getToken(), request.getOfferId());
 
@@ -100,7 +100,7 @@ public class NormalUserServiceTest {
         loginResponse.setRole(3);
         AcceptOrCancelOrRejectAnOfferRequest request = new AcceptOrCancelOrRejectAnOfferRequest();
         request.setToken(token);
-        request.setOfferId(7L);
+        request.setOfferId(12L);
 
         Result result = normalUserService.rejectAnOffer(request.getToken(), request.getOfferId());
 
@@ -118,7 +118,7 @@ public class NormalUserServiceTest {
         loginResponse.setRole(3);
         OpenOrCloseOrCancelSaleRequest request = new OpenOrCloseOrCancelSaleRequest();
         request.setToken(token);
-        request.setProductId(1L);
+        request.setProductId(38L);
         request.setProductStatusNew(1); // Assuming 1 represents some valid status.
 
         Result result = normalUserService.openOrCloseOrCancelSale(request.getToken(), request.getProductId(), request.getProductStatusNew());
