@@ -61,6 +61,7 @@ import java.util.Objects;
 
 import comp5703.sydney.edu.au.learn.DTO.Offer;
 import comp5703.sydney.edu.au.learn.DTO.Product;
+import comp5703.sydney.edu.au.learn.DTO.UserSetting;
 import comp5703.sydney.edu.au.learn.Home.Adapter.ProductOfferListAdapter;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.makeAnOfferParameter;
@@ -68,6 +69,7 @@ import comp5703.sydney.edu.au.learn.VO.modifyProductStatusParameter;
 import comp5703.sydney.edu.au.learn.VO.productDetailParameter;
 import comp5703.sydney.edu.au.learn.VO.productOfferParameter;
 import comp5703.sydney.edu.au.learn.VO.productParameter;
+import comp5703.sydney.edu.au.learn.VO.userIdVO;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -212,25 +214,62 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
 
     // 跳转到聊天页面
     private void dumpToChatRoom(View view) {
-        // jump to chat fragment
-        if (chatFragment == null){
-            chatFragment = new ChatFragment();
+        // 先判断receiverId的用户是否开启了聊天权限
+
+        userIdVO userIdVO = new userIdVO(sellerId);
+        // 发送一份offer
+        NetworkUtils.getWithParamsRequest(userIdVO,"/normal/getUserSetting",token, new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                handleGetRemoteUserSettingResponse(response);
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+            }
+        });
+
+    }
+
+    private void handleGetRemoteUserSettingResponse(Response response) throws IOException {
+
+        String responseBody = response.body().string();
+        JSONObject jsonObject = JSONObject.parseObject(responseBody);
+        int code = jsonObject.getIntValue("code");
+
+        if (code == 200) {
+
+            UserSetting remoteUserSetting = jsonObject.getJSONObject("data").toJavaObject(UserSetting.class);
+
+            if (remoteUserSetting.getMessageReceived() == 1){
+                // jump to chat fragment
+                if (chatFragment == null){
+                    chatFragment = new ChatFragment();
+                }
+                // 准备要传递的数据
+                Bundle args = new Bundle();
+
+
+                args.putInt("receiverId", sellerId); // 这里的 "key" 是传递数据的键名，"value" 是要传递的值
+                args.putInt("userId", userId);
+                args.putString("token", token);
+                chatFragment.setArguments(args);
+
+                // 执行 Fragment 跳转
+                assert getFragmentManager() != null;
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.replace(R.id.fl_container, chatFragment); // R.id.fragment_container 是用于放置 Fragment 的容器
+                transaction.addToBackStack(null); // 将 FragmentA 添加到返回栈，以便用户可以返回到它
+                transaction.commitAllowingStateLoss();
+            }else {
+                Snackbar.make(rootView, "The seller has turned off the chat function", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+
+
+        } else {
+            Log.d(TAG, "error");
         }
-        // 准备要传递的数据
-        Bundle args = new Bundle();
-
-
-        args.putInt("receiverId", sellerId); // 这里的 "key" 是传递数据的键名，"value" 是要传递的值
-        args.putInt("userId", userId);
-        args.putString("token", token);
-        chatFragment.setArguments(args);
-
-        // 执行 Fragment 跳转
-        assert getFragmentManager() != null;
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.fl_container, chatFragment); // R.id.fragment_container 是用于放置 Fragment 的容器
-        transaction.addToBackStack(null); // 将 FragmentA 添加到返回栈，以便用户可以返回到它
-        transaction.commitAllowingStateLoss();
     }
 
     private void editClick(View view) {

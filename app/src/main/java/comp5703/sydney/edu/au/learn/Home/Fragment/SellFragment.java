@@ -573,9 +573,9 @@ public class SellFragment extends Fragment {
         itemVO.setItemPurity(selectedPurity);
 
         if (selectedCategory.equals("gold")){
-            itemVO.setItemCategory(1);
+            itemVO.setCategory(1);
         }else {
-            itemVO.setItemCategory(2);
+            itemVO.setCategory(2);
         }
 
         if (hiddenPrice){

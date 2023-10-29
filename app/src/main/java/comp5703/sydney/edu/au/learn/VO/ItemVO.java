@@ -10,7 +10,7 @@ public class ItemVO {
     private String imageUrl;
     private Integer userId;
 
-    private Integer itemCategory;
+    private Integer category;
     private Integer hiddenPrice;
     private String itemPurity;
     private double itemPrice;
@@ -63,12 +63,12 @@ public class ItemVO {
         this.userId = userId;
     }
 
-    public Integer getItemCategory() {
-        return itemCategory;
+    public Integer getCategory() {
+        return category;
     }
 
-    public void setItemCategory(Integer itemCategory) {
-        this.itemCategory = itemCategory;
+    public void setCategory(Integer category) {
+        this.category = category;
     }
 
     public Integer getHiddenPrice() {

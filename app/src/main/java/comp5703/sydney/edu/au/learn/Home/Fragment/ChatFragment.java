@@ -377,11 +377,15 @@ public class ChatFragment extends Fragment {
                         chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1); // 滚动到最新的消息
 
                         try {
-                            // 获取设置的音频
-                            Ringtone ringtone = getUserSettingTone();
 
-                            assert ringtone != null;
-                            ringtone.play();
+                           if (sharedPreferences.getBoolean("messageToneOpen", false)){
+                                // 获取设置的音频
+                                Ringtone ringtone = getUserSettingTone();
+
+                                assert ringtone != null;
+                                ringtone.play();
+                            }
+
 
                         } catch (Exception e) {
                             e.printStackTrace();
