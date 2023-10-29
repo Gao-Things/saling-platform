@@ -150,7 +150,7 @@ public class SelectToneFragment extends Fragment {
                 case R.id.electronic:
                     electronicImage.setVisibility(View.VISIBLE);
                     // 处理electronic音效的逻辑
-                    Uri customSound3 = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.m888);
+                    Uri customSound3 = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.y831);
                     Ringtone ringtone4 = RingtoneManager.getRingtone(getActivity(), customSound3);
                     ringtone4.play();
 

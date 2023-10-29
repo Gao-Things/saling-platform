@@ -434,7 +434,7 @@ public class ChatFragment extends Fragment {
                 break;
 
             case "electronic":
-                Uri customSound3 = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.m888);
+                Uri customSound3 = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.y831);
                 ringtone = RingtoneManager.getRingtone(getActivity(), customSound3);
                 break;
 
