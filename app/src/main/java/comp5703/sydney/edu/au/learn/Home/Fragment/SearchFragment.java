@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -183,6 +184,9 @@ public class SearchFragment extends Fragment {
         topSearch.addItemDecoration(decoration1);
 
 
+        /**
+         * 获取Top搜索
+         */
         getTopSearchResult();
 
 
@@ -290,6 +294,23 @@ public class SearchFragment extends Fragment {
                             params.setMargins(10, 15, 10, 15);  // 设置左、上、右、下的边距
 
                             textView.setLayoutParams(params);
+
+
+                            // 为TextView设置点击监听器
+                            textView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    // 将TextView的文本内容设置到EditText中
+                                    searchBox.setText(((TextView) v).getText().toString());
+                                    // 可选：如果您希望EditText获得焦点并弹出键盘
+                                    searchBox.requestFocus();
+                                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                    imm.showSoftInput(searchBox, InputMethodManager.SHOW_IMPLICIT);
+                                }
+                            });
+
+
+
                             flexboxLayout.addView(textView);
                         }
                     }
@@ -381,36 +402,75 @@ public class SearchFragment extends Fragment {
 
         List<TopSearch> topSearchList = new ArrayList<>();
 
-        TopSearch topSearch1 = new TopSearch("24K gold cheap", 1000);
-        TopSearch topSearch2 = new TopSearch("24K sliver cheap", 933);
-        TopSearch topSearch3 = new TopSearch("23K gold cheap", 888);
-        TopSearch topSearch4 = new TopSearch("22K gold cheap", 777);
-        TopSearch topSearch5 = new TopSearch("23K gold aaa", 345);
-        TopSearch topSearch6 = new TopSearch("cascas", 567);
-        topSearchList.add(topSearch1);
-        topSearchList.add(topSearch2);
-        topSearchList.add(topSearch3);
-        topSearchList.add(topSearch4);
-        topSearchList.add(topSearch5);
-        topSearchList.add(topSearch6);
+        // 发送请求获取top搜索记录
 
-        topSearchList.add(topSearch1);
-        topSearchList.add(topSearch2);
-        topSearchList.add(topSearch3);
-        topSearchList.add(topSearch4);
-        topSearchList.add(topSearch5);
-        topSearchList.add(topSearch6);
+        NetworkUtils.getWithParamsRequest( null,"/public/product/getProductList/top10Products",token, new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                JSONObject jsonObject = JSONObject.parseObject(responseBody);
+                int code = jsonObject.getIntValue("code");
 
-        topSearchListAdapter.setRecordList(topSearchList);
-        topSearchListAdapter.notifyDataSetChanged();
+                // 提取 product 数组并转换为List
+                JSONArray messageArray = jsonObject.getJSONArray("data");
+
+                if (code == 200) {
+
+                    List<Product> productList = messageArray.toJavaList(Product.class);
+                    for (Product pp : productList){
+                        TopSearch topSearch = new TopSearch(pp.getId(), pp.getProductName(), pp.getSearchCount());
+                        topSearchList.add(topSearch);
+                    }
+                    // 通知adapter数据更新
+                    Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
+                        @SuppressLint("NotifyDataSetChanged")
+                        @Override
+                        public void run() {
+
+                            topSearchListAdapter.setRecordList(topSearchList);
+                            topSearchListAdapter.notifyDataSetChanged();
+
+                        }
+                    });
+
+
+                } else {
+                    Log.d(TAG, "errowwwwwww");
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                handleFailure(e);
+            }
+        });
+
 
     }
 
 
     TopSearchListAdapter.OnItemClickListener clickListener = new TopSearchListAdapter.OnItemClickListener() {
         @Override
-        public void onClick(int pos, String topContent) {
+        public void onClick(int pos, Integer productId, String productTitle) {
 
+            saveToSearchHistory(productId, productTitle);
+
+            // 跳转到商品详情页面
+            // jump to item detail
+            if (itemDetailFragment == null){
+                itemDetailFragment = new ItemDetailFragment();
+            }
+            // 准备要传递的数据
+            Bundle args = new Bundle();
+            args.putInt("productId", productId); // 这里的 "key" 是传递数据的键名，"value" 是要传递的值
+            itemDetailFragment.setArguments(args);
+
+            // 执行 Fragment 跳转
+            assert getFragmentManager() != null;
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            transaction.replace(R.id.fl_container, itemDetailFragment); // R.id.fragment_container 是用于放置 Fragment 的容器
+            transaction.addToBackStack(null); // 将 FragmentA 添加到返回栈，以便用户可以返回到它
+            transaction.commitAllowingStateLoss();
 
         }
     };
@@ -419,24 +479,8 @@ public class SearchFragment extends Fragment {
     SearchResultListAdapter.OnItemClickListener clickListener2 = new SearchResultListAdapter.OnItemClickListener() {
         @Override
         public void onClick(int pos, Integer productId) {
-            SearchHistoryParameter searchHistoryParameter = new SearchHistoryParameter();
-            searchHistoryParameter.setSearchTime(System.currentTimeMillis());
-            searchHistoryParameter.setProductId(productId);
-            searchHistoryParameter.setUserId(userId);
-            searchHistoryParameter.setSearchContent(keyWord);
-            // 存入搜索历史
-            NetworkUtils.postJsonRequest(searchHistoryParameter,"/search/saveSearchHistory",token, new Callback() {
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
 
-                }
-
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    handleFailure(e);
-                }
-            });
-
+            saveToSearchHistory(productId, keyWord);
 
             // 跳转到商品详情页面
             // jump to item detail
@@ -458,6 +502,26 @@ public class SearchFragment extends Fragment {
 
         }
     };
+
+    private void saveToSearchHistory(Integer productId, String keyWord){
+        SearchHistoryParameter searchHistoryParameter = new SearchHistoryParameter();
+        searchHistoryParameter.setSearchTime(System.currentTimeMillis());
+        searchHistoryParameter.setProductId(productId);
+        searchHistoryParameter.setUserId(userId);
+        searchHistoryParameter.setSearchContent(keyWord);
+        // 存入搜索历史
+        NetworkUtils.postJsonRequest(searchHistoryParameter,"/search/saveSearchHistory",token, new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                handleFailure(e);
+            }
+        });
+    }
 
 
 }

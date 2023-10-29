@@ -25,6 +25,16 @@ public class Product {
 
     private Integer category;
 
+    private int searchCount;
+
+    public int getSearchCount() {
+        return searchCount;
+    }
+
+    public void setSearchCount(int searchCount) {
+        this.searchCount = searchCount;
+    }
+
     public Integer getCategory() {
         return category;
     }

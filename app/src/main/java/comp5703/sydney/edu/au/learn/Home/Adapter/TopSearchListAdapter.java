@@ -96,7 +96,7 @@ public class TopSearchListAdapter extends RecyclerView.Adapter<TopSearchListAdap
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mlistener.onClick(position, recordList.get(position).getContent());
+                    mlistener.onClick(position, recordList.get(position).getProductId(), recordList.get(position).getContent());
                 }
             });
         }
@@ -131,7 +131,7 @@ public class TopSearchListAdapter extends RecyclerView.Adapter<TopSearchListAdap
     }
 
     public interface OnItemClickListener{
-        void onClick(int pos, String topContent);
+        void onClick(int pos, Integer topProductId, String productTitle);
     }
 
     public List<TopSearch> getRecordList() {

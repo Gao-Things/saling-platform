@@ -2,6 +2,8 @@ package comp5703.sydney.edu.au.learn.DTO;
 
 public class TopSearch {
 
+    private Integer productId;
+
     private String content;
 
     private Integer searchCount;
@@ -10,9 +12,18 @@ public class TopSearch {
     public TopSearch() {
     }
 
-    public TopSearch(String content, Integer searchCount) {
+    public TopSearch(Integer productId, String content, Integer searchCount) {
+        this.productId = productId;
         this.content = content;
         this.searchCount = searchCount;
+    }
+
+    public Integer getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Integer productId) {
+        this.productId = productId;
     }
 
     public String getContent() {

@@ -78,16 +78,22 @@ public class NetworkUtils {
         client.newCall(request).enqueue(callback);
     }
 
-    public static void getWithParamsRequest(Object object, String url, @Nullable String token, Callback callback) {
+    public static void getWithParamsRequest(@Nullable Object object, String url, @Nullable String token, Callback callback) {
 
         HttpUrl.Builder urlBuilder = HttpUrl.parse(apiURL + url).newBuilder();
-        // 拼接参数
-        Map<String, String> queryParams = convertObjectToMap(object);
-        // 添加查询参数
-        if (queryParams != null) {
-            for (Map.Entry<String, String> entry : queryParams.entrySet()) {
-                urlBuilder.addQueryParameter(entry.getKey(), entry.getValue());
+
+
+        if (object != null){
+            // 拼接参数
+            Map<String, String> queryParams = convertObjectToMap(object);
+
+            // 添加查询参数
+            if (queryParams != null) {
+                for (Map.Entry<String, String> entry : queryParams.entrySet()) {
+                    urlBuilder.addQueryParameter(entry.getKey(), entry.getValue());
+                }
             }
+
         }
 
         String useUrl = urlBuilder.build().toString();
