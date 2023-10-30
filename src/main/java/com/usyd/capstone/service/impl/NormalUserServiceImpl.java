@@ -8,12 +8,15 @@ import com.usyd.capstone.common.compents.JwtToken;
 import com.usyd.capstone.common.compents.NotificationServer;
 import com.usyd.capstone.entity.*;
 import com.usyd.capstone.mapper.*;
+import com.usyd.capstone.rabbitMq.FanoutSender;
 import com.usyd.capstone.service.NormalUserService;
 import com.usyd.capstone.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class NormalUserServiceImpl implements NormalUserService {
@@ -33,6 +36,9 @@ public class NormalUserServiceImpl implements NormalUserService {
 
     @Autowired
     private NotificationMapper notificationMapper;
+
+    @Autowired
+    private FanoutSender fanoutSender;
 
     @Override
     public Result setPriceThresholdSingle(String token, Long productId, boolean isMinimum, double threshold) {
@@ -463,11 +469,28 @@ public class NormalUserServiceImpl implements NormalUserService {
         notificationDto.setProduct(product);
 
         String result = JSONObject.toJSONString(notificationDto);
+
+
         // send message to seller
-        if(userType == 1)
-            NotificationServer.sendMessage(result, product.getOwnerId().intValue());
-        else
+        if(userType == 1){
+
+            /**
+             *
+             * 把推送消息发送到rabbitMQ
+             *
+             */
+
+            Map<Integer, String> rabbitMessageList = new HashMap<>();
+            rabbitMessageList.put(product.getOwnerId().intValue(), result);
+
+            fanoutSender.sendMessage(rabbitMessageList);
+
+//            NotificationServer.sendMessage(result, product.getOwnerId().intValue());
+
+        } else{
             NotificationServer.sendMessage(result, offer.getBuyerId().intValue());
+        }
+
     }
 
 

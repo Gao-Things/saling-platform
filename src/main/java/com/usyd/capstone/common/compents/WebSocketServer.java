@@ -8,8 +8,10 @@ import com.usyd.capstone.entity.Message;
 import com.usyd.capstone.entity.abstractEntities.User;
 import com.usyd.capstone.mapper.MessageMapper;
 import com.usyd.capstone.mapper.NormalUserMapper;
+import com.usyd.capstone.rabbitMq.FanoutSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +19,7 @@ import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -109,6 +112,9 @@ public class WebSocketServer {
 
         // {"to": "admin", "text": "聊天文本"}
         Session toSession = sessionMap2.get(toUserId); // 根据 to用户名来获取 session，再通过session发送消息文本
+
+        // 注入sender到bean
+        FanoutSender fanoutSender = applicationContext.getBean(FanoutSender.class);
         if (toSession != null) {
             // 服务器端 再把消息组装一下，组装后的消息包含发送人和发送的文本内容
             // {"from": "zhang", "text": "hello"}
@@ -116,9 +122,20 @@ public class WebSocketServer {
             jsonObject.put("from", userId);  // from 是 zhang
             jsonObject.put("text", text);  // text 同上面的text
 
-            this.sendMessage(jsonObject.toString(), toUserId);
+
+            /**
+             * 调用rabbitMQ的发送消息方法
+             */
+
+            Map<Integer, String> rabbitMessageList = new HashMap<>();
+            rabbitMessageList.put(toUserId, jsonObject.toString());
+            fanoutSender.sendChatMessage(rabbitMessageList);
+
+//            this.sendMessage(jsonObject.toString(), toUserId);
 
             log.info("发送给用户userId={}，消息：{}", toUserId, jsonObject);
+
+
         } else {
 
             /**
@@ -139,7 +156,15 @@ public class WebSocketServer {
 
             String result = com.alibaba.fastjson.JSONObject.toJSONString(messageNotificationDTO);
 
-            NotificationServer.sendMessage(result, toUserId);
+
+            /**
+             *  发送消息通知到rabbitMQ
+             */
+            Map<Integer, String> rabbitMessageList = new HashMap<>();
+            rabbitMessageList.put(toUserId, result);
+            fanoutSender.sendMessage(rabbitMessageList);
+
+//            NotificationServer.sendMessage(result, toUserId);
 
             log.info("发送失败，未找到用户userId={}的session，已经留言", toUserId);
         }
@@ -165,7 +190,7 @@ public class WebSocketServer {
     /**
      * 服务端发送消息给客户端
      */
-    private void sendMessage(String message, Integer userId) {
+    public static void sendMessage(String message, Integer userId) {
         System.out.println("开始调用sendMessage方法");
         Session session = sessionMap2.get(userId);
         if (session == null) {
