@@ -54,13 +54,14 @@ public class TestExchangeConfiguration {
     @Bean
     public Queue chatQueue() {
         logger.info("【【【聊天队列创建成功】】】");
-        return new Queue(Constants.CHAT_QUEUE_NAME);
+        return new Queue(Constants.CHAT_QUEUE_NAME+"——"+serverConfig.getUrl());
     }
 
     // 将聊天室队列绑定到聊天室交换机
     @Bean
-    public Binding bindingChatQueueToExchange(Queue chatQueue, FanoutExchange chatExchange) {
-        return BindingBuilder.bind(chatQueue).to(chatExchange);
+    public Binding bindingChatQueueToExchange() {
+        logger.info("【【【绑定队列到聊天交换机成功】】】");
+        return BindingBuilder.bind(chatQueue()).to(chatExchange());
     }
 
 
