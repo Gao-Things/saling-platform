@@ -3,8 +3,11 @@ package com.usyd.capstone.common.compents;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.usyd.capstone.common.DTO.MessageNotificationDTO;
 import com.usyd.capstone.entity.Message;
+import com.usyd.capstone.entity.abstractEntities.User;
 import com.usyd.capstone.mapper.MessageMapper;
+import com.usyd.capstone.mapper.NormalUserMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -115,8 +118,29 @@ public class WebSocketServer {
 
             this.sendMessage(jsonObject.toString(), toUserId);
 
-            log.info("发送给用户userId={}，消息：{}", toUserId, jsonObject.toString());
+            log.info("发送给用户userId={}，消息：{}", toUserId, jsonObject);
         } else {
+
+            /**
+             * 发送消息弹窗提示
+             */
+            // 接受此消息用户的类型
+            NormalUserMapper normalUserMapper = applicationContext.getBean(NormalUserMapper.class);
+            User localUser = normalUserMapper.selectById(userId);
+
+            MessageNotificationDTO messageNotificationDTO = new MessageNotificationDTO();
+
+            // 消息类型
+            messageNotificationDTO.setMessageType(999);
+            messageNotificationDTO.setRemoteUser(localUser);
+
+            // 为远程用户加载本地用户的信息
+            messageNotificationDTO.setNotificationContent(text);
+
+            String result = com.alibaba.fastjson.JSONObject.toJSONString(messageNotificationDTO);
+
+            NotificationServer.sendMessage(result, toUserId);
+
             log.info("发送失败，未找到用户userId={}的session，已经留言", toUserId);
         }
     }

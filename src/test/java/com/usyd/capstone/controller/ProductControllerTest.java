@@ -2,7 +2,6 @@ package com.usyd.capstone.controller;
 
 import com.usyd.capstone.CapstoneApplication;
 import com.usyd.capstone.common.DTO.Result;
-import com.usyd.capstone.common.VO.productVO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

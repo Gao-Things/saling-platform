@@ -241,20 +241,20 @@ public class NormalUserServiceImpl implements NormalUserService {
         product.setProductStatus(2);
         productMapper.updateById(product);
 
-        List<Offer> offers = offerMapper.selectList(new QueryWrapper<Offer>()
-                .eq("product_id", product.getId())
-                .ne("id", offerId));
-        offers.forEach(offer1 -> {
-            offer1.setOfferStatus(4);
-            offerMapper.updateById(offer1);
-            StringBuilder notificationContent = new StringBuilder();
-            notificationContent.append("The seller, ");
-            notificationContent.append(seller.getName());
-            notificationContent.append(", has accepted another offer about the item: ");
-            notificationContent.append(product.getProductName());
-            notificationContent.append(". Therefore, your relevant offer is expired.");
-            sendNotification(6, 2, offer, product, notificationContent.toString());
-        });
+//        List<Offer> offers = offerMapper.selectList(new QueryWrapper<Offer>()
+//                .eq("product_id", product.getId())
+//                .ne("id", offerId));
+//        offers.forEach(offer1 -> {
+//            offer1.setOfferStatus(4);
+//            offerMapper.updateById(offer1);
+//            StringBuilder notificationContent = new StringBuilder();
+//            notificationContent.append("The seller, ");
+//            notificationContent.append(seller.getName());
+//            notificationContent.append(", has accepted another offer about the item: ");
+//            notificationContent.append(product.getProductName());
+//            notificationContent.append(". Therefore, your relevant offer is expired.");
+//            sendNotification(6, 2, offer, product, notificationContent.toString());
+//        });
 
         StringBuilder notificationContent = new StringBuilder();
         notificationContent.append("The seller, ");
@@ -463,8 +463,8 @@ public class NormalUserServiceImpl implements NormalUserService {
         notificationDto.setProduct(product);
 
         String result = JSONObject.toJSONString(notificationDto);
-        // send message to buyer
-        if(type == 1)
+        // send message to seller
+        if(userType == 1)
             NotificationServer.sendMessage(result, product.getOwnerId().intValue());
         else
             NotificationServer.sendMessage(result, offer.getBuyerId().intValue());

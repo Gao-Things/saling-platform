@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.usyd.capstone.common.DTO.ProductUserDTO;
 import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.common.DTO.productAdmin;
+import com.usyd.capstone.common.VO.ProductFilter;
 import com.usyd.capstone.common.utils.pageUtil;
 import com.usyd.capstone.entity.ExchangeRateUsd;
 import com.usyd.capstone.entity.Product;
@@ -113,8 +114,8 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     }
 
     @Override
-    public List<ProductUserDTO> listProduct() {
-        return productMapper.listProduct();
+    public List<ProductUserDTO> listProduct(ProductFilter productFilter) {
+        return productMapper.listProduct(productFilter);
     }
     @Override
     public Result getProductListAfterFiltered(String filter1, Integer value1, String filter2, String value2) {

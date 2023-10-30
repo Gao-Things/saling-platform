@@ -19,12 +19,30 @@
     </sql>
     <resultMap id="OfferProductDTO" type="com.usyd.capstone.common.DTO.ProductUserDTO">
     </resultMap>
-    <select id="listProduct" resultType="com.usyd.capstone.common.DTO.ProductUserDTO">
+    <select id="listProduct" parameterType="com.usyd.capstone.common.VO.ProductFilter" resultType="com.usyd.capstone.common.DTO.ProductUserDTO">
         SELECT product.*,
-               normal_user.*
+        normal_user.*
         FROM product
-                 LEFT JOIN normal_user
-                           ON product.owner_id = normal_user.id
+        LEFT JOIN normal_user
+        ON product.owner_id = normal_user.id
+        <where>
+            <if test="category != null">
+                AND product.category = #{category}
+            </if>
+            <if test="purity != null and purity != ''">
+                AND product.purity = #{purity}
+            </if>
+            <if test="status != null">
+                AND product.product_status = #{status}
+            </if>
+            <if test="minPrice != 0">
+                AND product.product_price &gt;= #{minPrice}
+            </if>
+            <if test="maxPrice != 0">
+                AND product.product_price &lt;= #{maxPrice}
+            </if>
+        </where>
     </select>
+
 
 </mapper>

@@ -54,6 +54,8 @@ public class SearchController {
         Product product = productService.getById(search.getProductId());
         if(product != null) {
             product.setSearchCount(product.getSearchCount() + 1);
+
+            productService.updateById(product);
             Search oldSearchResult = searchService.getOne(
                     new QueryWrapper<Search>().eq("search_content", search.getSearchContent())
             );
