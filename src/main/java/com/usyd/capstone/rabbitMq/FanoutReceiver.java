@@ -70,6 +70,12 @@ public class FanoutReceiver {
          * 判断rabbitMq交换机的key（userID）是否能在当前进程上找到
          */
         for (Integer key : rabbitMessageList.keySet()) {
+
+            // 如果这个key是0，则为心跳包
+            if (key == 0){
+
+            }
+
             if(electricSocketMap.get(key)!=null) {
 
                 String string = rabbitMessageList.get(key);

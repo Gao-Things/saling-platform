@@ -21,6 +21,7 @@ import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -101,18 +102,42 @@ public class WebSocketServer {
         JSONObject obj = JSONUtil.parseObj(message);
         Integer toUserId = obj.getInt("to"); // to表示发送给哪个用户，比如 admin
         String text = obj.getStr("text"); // 发送的消息文本  hello
-        // 存入数据库
-        MessageMapper messageMapper = applicationContext.getBean(MessageMapper.class);
-        Message messageDB = new Message();
-        messageDB.setPostMessageContent(text);
-        messageDB.setFromUserId(userId);
-        messageDB.setToUserId(toUserId);
-        messageDB.setPostTime(System.currentTimeMillis());
-        messageMapper.insert(messageDB);
 
+        /**
+         *
+         *  userID == 0为websocket心跳包
+         */
 
         // 注入sender到bean
         FanoutSender fanoutSender = applicationContext.getBean(FanoutSender.class);
+        if (Objects.equals(toUserId, userId)){
+
+//            /**
+//             *  发送消息通知到rabbitMQ 通知 交换机
+//             */
+//            Map<Integer, String> rabbitMessageList2 = new HashMap<>();
+//
+//            // 心跳续约
+//            rabbitMessageList2.put(0, "Pong");
+//            fanoutSender.sendMessage(rabbitMessageList2);
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("from", userId);  // from 是 zhang
+            jsonObject.put("text", "pong");  // text 同上面的text
+
+            sendMessage(jsonObject.toString(), toUserId);
+
+        }else{
+
+            // 存入数据库
+            MessageMapper messageMapper = applicationContext.getBean(MessageMapper.class);
+            Message messageDB = new Message();
+            messageDB.setPostMessageContent(text);
+            messageDB.setFromUserId(userId);
+            messageDB.setToUserId(toUserId);
+            messageDB.setPostTime(System.currentTimeMillis());
+            messageMapper.insert(messageDB);
+
             // 服务器端 再把消息组装一下，组装后的消息包含发送人和发送的文本内容
             // {"from": "zhang", "text": "hello"}
             JSONObject jsonObject = new JSONObject();
@@ -159,6 +184,9 @@ public class WebSocketServer {
             fanoutSender.sendMessage(rabbitMessageList2);
 
 //            NotificationServer.sendMessage(result, toUserId);
+        }
+
+
 
 
     }
