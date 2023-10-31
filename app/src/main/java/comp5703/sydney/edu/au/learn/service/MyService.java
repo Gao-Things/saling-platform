@@ -39,6 +39,9 @@ import com.alibaba.fastjson.JSON;
 import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import comp5703.sydney.edu.au.learn.DTO.Product;
 import comp5703.sydney.edu.au.learn.DTO.User;
@@ -46,6 +49,7 @@ import comp5703.sydney.edu.au.learn.DTO.WebSocketMessage;
 import comp5703.sydney.edu.au.learn.Home.HomeUseActivity;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.ResponseMessage;
+import comp5703.sydney.edu.au.learn.VO.SendMessage;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -62,6 +66,8 @@ public class MyService extends Service {
     private final OkHttpClient client = new OkHttpClient();
     private WebSocket webSocket;
 
+    private Integer userId;
+
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -74,6 +80,8 @@ public class MyService extends Service {
             Integer value = intent.getIntExtra("userId", -1); // 对应于之前设置的数据类型
 
             initWebSocket(value);
+
+            userId = value;
         }
 
 
@@ -106,6 +114,7 @@ public class MyService extends Service {
                 super.onOpen(webSocket, response);
                 // WebSocket connection opened
                 Log.d("Websocket message","websocket连接已打开");
+                startHeartbeat();
             }
 
             @Override
@@ -117,49 +126,58 @@ public class MyService extends Service {
 
                 WebSocketMessage webSocketMessage = JSON.parseObject(text, WebSocketMessage.class);
 
-                if (webSocketMessage.getMessageType() != 999 ){
+                // 判断是否为心跳包消息
+                if (webSocketMessage.getMessageType() == 998){
+                    Log.d("Websocket notification心跳", webSocketMessage.getNotificationContent());
 
-                    Product product =  webSocketMessage.getProduct();
-                    // send notification后台
-                    createNotification(webSocketMessage.getNotificationContent(), product.getProductName());
-
-                    Log.d("系统消息通知", webSocketMessage.getNotificationContent());
-                    // 将操作发送到主线程，前台弹窗
-                    new Handler(Looper.getMainLooper()).post(() -> initializeBubbleView(webSocketMessage.getNotificationContent(), product.getProductName(), null));
-
-                    // Send a message back to the server
-                    // 构建响应消息对象
-                    ResponseMessage response = new ResponseMessage(1, webSocketMessage.getNotificationId());  // 这里的 1 表示消息已读
-                    String responseMessage = JSON.toJSONString(response);
-
-                    webSocket.send(responseMessage);
                 }else {
 
-                    // 消息提示类型为未读的聊天消息
+                    if (webSocketMessage.getMessageType() != 999 ){
 
-                    User user = webSocketMessage.getRemoteUser();
-                    Log.d("用户消息通知", webSocketMessage.getNotificationContent());
+                        Product product =  webSocketMessage.getProduct();
+                        // send notification后台
+                        createNotification(webSocketMessage.getNotificationContent(), product.getProductName());
 
-                    /**
-                     * 判断用户是否开启聊天页面
-                     */
-
-                    // 使用 Service 的上下文来获取 SharedPreferences
-                    SharedPreferences sharedPreferences = getSharedPreferences("comp5703", MODE_PRIVATE);
-
-                    // 获取数据
-                    boolean userIsInCheating = sharedPreferences.getBoolean("userIsInCheating", false);
-
-                    if (!userIsInCheating){
+                        Log.d("系统消息通知", webSocketMessage.getNotificationContent());
                         // 将操作发送到主线程，前台弹窗
-                        new Handler(Looper.getMainLooper()).post(() -> initializeBubbleView(user.getName(), webSocketMessage.getNotificationContent(), user.getAvatarUrl()));
-                    }else {
-                        // 震动手机提示用户有其他消息
-                        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                        new Handler(Looper.getMainLooper()).post(() -> initializeBubbleView(webSocketMessage.getNotificationContent(), product.getProductName(), null));
 
-                        if (vibrator != null) {
-                            // New vibrate method for API Level 26 (Android O) and above
-                            vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+                        // Send a message back to the server
+                        // 构建响应消息对象
+                        ResponseMessage response = new ResponseMessage(1, webSocketMessage.getNotificationId());  // 这里的 1 表示消息已读
+                        String responseMessage = JSON.toJSONString(response);
+
+                        webSocket.send(responseMessage);
+                    }else {
+
+                        // 消息提示类型为未读的聊天消息
+
+                        User user = webSocketMessage.getRemoteUser();
+                        Log.d("用户消息通知", webSocketMessage.getNotificationContent());
+
+                        /**
+                         * 判断用户是否开启聊天页面
+                         */
+
+                        // 使用 Service 的上下文来获取 SharedPreferences
+                        SharedPreferences sharedPreferences = getSharedPreferences("comp5703", MODE_PRIVATE);
+
+                        // 获取数据
+                        boolean userIsInCheating = sharedPreferences.getBoolean("userIsInCheating", false);
+
+                        if (!userIsInCheating){
+                            // 将操作发送到主线程，前台弹窗
+                            new Handler(Looper.getMainLooper()).post(() -> initializeBubbleView(user.getName(), webSocketMessage.getNotificationContent(), user.getAvatarUrl()));
+                        }else {
+                            // 震动手机提示用户有其他消息
+                            Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+                            if (vibrator != null) {
+                                // New vibrate method for API Level 26 (Android O) and above
+                                vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+                            }
+
+
                         }
 
 
@@ -173,6 +191,30 @@ public class MyService extends Service {
             }
 
             // Handle other WebSocket events like onClose, onFailure, ...
+
+            @Override
+            public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+                super.onFailure(webSocket, t, response);
+                // Handle connection failures
+                stopHeartbeat(); // WebSocket 关闭时停止发送心跳包
+                Log.e("Websocket onFailure", "Connection failed: " + t.getMessage());
+            }
+
+            @Override
+            public void onClosing(WebSocket webSocket, int code, String reason) {
+                super.onClosing(webSocket, code, reason);
+                // The remote peer initiated a graceful shutdown
+                stopHeartbeat(); // WebSocket 关闭时停止发送心跳包
+                Log.d("Websocket onClosing", "Remote peer initiated close with code: " + code);
+            }
+
+            @Override
+            public void onClosed(WebSocket webSocket, int code, String reason) {
+                super.onClosed(webSocket, code, reason);
+                // WebSocket has been fully closed
+                Log.d("Websocket onClosed", "WebSocket closed with code: " + code);
+            }
+
         });
 
 //        client.dispatcher().executorService().shutdown();
@@ -311,6 +353,34 @@ public class MyService extends Service {
        NotificationManager notificationManager = getSystemService(NotificationManager.class);
        notificationManager.notify(notificationId, notification);
    }
+
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+    private void startHeartbeat() {
+        final Runnable heartbeatSender = new Runnable() {
+            public void run() { sendHeartbeat(); }
+        };
+
+        // 定时任务，每30秒发送一次心跳
+        scheduler.scheduleAtFixedRate(heartbeatSender, 30, 30, TimeUnit.SECONDS);
+    }
+
+    private void stopHeartbeat() {
+        scheduler.shutdown();
+    }
+
+    private void sendHeartbeat() {
+        if (webSocket != null) {
+            // 发送心跳包 "ping"
+
+            // Send a message back to the server
+            // 构建响应消息对象
+            ResponseMessage response = new ResponseMessage(2, 0);  // 这里的 2 表示为一条心跳包消息
+            String responseMessage = JSON.toJSONString(response);
+
+            webSocket.send(responseMessage);
+        }
+    }
 
 }
 

@@ -40,6 +40,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import comp5703.sydney.edu.au.learn.DTO.Message;
 import comp5703.sydney.edu.au.learn.DTO.MessageHistory;
@@ -364,6 +367,7 @@ public class ChatFragment extends Fragment {
                 super.onOpen(webSocket, response);
                 // WebSocket connection opened
                 Log.d("Websocket message", "websocket连接已打开");
+                startHeartbeat();
             }
 
             @Override
@@ -373,36 +377,47 @@ public class ChatFragment extends Fragment {
                 Log.d("Websocket message", "服务器发送的消息：" + text);
 
                 ReceivedMessage receivedMessage = JSON.parseObject(text, ReceivedMessage.class);
-                // set received message
-                Message newSentMessage = new Message(receivedMessage.getText(),remoteUserAvatarUrl, Message.MessageType.RECEIVED, formatTimeStamp(System.currentTimeMillis()));
+
+                /**
+                 * ID = 自己的ID 为心跳回复
+                 */
+                if(receivedMessage.getFrom() == userId){
+                    Log.d("Websocket chat心跳", receivedMessage.getText());
+
+                }else {
+
+                    // set received message
+                    Message newSentMessage = new Message(receivedMessage.getText(),remoteUserAvatarUrl, Message.MessageType.RECEIVED, formatTimeStamp(System.currentTimeMillis()));
 
 
-                // 通知adapter数据更新
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        // 更新Adapter的数据
-                        chatAdapter.addMessage(newSentMessage);
-                        chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1); // 滚动到最新的消息
+                    // 通知adapter数据更新
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // 更新Adapter的数据
+                            chatAdapter.addMessage(newSentMessage);
+                            chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1); // 滚动到最新的消息
 
-                        try {
+                            try {
 
-                           if (sharedPreferences.getBoolean("messageToneOpen", false)){
-                                // 获取设置的音频
-                                Ringtone ringtone = getUserSettingTone();
+                                if (sharedPreferences.getBoolean("messageToneOpen", false)){
+                                    // 获取设置的音频
+                                    Ringtone ringtone = getUserSettingTone();
 
-                                assert ringtone != null;
-                                ringtone.play();
+                                    assert ringtone != null;
+                                    ringtone.play();
+                                }
+
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
 
 
-                        } catch (Exception e) {
-                            e.printStackTrace();
                         }
+                    });
+                }
 
-
-                    }
-                });
 
 
             }
@@ -411,6 +426,7 @@ public class ChatFragment extends Fragment {
             public void onFailure(WebSocket webSocket, Throwable t, Response response) {
                 super.onFailure(webSocket, t, response);
                 // Handle connection failures
+                stopHeartbeat(); // WebSocket 关闭时停止发送心跳包
                 Log.e("Websocket onFailure", "Connection failed: " + t.getMessage());
             }
 
@@ -418,6 +434,7 @@ public class ChatFragment extends Fragment {
             public void onClosing(WebSocket webSocket, int code, String reason) {
                 super.onClosing(webSocket, code, reason);
                 // The remote peer initiated a graceful shutdown
+                stopHeartbeat(); // WebSocket 关闭时停止发送心跳包
                 Log.d("Websocket onClosing", "Remote peer initiated close with code: " + code);
             }
 
@@ -460,6 +477,41 @@ public class ChatFragment extends Fragment {
 
         return ringtone;
     }
+
+
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+    private void startHeartbeat() {
+        final Runnable heartbeatSender = new Runnable() {
+            public void run() { sendHeartbeat(); }
+        };
+
+        // 定时任务，每30秒发送一次心跳
+        scheduler.scheduleAtFixedRate(heartbeatSender, 30, 30, TimeUnit.SECONDS);
+    }
+
+    private void stopHeartbeat() {
+        scheduler.shutdown();
+    }
+
+    private void sendHeartbeat() {
+        if (webSocket != null) {
+            // 发送心跳包 "ping"
+
+            SendMessage sendMessage = new SendMessage();
+
+            // 设置id为当前ID
+            sendMessage.setTo(userId);
+            sendMessage.setText("ping");
+
+            String jsonString = JSON.toJSONString(sendMessage);
+
+            // 发送消息到服务器
+            webSocket.send(jsonString);
+        }
+    }
+
+
 
     @Override
     public void onPause() {
