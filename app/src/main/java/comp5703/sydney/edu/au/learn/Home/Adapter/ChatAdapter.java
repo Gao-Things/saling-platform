@@ -25,6 +25,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int SENT = 0;
     private static final int RECEIVED = 1;
+    private static final int SENT_CARD = 2;
+    private static final int RECEIVED_CARD = 3;
     private List<Message> messages;
 
     public ChatAdapter(Context context, List<Message> messages) {
@@ -33,27 +35,60 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        return messages.get(position).getType() == Message.MessageType.SENT ? SENT : RECEIVED;
+        Message message = messages.get(position);
+        switch (message.getType()) {
+            case SENT:
+                return SENT;
+            case RECEIVED:
+                return RECEIVED;
+            case SENTCARD:
+                return SENT_CARD;
+            case RECEIVEDCARD:
+                return RECEIVED_CARD;
+            default:
+                return -1; // For unknown cases
+        }
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == SENT) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_sent_message, parent, false);
-            return new SentViewHolder(view);
-        } else {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_received_message, parent, false);
-            return new ReceivedViewHolder(view);
+        View view;
+        switch (viewType) {
+            case SENT:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_sent_message, parent, false);
+                return new SentViewHolder(view);
+            case RECEIVED:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_received_message, parent, false);
+                return new ReceivedViewHolder(view);
+            case SENT_CARD:
+                // Replace with your card layout
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_sent_card, parent, false);
+                return new SentCardViewHolder(view);
+            case RECEIVED_CARD:
+                // Replace with your card layout
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_received_card, parent, false);
+                return new ReceivedCardViewHolder(view);
+            default:
+                throw new IllegalArgumentException("Unknown view type: " + viewType);
         }
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         Message message = messages.get(position);
-        if (holder.getItemViewType() == SENT) {
-            ((SentViewHolder) holder).bind(message);
-        } else {
-            ((ReceivedViewHolder) holder).bind(message);
+        switch (holder.getItemViewType()) {
+            case SENT:
+                ((SentViewHolder) holder).bind(message);
+                break;
+            case RECEIVED:
+                ((ReceivedViewHolder) holder).bind(message);
+                break;
+            case SENT_CARD:
+                ((SentCardViewHolder) holder).bind(message);
+                break;
+            case RECEIVED_CARD:
+                ((ReceivedCardViewHolder) holder).bind(message);
+                break;
         }
     }
 
@@ -114,6 +149,93 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             tvTime.setText(message.getPostTime());
         }
     }
+
+
+
+    public class SentCardViewHolder extends RecyclerView.ViewHolder {
+        // Define your card view components here
+        ImageView cardImage;
+        TextView cardTitle;
+        TextView cardDescription;
+        ImageView userAvatar;
+        TextView tvTime;
+
+        public SentCardViewHolder(View itemView) {
+            super(itemView);
+            // Initialize your card view components
+            cardTitle = itemView.findViewById(R.id.tvCardTitle);
+            cardDescription = itemView.findViewById(R.id.cardDescription);
+            cardImage = itemView.findViewById(R.id.tvCardImage);
+            userAvatar = itemView.findViewById(R.id.userAvatar);
+            tvTime = itemView.findViewById(R.id.tvTime);
+        }
+
+        public void bind(Message message) {
+            // Bind your card data
+            cardTitle.setText(message.getCardTitle());
+            cardDescription.setText(message.getCardDescription());
+
+
+            Picasso.get()
+                    .load(imageURL + message.getCardImageUrl())
+                    .error(R.drawable.img_5)  // error_image为加载失败时显示的图片
+                    .into(cardImage);
+            // Bind other card components...
+
+            Picasso.get()
+                    .load(imageURL + message.getAvatarUrl())
+                    .error(R.drawable.img_5)  // error_image为加载失败时显示的图片
+                    .into(userAvatar);
+
+            tvTime.setText(message.getPostTime());
+
+        }
+    }
+
+    public class ReceivedCardViewHolder extends RecyclerView.ViewHolder {
+        // Define your card view components here
+        ImageView cardImage;
+        TextView cardTitle;
+        TextView cardDescription;
+        ImageView userAvatar;
+        TextView tvTime;
+
+        public ReceivedCardViewHolder(View itemView) {
+            super(itemView);
+            // Initialize your card view components
+            cardImage = itemView.findViewById(R.id.tvCardTitle);
+            cardTitle = itemView.findViewById(R.id.tvCardImage);
+            cardDescription = itemView.findViewById(R.id.cardDescription);
+            userAvatar = itemView.findViewById(R.id.userAvatar);
+            tvTime = itemView.findViewById(R.id.tvTime);
+
+        }
+
+        public void bind(Message message) {
+            // Bind your card data
+            cardTitle.setText(message.getCardTitle());
+            cardDescription.setText(message.getCardDescription());
+
+
+            Picasso.get()
+                    .load(imageURL + message.getCardImageUrl())
+                    .error(R.drawable.img_5)  // error_image为加载失败时显示的图片
+                    .into(cardImage);
+            // Bind other card components...
+
+            Picasso.get()
+                    .load(imageURL + message.getAvatarUrl())
+                    .error(R.drawable.img_5)  // error_image为加载失败时显示的图片
+                    .into(userAvatar);
+
+            tvTime.setText(message.getPostTime());
+
+
+        }
+    }
+
+
+
 
     public void setMessages(List<Message> messageList) {
         this.messages = messageList;

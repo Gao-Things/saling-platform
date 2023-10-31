@@ -38,6 +38,7 @@ import java.util.Objects;
 import comp5703.sydney.edu.au.learn.DTO.Offer;
 import comp5703.sydney.edu.au.learn.DTO.ProductOffer;
 import comp5703.sydney.edu.au.learn.Home.Adapter.OfferReceivedListAdapter;
+import comp5703.sydney.edu.au.learn.Home.DialogFragment.GuideDialogFragment;
 import comp5703.sydney.edu.au.learn.Home.HomeUseActivity;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.OfferParameter;
@@ -269,6 +270,17 @@ public class ReceivedOfferFragment extends Fragment {
                         if (operation == 0){
                             Snackbar.make(rootView, "Your have reject the offer", Snackbar.LENGTH_LONG)
                                     .setAction("NEWS", null).show();
+
+                            /**
+                             * TODO 显示一个弹窗，卖家拒绝的理由
+                             */
+                            // 创建GuideDialogFragment的实例
+                            GuideDialogFragment guideDialog = new GuideDialogFragment();
+
+                            // 显示弹窗
+                            guideDialog.show(getChildFragmentManager(), "guideDialog");
+
+
                         }else {
                             Snackbar.make(rootView, "Your have accept the offer", Snackbar.LENGTH_LONG)
                                     .setAction("NEWS", null).show();

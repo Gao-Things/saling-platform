@@ -2,7 +2,7 @@ package comp5703.sydney.edu.au.learn.DTO;
 
 public class Message {
     public enum MessageType {
-        SENT, RECEIVED
+        SENT, RECEIVED, SENTCARD, RECEIVEDCARD
     }
 
     String content;
@@ -10,6 +10,14 @@ public class Message {
     String postTime;
     MessageType type;
 
+    // 卡片专用字段
+    private String cardImageUrl;
+    private String cardTitle;
+    private String cardDescription;
+
+
+    public Message() {
+    }
 
     public Message(String content, String avatarUrl, MessageType type, String postTime) {
         this.content = content;
@@ -17,6 +25,18 @@ public class Message {
         this.type = type;
         this.postTime = postTime;
     }
+
+
+    // 构造函数用于卡片消息
+    public Message(String cardTitle, String cardDescription,String avatarUrl, String cardImageUrl, MessageType type, String postTime) {
+        this.cardTitle = cardTitle;
+        this.cardDescription = cardDescription;
+        this.cardImageUrl = cardImageUrl;
+        this.type = type;
+        this.postTime = postTime;
+        this.avatarUrl = avatarUrl;
+    }
+
 
     public String getAvatarUrl() {
         return avatarUrl;
@@ -48,5 +68,29 @@ public class Message {
 
     public void setPostTime(String postTime) {
         this.postTime = postTime;
+    }
+
+    public String getCardImageUrl() {
+        return cardImageUrl;
+    }
+
+    public void setCardImageUrl(String cardImageUrl) {
+        this.cardImageUrl = cardImageUrl;
+    }
+
+    public String getCardTitle() {
+        return cardTitle;
+    }
+
+    public void setCardTitle(String cardTitle) {
+        this.cardTitle = cardTitle;
+    }
+
+    public String getCardDescription() {
+        return cardDescription;
+    }
+
+    public void setCardDescription(String cardDescription) {
+        this.cardDescription = cardDescription;
     }
 }

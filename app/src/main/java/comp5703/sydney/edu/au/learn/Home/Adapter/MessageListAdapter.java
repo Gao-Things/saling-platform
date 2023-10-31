@@ -14,11 +14,15 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.alibaba.fastjson.JSON;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import comp5703.sydney.edu.au.learn.DTO.MessageFormat;
 import comp5703.sydney.edu.au.learn.DTO.UserMessage;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.userAndRemoteUserIdVO;
@@ -55,7 +59,22 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         // 初始化请求数据还没回来的时候list是空的
         if (!userMessageList.isEmpty()){
             UserMessage userMessage = userMessageList.get(position);
-            holder.messageContent.setText(userMessage.getPostMessageContent());
+
+            /**
+             * 对收到对消息内容做一个拆装，原本为JSON String
+             */
+            // 将JSON字符串转换回MessageFormat对象
+            MessageFormat messageFormat = JSON.parseObject(userMessage.getPostMessageContent(), MessageFormat.class);
+
+            if (messageFormat.getMessageType() == 1){
+                holder.messageContent.setText(messageFormat.getMessageText());
+            }else if (messageFormat.getMessageType() == 2){
+                holder.messageContent.setText(messageFormat.getCardDescription());
+            }
+
+
+
+
             holder.messageTitle.setText(userMessage.getName());
 
             holder.messageSendTime.setText(TimeCalculateUtil.getTimeElapsed(userMessage.getPostTime()));

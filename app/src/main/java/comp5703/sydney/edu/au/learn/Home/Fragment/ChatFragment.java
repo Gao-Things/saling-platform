@@ -3,6 +3,7 @@ package comp5703.sydney.edu.au.learn.Home.Fragment;
 import static android.content.ContentValues.TAG;
 import static comp5703.sydney.edu.au.learn.DTO.Message.MessageType.RECEIVED;
 import static comp5703.sydney.edu.au.learn.DTO.Message.MessageType.SENT;
+import static comp5703.sydney.edu.au.learn.DTO.Message.MessageType.SENTCARD;
 import static comp5703.sydney.edu.au.learn.util.NetworkUtils.imageURL;
 import static comp5703.sydney.edu.au.learn.util.NetworkUtils.websocketUrl;
 
@@ -45,6 +46,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import comp5703.sydney.edu.au.learn.DTO.Message;
+import comp5703.sydney.edu.au.learn.DTO.MessageFormat;
 import comp5703.sydney.edu.au.learn.DTO.MessageHistory;
 import comp5703.sydney.edu.au.learn.DTO.User;
 import comp5703.sydney.edu.au.learn.Home.Adapter.ChatAdapter;
@@ -283,15 +285,37 @@ public class ChatFragment extends Fragment {
             for (MessageHistory messageHistory : recordsListUse){
                 // 如果当前数据本地用户是发信人的话，这条消息就渲染为sent,否则就渲染为RECEIVED
                 Message message;
+
+                /**
+                 * 对收到对消息内容做一个拆装，原本为JSON String
+                 */
+                // 将JSON字符串转换回MessageFormat对象
+                MessageFormat messageFormat = JSON.parseObject(messageHistory.getPostMessageContent(), MessageFormat.class);
+
                 if (messageHistory.getFromUserId() == userId){
 
+                    if (messageFormat.getMessageType() == 1){
+                        message = new Message(messageFormat.getMessageText(), messageHistory.getFromUserAvatar(), SENT, formatTimeStamp(messageHistory.getPostTime()));
+                        messageList.add(message);
+                    } else if (messageFormat.getMessageType() == 2){
+                        // TODO 卡片消息的处理
+                        message = new Message("Test card Title","Test Describtion", messageHistory.getFromUserAvatar(), messageHistory.getFromUserAvatar(),  SENTCARD, formatTimeStamp(messageHistory.getPostTime()));
+                        messageList.add(message);
+                    }
 
-                    message = new Message(messageHistory.getPostMessageContent(), messageHistory.getFromUserAvatar(), SENT, formatTimeStamp(messageHistory.getPostTime()));
+
                 }else {
+                    if (messageFormat.getMessageType() == 1){
+                        message = new Message(messageFormat.getMessageText(), messageHistory.getFromUserAvatar(), RECEIVED, formatTimeStamp(messageHistory.getPostTime()));
+                        messageList.add(message);
+                    } else if (messageFormat.getMessageType() == 2){
+                        // TODO 卡片消息的处理
+                        message = new Message("Test card Title","Test Describtion", messageHistory.getFromUserAvatar(), messageHistory.getFromUserAvatar(),  SENTCARD, formatTimeStamp(messageHistory.getPostTime()));
+                        messageList.add(message);
+                    }
 
-                    message = new Message(messageHistory.getPostMessageContent(), messageHistory.getFromUserAvatar(), RECEIVED, formatTimeStamp(messageHistory.getPostTime()));
                 }
-                messageList.add(message);
+
 
             }
 
@@ -325,7 +349,13 @@ public class ChatFragment extends Fragment {
 
         // 设置发送目标的ID
         sendMessage.setTo(receiverId);
-        sendMessage.setText(sentString);
+
+        // 对消息内容本身进行一个包装
+        // 此条消息为一条普通消息
+        MessageFormat messageFormat = new MessageFormat(1, sentString);
+        String formatString =  JSON.toJSONString(messageFormat);
+
+        sendMessage.setText(formatString);
 
         String jsonString = JSON.toJSONString(sendMessage);
 
@@ -387,13 +417,29 @@ public class ChatFragment extends Fragment {
                 }else {
 
                     // set received message
-                    Message newSentMessage = new Message(receivedMessage.getText(),remoteUserAvatarUrl, Message.MessageType.RECEIVED, formatTimeStamp(System.currentTimeMillis()));
+
+                    /**
+                     * 对收到对消息内容做一个拆装，原本为JSON String
+                     */
+                    // 将JSON字符串转换回MessageFormat对象
+                    MessageFormat messageFormat = JSON.parseObject(receivedMessage.getText(), MessageFormat.class);
 
 
                     // 通知adapter数据更新
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+
+                            Message newSentMessage = null;
+                            // 如果type为1，则代表为一条普通消息
+                            if (messageFormat.getMessageType() == 1){
+
+                                newSentMessage = new Message(messageFormat.getMessageText(),remoteUserAvatarUrl, Message.MessageType.RECEIVED, formatTimeStamp(System.currentTimeMillis()));
+                            }else if (messageFormat.getMessageType() == 2){
+                                // TODO 如果type为2，则为一条卡片消息
+
+                            }
+
                             // 更新Adapter的数据
                             chatAdapter.addMessage(newSentMessage);
                             chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1); // 滚动到最新的消息
