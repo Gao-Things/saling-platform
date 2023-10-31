@@ -110,12 +110,9 @@ public class WebSocketServer {
         messageDB.setPostTime(System.currentTimeMillis());
         messageMapper.insert(messageDB);
 
-        // {"to": "admin", "text": "聊天文本"}
-        Session toSession = sessionMap2.get(toUserId); // 根据 to用户名来获取 session，再通过session发送消息文本
 
         // 注入sender到bean
         FanoutSender fanoutSender = applicationContext.getBean(FanoutSender.class);
-        if (toSession != null) {
             // 服务器端 再把消息组装一下，组装后的消息包含发送人和发送的文本内容
             // {"from": "zhang", "text": "hello"}
             JSONObject jsonObject = new JSONObject();
@@ -124,7 +121,7 @@ public class WebSocketServer {
 
 
             /**
-             * 调用rabbitMQ的发送消息方法
+             * 发送消息到rabbitMQ聊天交换机
              */
 
             Map<Integer, String> rabbitMessageList = new HashMap<>();
@@ -135,8 +132,6 @@ public class WebSocketServer {
 
             log.info("发送给用户userId={}，消息：{}", toUserId, jsonObject);
 
-
-        } else {
 
             /**
              * 发送消息弹窗提示
@@ -156,18 +151,16 @@ public class WebSocketServer {
 
             String result = com.alibaba.fastjson.JSONObject.toJSONString(messageNotificationDTO);
 
-
             /**
-             *  发送消息通知到rabbitMQ
+             *  发送消息通知到rabbitMQ 通知 交换机
              */
-            Map<Integer, String> rabbitMessageList = new HashMap<>();
-            rabbitMessageList.put(toUserId, result);
-            fanoutSender.sendMessage(rabbitMessageList);
+            Map<Integer, String> rabbitMessageList2 = new HashMap<>();
+            rabbitMessageList2.put(toUserId, result);
+            fanoutSender.sendMessage(rabbitMessageList2);
 
 //            NotificationServer.sendMessage(result, toUserId);
 
-            log.info("发送失败，未找到用户userId={}的session，已经留言", toUserId);
-        }
+
     }
     @OnError
     public void onError(Session sess, Throwable e) {
