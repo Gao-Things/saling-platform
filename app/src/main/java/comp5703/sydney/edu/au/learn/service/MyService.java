@@ -43,6 +43,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import comp5703.sydney.edu.au.learn.DTO.MessageFormat;
 import comp5703.sydney.edu.au.learn.DTO.Product;
 import comp5703.sydney.edu.au.learn.DTO.User;
 import comp5703.sydney.edu.au.learn.DTO.WebSocketMessage;
@@ -167,7 +168,20 @@ public class MyService extends Service {
 
                         if (!userIsInCheating){
                             // 将操作发送到主线程，前台弹窗
-                            new Handler(Looper.getMainLooper()).post(() -> initializeBubbleView(user.getName(), webSocketMessage.getNotificationContent(), user.getAvatarUrl()));
+
+                            /**
+                             * 对收到对消息内容做一个拆装，原本为JSON String
+                             */
+                            // 将JSON字符串转换回MessageFormat对象
+                            MessageFormat messageFormat = JSON.parseObject(webSocketMessage.getNotificationContent(), MessageFormat.class);
+
+                            if (messageFormat.getMessageType() == 1){
+                                new Handler(Looper.getMainLooper()).post(() -> initializeBubbleView(user.getName(), messageFormat.getMessageText(), user.getAvatarUrl()));
+                            }else if (messageFormat.getMessageType() == 2){
+                                new Handler(Looper.getMainLooper()).post(() -> initializeBubbleView(user.getName(), messageFormat.getCardTitle(), user.getAvatarUrl()));
+                            }
+
+
                         }else {
                             // 震动手机提示用户有其他消息
                             Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);

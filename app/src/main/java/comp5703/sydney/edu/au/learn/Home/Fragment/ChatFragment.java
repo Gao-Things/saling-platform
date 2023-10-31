@@ -2,6 +2,7 @@ package comp5703.sydney.edu.au.learn.Home.Fragment;
 
 import static android.content.ContentValues.TAG;
 import static comp5703.sydney.edu.au.learn.DTO.Message.MessageType.RECEIVED;
+import static comp5703.sydney.edu.au.learn.DTO.Message.MessageType.RECEIVEDCARD;
 import static comp5703.sydney.edu.au.learn.DTO.Message.MessageType.SENT;
 import static comp5703.sydney.edu.au.learn.DTO.Message.MessageType.SENTCARD;
 import static comp5703.sydney.edu.au.learn.util.NetworkUtils.imageURL;
@@ -299,7 +300,10 @@ public class ChatFragment extends Fragment {
                         messageList.add(message);
                     } else if (messageFormat.getMessageType() == 2){
                         // TODO 卡片消息的处理
-                        message = new Message("Test card Title","Test Describtion", messageHistory.getFromUserAvatar(), messageHistory.getFromUserAvatar(),  SENTCARD, formatTimeStamp(messageHistory.getPostTime()));
+                        if (messageFormat.getCardDescription() ==null){
+                            messageFormat.setCardDescription("No Description by seller");
+                        }
+                        message = new Message(messageFormat.getCardTitle(),messageFormat.getCardDescription(), messageHistory.getFromUserAvatar(), messageFormat.getCardImageUrl(),  SENTCARD, formatTimeStamp(messageHistory.getPostTime()));
                         messageList.add(message);
                     }
 
@@ -310,7 +314,11 @@ public class ChatFragment extends Fragment {
                         messageList.add(message);
                     } else if (messageFormat.getMessageType() == 2){
                         // TODO 卡片消息的处理
-                        message = new Message("Test card Title","Test Describtion", messageHistory.getFromUserAvatar(), messageHistory.getFromUserAvatar(),  SENTCARD, formatTimeStamp(messageHistory.getPostTime()));
+
+                        if (messageFormat.getCardDescription() ==null){
+                            messageFormat.setCardDescription("No Description by seller");
+                        }
+                        message = new Message(messageFormat.getCardTitle(),messageFormat.getCardDescription(), messageHistory.getFromUserAvatar(), messageFormat.getCardImageUrl(),  RECEIVEDCARD, formatTimeStamp(messageHistory.getPostTime()));
                         messageList.add(message);
                     }
 
@@ -341,7 +349,7 @@ public class ChatFragment extends Fragment {
         }
     }
 
-    private void sendMessage(View view) {
+    private  void sendMessage(View view) {
 
 
         String sentString = sendContent.getText().toString();
@@ -436,8 +444,14 @@ public class ChatFragment extends Fragment {
 
                                 newSentMessage = new Message(messageFormat.getMessageText(),remoteUserAvatarUrl, Message.MessageType.RECEIVED, formatTimeStamp(System.currentTimeMillis()));
                             }else if (messageFormat.getMessageType() == 2){
-                                // TODO 如果type为2，则为一条卡片消息
-
+                                /**
+                                 * 收到的消息类型为2，则代表为一条卡片消息
+                                 *
+                                 */
+                                if (messageFormat.getCardDescription() == null){
+                                    messageFormat.setCardDescription("The seller has no description");
+                                }
+                                newSentMessage = new Message(messageFormat.getCardTitle(), messageFormat.getCardDescription(),remoteUserAvatarUrl,messageFormat.getCardImageUrl() , RECEIVEDCARD, formatTimeStamp(System.currentTimeMillis()));
                             }
 
                             // 更新Adapter的数据

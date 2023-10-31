@@ -203,8 +203,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         public ReceivedCardViewHolder(View itemView) {
             super(itemView);
             // Initialize your card view components
-            cardImage = itemView.findViewById(R.id.tvCardTitle);
-            cardTitle = itemView.findViewById(R.id.tvCardImage);
+            cardImage = itemView.findViewById(R.id.tvCardImage);
+            cardTitle = itemView.findViewById(R.id.tvCardTitle);
             cardDescription = itemView.findViewById(R.id.cardDescription);
             userAvatar = itemView.findViewById(R.id.userAvatar);
             tvTime = itemView.findViewById(R.id.tvTime);

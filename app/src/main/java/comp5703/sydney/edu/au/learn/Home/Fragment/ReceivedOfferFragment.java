@@ -35,8 +35,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import comp5703.sydney.edu.au.learn.DTO.Message;
 import comp5703.sydney.edu.au.learn.DTO.Offer;
 import comp5703.sydney.edu.au.learn.DTO.ProductOffer;
+import comp5703.sydney.edu.au.learn.Home.Adapter.ChatAdapter;
 import comp5703.sydney.edu.au.learn.Home.Adapter.OfferReceivedListAdapter;
 import comp5703.sydney.edu.au.learn.Home.DialogFragment.GuideDialogFragment;
 import comp5703.sydney.edu.au.learn.Home.HomeUseActivity;
@@ -59,7 +61,8 @@ public class ReceivedOfferFragment extends Fragment {
 
     private String token;
 
-    private Fragment itemDetailFragment;
+    private Integer selectOfferId;
+
 
     @Nullable
     @Override
@@ -90,6 +93,7 @@ public class ReceivedOfferFragment extends Fragment {
         // 创建并设置RecyclerView的Adapter
         offerReceivedListAdapter = new OfferReceivedListAdapter(getContext(),new ArrayList<ProductOffer>(),clickListener, onCancelClickListener);
         itemRecyclerView.setAdapter(offerReceivedListAdapter);
+
 
     }
 
@@ -157,7 +161,7 @@ public class ReceivedOfferFragment extends Fragment {
     OfferReceivedListAdapter.OnCancelClickListener onCancelClickListener = new OfferReceivedListAdapter.OnCancelClickListener() {
         @Override
         public void onClick(int pos, Integer itemId, double productPrice) {
-
+            selectOfferId = itemId;
             showConfirmationDialog(0, itemId, productPrice);
 
         }
@@ -276,6 +280,15 @@ public class ReceivedOfferFragment extends Fragment {
                              */
                             // 创建GuideDialogFragment的实例
                             GuideDialogFragment guideDialog = new GuideDialogFragment();
+
+                            // 创建一个Bundle来保存参数
+                            Bundle args = new Bundle();
+                            args.putInt("offerId", selectOfferId);
+                            args.putInt("userId", userId);
+
+                            // 将参数设置到GuideDialogFragment
+                            guideDialog.setArguments(args);
+
 
                             // 显示弹窗
                             guideDialog.show(getChildFragmentManager(), "guideDialog");
