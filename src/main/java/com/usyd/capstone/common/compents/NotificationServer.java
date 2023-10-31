@@ -2,6 +2,7 @@ package com.usyd.capstone.common.compents;
 
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.usyd.capstone.common.DTO.MessageNotificationDTO;
 import com.usyd.capstone.entity.Notification;
 import com.usyd.capstone.mapper.NotificationMapper;
 import org.slf4j.Logger;
@@ -70,6 +71,22 @@ public class NotificationServer {
             notificationOld.setUserIsRead(1);
 
             notificationMapper.updateById(notificationOld);
+        }
+
+        if(status == 2){
+            // 接收到移动端心跳包消息，发送心跳回复
+            MessageNotificationDTO messageNotificationDTO = new MessageNotificationDTO();
+
+            // 消息类型， 998为心跳续约类型
+            messageNotificationDTO.setMessageType(998);
+
+            messageNotificationDTO.setNotificationContent("pong");
+
+            String result = com.alibaba.fastjson.JSONObject.toJSONString(messageNotificationDTO);
+
+            // 发送给移动端心跳消息
+            sendMessage(result, userId);
+
         }
 
     }
