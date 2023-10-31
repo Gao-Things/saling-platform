@@ -11,7 +11,17 @@ public class WebSocketMessage {
 
     private Product product;
 
+    private User remoteUser;
+
     private String notificationContent;
+
+    public User getRemoteUser() {
+        return remoteUser;
+    }
+
+    public void setRemoteUser(User remoteUser) {
+        this.remoteUser = remoteUser;
+    }
 
     public Integer getNotificationId() {
         return notificationId;

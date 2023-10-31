@@ -54,10 +54,10 @@
 
         <ImageView
             android:id="@+id/filterIcon"
-            android:layout_width="20dp"
+            android:layout_width="15dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="16dp"
-            android:src="@drawable/img_14"/>
+            android:src="@drawable/img_14" />
         <ImageView
             android:id="@+id/sortIcon"
             android:layout_width="15dp"

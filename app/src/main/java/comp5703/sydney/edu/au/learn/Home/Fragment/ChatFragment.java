@@ -109,6 +109,15 @@ public class ChatFragment extends Fragment {
             initWebSocket(userId);
         }
 
+        /**
+         *
+         * 进入这个页面的时候，禁止消息弹窗推送,设置全局变量通知service
+         */
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("userIsInCheating", true);
+        editor.apply();
+
+
 
         chatRecyclerView = view.findViewById(R.id.chatRecyclerView);
         sentBtn = view.findViewById(R.id.sentBtn);
@@ -451,5 +460,21 @@ public class ChatFragment extends Fragment {
 
         return ringtone;
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // 用户即将离开Fragment，可以在这里保存数据或者释放资源
+
+        /**
+         *
+         * 离开这个页面的时候，开启消息弹窗推送,设置全局变量通知service
+         */
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("userIsInCheating", false);
+        editor.apply();
+
+    }
+
 
 }

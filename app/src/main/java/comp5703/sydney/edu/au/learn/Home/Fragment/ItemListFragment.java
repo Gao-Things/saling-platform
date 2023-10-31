@@ -3,12 +3,15 @@ package comp5703.sydney.edu.au.learn.Home.Fragment;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
@@ -31,6 +34,7 @@ import comp5703.sydney.edu.au.learn.DTO.ProductUser;
 import comp5703.sydney.edu.au.learn.DTO.Record;
 import comp5703.sydney.edu.au.learn.Home.Adapter.ItemListAdapter;
 import comp5703.sydney.edu.au.learn.R;
+import comp5703.sydney.edu.au.learn.VO.ProductFilter;
 import comp5703.sydney.edu.au.learn.VO.productListParameter;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
 import okhttp3.Call;
@@ -52,6 +56,8 @@ public class ItemListFragment extends Fragment {
 
     private EditText searchBox;
 
+    private ImageView filterIcon;
+
 
     @Nullable
     @Override
@@ -70,6 +76,7 @@ public class ItemListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         itemRecyclerView = view.findViewById(R.id.list_main);
         searchBox = view.findViewById(R.id.search_box);
+        filterIcon = view.findViewById(R.id.filterIcon);
 
         // 创建并设置RecyclerView的LayoutManager
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -81,7 +88,25 @@ public class ItemListFragment extends Fragment {
         itemRecyclerView.setAdapter(itemListAdapter);
 
         searchBox.setOnClickListener(this::dumpToSearchFragment);
+        filterIcon.setOnClickListener(this::openFilterFragment);
 
+
+    }
+
+    private void openFilterFragment(View view) {
+        // 创建并显示筛选弹窗
+        FilterDialogFragment filterDialogFragment = new FilterDialogFragment();
+
+        // 设置监听器
+        filterDialogFragment.setFilterDialogListener(new FilterDialogFragment.FilterDialogListener() {
+            @Override
+            public void onFilterClosed() {
+                // 在这里刷新页面
+                getRecordList();
+            }
+        });
+
+        filterDialogFragment.show(getChildFragmentManager(), "filterDialog");
 
 
     }
@@ -103,7 +128,38 @@ public class ItemListFragment extends Fragment {
 
     private void getRecordList(){
 
-        NetworkUtils.getRequest("/public/product/productList", new Callback() {
+        SharedPreferences preferences = getActivity().getSharedPreferences("FilterPreferences", Context.MODE_PRIVATE);
+        int savedCategoryOld = preferences.getInt("category", -1); // 默认值为-1，表示未选中任何按钮
+        int saveStatusOld = preferences.getInt("status", -1); // 默认值为-1，表示未选中任何按钮
+        String savedPurityOld = preferences.getString("purity", null);
+        double minPriceOld = preferences.getFloat("minPrice", 0f);
+        double maxPriceOld = preferences.getFloat("maxPrice", 0f);
+
+        ProductFilter productFilter = new ProductFilter();
+        if (savedCategoryOld != -1){
+            productFilter.setCategory(savedCategoryOld);
+        }
+
+        if (savedPurityOld!= null){
+            productFilter.setPurity(savedPurityOld);
+        }
+
+        if (saveStatusOld != -1){
+            productFilter.setStatus(saveStatusOld);
+        }
+
+
+        if (minPriceOld != 0f){
+            productFilter.setMinPrice(minPriceOld);
+        }
+
+        if (maxPriceOld != 0f){
+            productFilter.setMaxPrice(maxPriceOld);
+        }
+
+
+
+        NetworkUtils.getWithParamsRequest(productFilter,"/public/product/productList",null, new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 handleResponse(response);

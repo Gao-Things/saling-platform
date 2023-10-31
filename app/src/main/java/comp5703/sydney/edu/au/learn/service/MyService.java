@@ -1,5 +1,6 @@
 package comp5703.sydney.edu.au.learn.service;
 
+import static comp5703.sydney.edu.au.learn.util.NetworkUtils.imageURL;
 import static comp5703.sydney.edu.au.learn.util.NetworkUtils.websocketUrl;
 
 import android.annotation.SuppressLint;
@@ -9,28 +10,38 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
 import com.alibaba.fastjson.JSON;
+import com.squareup.picasso.Picasso;
+
+import java.util.Objects;
 
 import comp5703.sydney.edu.au.learn.DTO.Product;
+import comp5703.sydney.edu.au.learn.DTO.User;
 import comp5703.sydney.edu.au.learn.DTO.WebSocketMessage;
 import comp5703.sydney.edu.au.learn.Home.HomeUseActivity;
 import comp5703.sydney.edu.au.learn.R;
@@ -105,21 +116,59 @@ public class MyService extends Service {
                 Log.d("Websocket message","服务器发送的消息："+ text);
 
                 WebSocketMessage webSocketMessage = JSON.parseObject(text, WebSocketMessage.class);
-                Product product =  webSocketMessage.getProduct();
 
-                if (webSocketMessage.getMessageType() ==1){
+                if (webSocketMessage.getMessageType() != 999 ){
+
+                    Product product =  webSocketMessage.getProduct();
                     // send notification后台
                     createNotification(webSocketMessage.getNotificationContent(), product.getProductName());
+
+                    Log.d("系统消息通知", webSocketMessage.getNotificationContent());
                     // 将操作发送到主线程，前台弹窗
-                    new Handler(Looper.getMainLooper()).post(() -> initializeBubbleView(webSocketMessage.getNotificationContent(), product.getProductName()));
+                    new Handler(Looper.getMainLooper()).post(() -> initializeBubbleView(webSocketMessage.getNotificationContent(), product.getProductName(), null));
+
+                    // Send a message back to the server
+                    // 构建响应消息对象
+                    ResponseMessage response = new ResponseMessage(1, webSocketMessage.getNotificationId());  // 这里的 1 表示消息已读
+                    String responseMessage = JSON.toJSONString(response);
+
+                    webSocket.send(responseMessage);
+                }else {
+
+                    // 消息提示类型为未读的聊天消息
+
+                    User user = webSocketMessage.getRemoteUser();
+                    Log.d("用户消息通知", webSocketMessage.getNotificationContent());
+
+                    /**
+                     * 判断用户是否开启聊天页面
+                     */
+
+                    // 使用 Service 的上下文来获取 SharedPreferences
+                    SharedPreferences sharedPreferences = getSharedPreferences("comp5703", MODE_PRIVATE);
+
+                    // 获取数据
+                    boolean userIsInCheating = sharedPreferences.getBoolean("userIsInCheating", false);
+
+                    if (!userIsInCheating){
+                        // 将操作发送到主线程，前台弹窗
+                        new Handler(Looper.getMainLooper()).post(() -> initializeBubbleView(user.getName(), webSocketMessage.getNotificationContent(), user.getAvatarUrl()));
+                    }else {
+                        // 震动手机提示用户有其他消息
+                        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+                        if (vibrator != null) {
+                            // New vibrate method for API Level 26 (Android O) and above
+                            vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+                        }
+
+
+                    }
+
+
                 }
 
-                // Send a message back to the server
-                // 构建响应消息对象
-                ResponseMessage response = new ResponseMessage(1, webSocketMessage.getNotificationId());  // 这里的 1 表示消息已读
-                String responseMessage = JSON.toJSONString(response);
 
-                webSocket.send(responseMessage);
 
             }
 
@@ -130,7 +179,12 @@ public class MyService extends Service {
     }
 
 
-    private void initializeBubbleView(String title, String contentUse) {
+
+
+
+
+
+    private void initializeBubbleView(String title, String contentUse, @Nullable  String userAvatarUrl) {
 
         WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -154,10 +208,26 @@ public class MyService extends Service {
         floatingView = inflater.inflate(R.layout.popup_windows, null);
 
         // 设置推送消息的内容
+        ImageView logoImageView = floatingView.findViewById(R.id.logoImageView);
         TextView notificationTitle = floatingView.findViewById(R.id.notificationTitle);
         TextView content = floatingView.findViewById(R.id.content);
+
+        ImageView addImage1 = floatingView.findViewById(R.id.addImage1);
+        ImageView addImage2 = floatingView.findViewById(R.id.addImage2);
+
         notificationTitle.setText(title);
         content.setText(contentUse);
+
+        if (userAvatarUrl != null){
+
+            addImage1.setVisibility(View.GONE);
+            addImage2.setVisibility(View.GONE);
+
+            Picasso.get()
+                    .load(imageURL + userAvatarUrl)
+                    .error(R.drawable.img_20)  // error_image为加载失败时显示的图片
+                    .into(logoImageView);
+        }
 
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         // 添加悬浮窗口到 WindowManager

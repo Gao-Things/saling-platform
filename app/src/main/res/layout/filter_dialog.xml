@@ -1,0 +1,173 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/darkGreen"
+        android:text="Filter criteria"
+        android:textSize="23sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Category"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Category"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+
+    <RadioGroup android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/category"
+        android:orientation="horizontal">
+
+        <RadioButton android:id="@+id/radio_button_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gold"/>
+
+        <RadioButton android:id="@+id/radio_button_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="Sliver"/>
+
+    </RadioGroup>
+
+
+
+    <!-- 添加其他Category类型的复选框 -->
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Purity"
+        android:layout_marginTop="10dp"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+    <!-- 根据需要在这里添加Purity的复选框 -->
+
+    <RadioGroup android:layout_width="match_parent"
+        android:id="@+id/goldType"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton android:id="@+id/gold24K"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="24K"/>
+
+        <RadioButton
+            android:id="@+id/gold21K"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="21k" />
+        <RadioButton
+            android:id="@+id/gold18K"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="18k" />
+
+    </RadioGroup>
+
+    <RadioGroup android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:id="@+id/sliverType"
+        android:orientation="horizontal">
+        <RadioButton
+            android:id="@+id/sliver999"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="999" />
+        <RadioButton
+            android:id="@+id/sliver925"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="925" />
+        <RadioButton
+            android:id="@+id/sliverAlloy"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Alloy" />
+
+    </RadioGroup>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_height="wrap_content"
+        android:text="Status"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+
+
+
+
+    <RadioGroup android:layout_width="match_parent"
+        android:id="@+id/status"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+        <RadioButton
+            android:id="@+id/checkbox_selling"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Selling" />
+        <RadioButton
+            android:id="@+id/checkbox_sold_out"
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_height="wrap_content"
+            android:text="Sold" />
+        <RadioButton
+            android:id="@+id/checkbox_close"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Close" />
+
+
+    </RadioGroup>
+
+
+
+    <TextView
+        android:id="@+id/textview_price_range"
+        android:layout_width="wrap_content"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginTop="10dp"
+        android:layout_height="wrap_content"
+        android:text="Select weight" />
+
+    <com.google.android.material.slider.RangeSlider
+        android:id="@+id/range_slider_price"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:valueFrom="0.0"
+        android:valueTo="1000.0"
+        android:stepSize="1.0"/>
+
+
+</LinearLayout>

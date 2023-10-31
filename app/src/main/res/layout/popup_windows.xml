@@ -55,11 +55,13 @@
                         android:textSize="18sp"
                         android:text="Hello chloe, your item...."/>
                     <ImageView
+                        android:id="@+id/addImage1"
                         android:layout_width="20dp"
                         android:layout_height="30dp"
                         android:src="@drawable/ic_baseline_priority_high_24"/>
 
                     <ImageView
+                        android:id="@+id/addImage2"
                         android:layout_width="20dp"
                         android:layout_height="30dp"
                         android:src="@drawable/ic_baseline_priority_high_24"/>
