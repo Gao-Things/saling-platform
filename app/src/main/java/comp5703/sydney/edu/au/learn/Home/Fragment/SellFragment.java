@@ -363,7 +363,7 @@ public class SellFragment extends Fragment {
     }
 
 
-    private void openCameraClick(){
+    public void openCameraClick(){
         CharSequence[] items = {"Take picture", "Select from gallery"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
