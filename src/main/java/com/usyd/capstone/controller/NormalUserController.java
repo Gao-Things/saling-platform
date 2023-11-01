@@ -3,8 +3,10 @@ package com.usyd.capstone.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.common.VO.*;
+import com.usyd.capstone.entity.NormalUser;
 import com.usyd.capstone.entity.Offer;
 import com.usyd.capstone.entity.UserSetting;
+import com.usyd.capstone.entity.abstractEntities.User;
 import com.usyd.capstone.service.NormalUserService;
 import com.usyd.capstone.service.OfferService;
 import com.usyd.capstone.service.UserSettingService;
@@ -119,6 +121,30 @@ public class NormalUserController {
         userSetting.setUserSettingId(settingId);
         return Result.suc(userSettingService.updateById(userSetting));
     }
+
+    @GetMapping("/getUserInfo")
+    public Result getUserInfo(@RequestParam Integer userId){
+
+        if (userId == null){
+            return Result.fail();
+        }
+
+        return Result.suc(normalUserService.findUserInfoById(userId)) ;
+    }
+    @PostMapping("/updateUserAvatar")
+    public Result updateUserAvatar(@RequestBody UpdateUserInfo updateUserInfo){
+
+        if (updateUserInfo.getId() == null || updateUserInfo.getAvatarUrl() == null){
+            return Result.fail();
+        }
+
+        NormalUser normalUser = normalUserService.findUserInfoById(Math.toIntExact(updateUserInfo.getId()));
+
+        normalUser.setAvatarUrl(updateUserInfo.getAvatarUrl());
+
+        return Result.suc(normalUserService.updateUserInfo(normalUser));
+    }
+
 
 
     @PostMapping("/setPriceThreshold")

@@ -437,6 +437,11 @@ public class NormalUserServiceImpl implements NormalUserService {
         return normalUser;
     }
 
+    @Override
+    public Boolean updateUserInfo(NormalUser normalUser) {
+      return   normalUserMapper.updateById(normalUser) == 1;
+    }
+
 
     private void sendNotification(Integer type,
                                   Integer userType,

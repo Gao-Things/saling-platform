@@ -21,4 +21,6 @@ public interface NormalUserService {
     public Result openOrCloseOrCancelSale(String token, Long productId, int productStatusNew);
 
     NormalUser findUserInfoById(Integer userId);
+
+    Boolean updateUserInfo(NormalUser normalUser);
 }
