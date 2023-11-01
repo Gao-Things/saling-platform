@@ -2,46 +2,53 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="8dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="start|top"
+        android:gravity="top"
         android:orientation="horizontal"
         android:paddingRight="55dp">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/userAvatar"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@drawable/avatar3" />
+            android:src="@drawable/avatar3"
+            app:shapeAppearanceOverlay="@style/CircleImageViewStyle"/>
+
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="300dp"
-            android:layout_marginStart="7dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="7dp"
             android:layout_weight="1"
             android:background="@drawable/rounded_corner_background"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:gravity="end">
 
             <TextView
                 android:id="@+id/tvCardTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:paddingLeft="17dp"
                 android:paddingBottom="4dp"
                 android:text="Card Title"
-                android:textSize="24sp"
+                android:textSize="22sp"
                 android:textStyle="bold" />
 
             <ImageView
                 android:id="@+id/tvCardImage"
+                android:layout_marginHorizontal="15dp"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
                 android:src="@drawable/reject1" />
 
             <!-- 这里可以添加卡片的其他描述信息 -->
@@ -50,22 +57,28 @@
                 android:id="@+id/cardDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="top"
                 android:layout_marginTop="30dp"
+
                 android:paddingLeft="15dp"
                 android:paddingBottom="4dp"
-                android:text="The seller has no message"
+                android:text="Tno message"
                 android:textSize="21sp" />
 
             <TextView
                 android:id="@+id/tvTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:paddingTop="4dp"
-                android:paddingEnd="10dp"
+
+                android:paddingLeft="18dp"
+                android:paddingBottom="5dp"
                 android:text="6:03 PM"
                 android:textColor="@color/textColorBlackGray"
-                android:textSize="12sp" />
+                android:textSize="15sp"
+                android:layout_gravity="top"/>
         </LinearLayout>
+
+
+
     </LinearLayout>
 </LinearLayout>

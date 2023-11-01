@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
+import comp5703.sydney.edu.au.learn.Common.OnSingleClickListener;
 import comp5703.sydney.edu.au.learn.DTO.UserMessage;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.RejectMessage;
@@ -108,13 +109,15 @@ public class GuideDialogFragment extends DialogFragment {
         notSellingButton.setOnClickListener(buttonClickListener);
         otherButton.setOnClickListener(buttonClickListener);
 
-        // 发送按钮的监听器
-        sendButton.setOnClickListener(v -> {
-            // 发送用户理由
-            cardDescription = customReasonEditText.getText().toString();
+        sendButton.setOnClickListener(new OnSingleClickListener() {
+            @Override
+            public void onSingleClick(View v) {
+                // 发送用户理由
+                cardDescription = customReasonEditText.getText().toString();
 
-            // 处理发送逻辑
-            saveAndSendCardMessage();
+                // 处理发送逻辑
+                saveAndSendCardMessage();
+            }
         });
 
         // 取消按钮的监听器

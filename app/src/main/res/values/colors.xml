@@ -19,6 +19,7 @@
     <color name="borderGray">#D6D6D6</color>
     <color name="backgroundGray">#FBFBFB</color>
     <color name="lightwhite">#F2FEED</color>
+    <color name="lightwhite2">#F4F4F4</color>
     <color name="withoutSelect">#B9C1D9</color>
     <color name="popWindowsBackground">#FFFFFF</color>
     <color name="lineColor">#E4E7E7E7</color>

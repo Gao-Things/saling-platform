@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -116,6 +117,8 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
     private Integer sellerId;
 
     private Boolean checkButtonFlag = true;
+
+    private boolean isClickBlocked = false;
 
 
     // 基础的商品信息
@@ -299,6 +302,17 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
 
     // submit a offer
     private void submitOffer(View view){
+
+
+        if (isClickBlocked) {
+            return;
+        }
+        isClickBlocked = true;
+
+        // 处理点击事件
+
+        // 在逻辑执行完毕后重置标志变量，可以使用Handler来延迟重置
+        new Handler().postDelayed(() -> isClickBlocked = false, 1000); // 延迟1秒
 
         makeAnOfferParameter makeAnOfferParameter = new makeAnOfferParameter();
         String stringPrice =setPrice.getText().toString();

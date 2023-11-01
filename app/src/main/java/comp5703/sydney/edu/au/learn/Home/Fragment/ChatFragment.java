@@ -27,12 +27,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
@@ -90,6 +92,8 @@ public class ChatFragment extends Fragment {
 
     SharedPreferences sharedPreferences;
 
+    private ImageView backClick;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -105,6 +109,12 @@ public class ChatFragment extends Fragment {
 
         // 隐藏header
         Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).hide();
+
+
+        // 获取底部导航栏的引用
+        BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottom_navigation);
+        // 隐藏底部导航栏
+        bottomNavigationView.setVisibility(View.GONE);
 
         // 在 ItemDetailFragment 中获取传递的整数值
         Bundle args = getArguments();
@@ -147,6 +157,15 @@ public class ChatFragment extends Fragment {
 
 
 
+        backClick = view.findViewById(R.id.backClick);
+
+        backClick.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                fragmentManager.popBackStack(); // 返回上一级
+            }
+        });
 
 
         remoteUserAvatar = view.findViewById(R.id.userAvatar);
@@ -585,6 +604,12 @@ public class ChatFragment extends Fragment {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("userIsInCheating", false);
         editor.apply();
+
+        // 获取底部导航栏的引用
+        BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottom_navigation);
+
+        // 重新显示底部导航栏
+        bottomNavigationView.setVisibility(View.VISIBLE);
 
     }
 
