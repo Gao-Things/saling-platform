@@ -18,7 +18,9 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -54,6 +56,19 @@ public class ProductController {
         List<ProductUserDTO> productList = productService.listProduct(productFilter);
         return Result.suc(productList);
     }
+
+
+    @GetMapping("/getMinMaxWeight")
+    public Result getMinMaxWeight() {
+        Map<String, Double> resultMap = new HashMap<>();
+        double minWeight = productService.getMinWeight();
+        double maxWeight = productService.getMaxWeight();
+
+        resultMap.put("minWeight", minWeight);
+        resultMap.put("maxWeight", maxWeight);
+        return Result.suc(resultMap);
+    }
+
 
     @PostMapping("/uploadImage")
     public Result uploadImage(@RequestParam("file") MultipartFile file) {

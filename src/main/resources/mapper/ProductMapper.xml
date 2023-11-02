@@ -29,17 +29,17 @@
             <if test="category != null">
                 AND product.category = #{category}
             </if>
-            <if test="purity != null and purity != ''">
+            <if test="purity != null">
                 AND product.purity = #{purity}
             </if>
             <if test="status != null">
                 AND product.product_status = #{status}
             </if>
             <if test="minPrice != 0">
-                AND product.product_price &gt;= #{minPrice}
+                AND product.product_weight &gt;= #{minPrice}
             </if>
             <if test="maxPrice != 0">
-                AND product.product_price &lt;= #{maxPrice}
+                AND product.product_weight &lt;= #{maxPrice}
             </if>
         </where>
     </select>

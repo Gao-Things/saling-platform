@@ -27,4 +27,8 @@ public interface ProductService extends IService<Product> {
     List<ProductUserDTO> listProduct(ProductFilter productFilter);
     Result getProductListAfterFiltered(String filter1, Integer value1, String filter2, String value2);
     Result getTop10Products();
+
+    double getMinWeight();
+
+    double getMaxWeight();
 }

@@ -150,4 +150,44 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         return Result.suc(top10Products);
     }
 
+    @Override
+    public double getMinWeight() {
+
+        // 假设Product类中有一个price字段来表示价格
+        // 使用QueryWrapper来构建查询条件
+        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByAsc("product_weight"); // 按照价格升序排序
+        queryWrapper.last("LIMIT 1"); // 限制结果只有一个，即最低价格的商品
+
+        // 执行查询，selectOne方法会返回查询结果中的第一个对象
+        Product product = productMapper.selectOne(queryWrapper);
+
+        // 检查product是否为null，以防数据库为空或查询出错
+        if (product != null) {
+            return product.getProductWeight(); // 返回找到的商品的价格
+        } else {
+            return 0; // 如果没有找到商品，则返回0或者抛出一个异常
+        }
+    }
+
+    @Override
+    public double getMaxWeight() {
+
+        // 假设Product类中有一个price字段来表示价格
+        // 使用QueryWrapper来构建查询条件
+        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByDesc("product_weight");
+        queryWrapper.last("LIMIT 1"); // 限制结果只有一个，即最高重量的商品
+
+        // 执行查询，selectOne方法会返回查询结果中的第一个对象
+        Product product = productMapper.selectOne(queryWrapper);
+
+        // 检查product是否为null，以防数据库为空或查询出错
+        if (product != null) {
+            return product.getProductWeight(); // 返回找到的商品的价格
+        } else {
+            return 0; // 如果没有找到商品，则返回0或者抛出一个异常
+        }
+    }
+
 }

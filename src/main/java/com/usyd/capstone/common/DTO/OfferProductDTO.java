@@ -15,7 +15,7 @@ public class    OfferProductDTO {
 
     private int offerStatus; //0: send 1: accepted 2: rejected 3:cancelled
 
-    private double price;
+    private double offerPrice;
 
     //备注
     private String note;
