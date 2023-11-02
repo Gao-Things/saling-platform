@@ -469,7 +469,7 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
         if (isChecked) {
             backColor = ContextCompat.getColor(Objects.requireNonNull(getContext()), R.color.generalGreen);
         } else {
-            backColor = ContextCompat.getColor(Objects.requireNonNull(getContext()), R.color.red);
+            backColor = ContextCompat.getColor(Objects.requireNonNull(getContext()), R.color.textColorSecondary);
         }
         switchButton.setBackColor(ColorStateList.valueOf(backColor));
     }

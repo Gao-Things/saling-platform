@@ -64,7 +64,7 @@ public class ItemListFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list_item, container, false);
         // get recordList By request backend
-        getRecordList();
+        getRecordList(-1, null, -1, 0, 0);
 
         return view;
     }
@@ -101,8 +101,14 @@ public class ItemListFragment extends Fragment {
         filterDialogFragment.setFilterDialogListener(new FilterDialogFragment.FilterDialogListener() {
             @Override
             public void onFilterClosed() {
-                // 在这里刷新页面
-                getRecordList();
+
+            }
+
+            @Override
+            public void onFilterApplied(int category, @Nullable String purity, int status, double minPrice, double maxPrice) {
+
+                getRecordList(category, purity, status, minPrice, maxPrice);
+
             }
         });
 
@@ -126,38 +132,23 @@ public class ItemListFragment extends Fragment {
     }
 
 
-    private void getRecordList(){
-
-        SharedPreferences preferences = getActivity().getSharedPreferences("FilterPreferences", Context.MODE_PRIVATE);
-        int savedCategoryOld = preferences.getInt("category", -1); // 默认值为-1，表示未选中任何按钮
-        int saveStatusOld = preferences.getInt("status", -1); // 默认值为-1，表示未选中任何按钮
-        String savedPurityOld = preferences.getString("purity", null);
-        double minPriceOld = preferences.getFloat("minPrice", 0f);
-        double maxPriceOld = preferences.getFloat("maxPrice", 0f);
+    private void getRecordList(int category, @Nullable String purity, int status, double minPrice, double maxPrice ){
 
         ProductFilter productFilter = new ProductFilter();
-        if (savedCategoryOld != -1){
-            productFilter.setCategory(savedCategoryOld);
+        if (category != -1){
+            productFilter.setCategory(category);
         }
 
-        if (savedPurityOld!= null){
-            productFilter.setPurity(savedPurityOld);
+        if (purity!= null){
+            productFilter.setPurity(purity);
         }
 
-        if (saveStatusOld != -1){
-            productFilter.setStatus(saveStatusOld);
+        if (status != -1){
+            productFilter.setStatus(status);
         }
 
-
-        if (minPriceOld != 0f){
-            productFilter.setMinPrice(minPriceOld);
-        }
-
-        if (maxPriceOld != 0f){
-            productFilter.setMaxPrice(maxPriceOld);
-        }
-
-
+        productFilter.setMinPrice(minPrice);
+        productFilter.setMaxPrice(maxPrice);
 
         NetworkUtils.getWithParamsRequest(productFilter,"/public/product/productList",null, new Callback() {
             @Override

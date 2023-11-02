@@ -47,22 +47,22 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="8"
-                    android:textColor="@color/red"
+                    android:textColor="@color/black"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
 
-                <TextView
-                    android:id="@+id/itemPrice"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_weight="1"
-                    android:text="$5"
-                    android:visibility="invisible"
-                    android:textColor="@color/red"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+<!--                <TextView-->
+<!--                    android:id="@+id/itemPrice"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginLeft="10dp"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:text="$5"-->
+<!--                    android:visibility="invisible"-->
+<!--                    android:textColor="@color/black"-->
+<!--                    android:textSize="18sp"-->
+<!--                    android:textStyle="bold" />-->
 
                 <TextView
                     android:id="@+id/itemSellerName"

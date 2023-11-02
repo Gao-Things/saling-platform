@@ -65,7 +65,7 @@ public class MyOfferListAdapter extends RecyclerView.Adapter<MyOfferListAdapter.
             String formattedDate = sdf.format(new Date(timeStamp));
 
             holder.itemName.setText(product.getProductName());
-            holder.itemPrice.setText(Double.toString(product.getProductPrice()));
+            holder.itemPrice.setText(Double.toString(offerList.get(position).getPrice()));
             holder.myOfferTime.setText(formattedDate);
 
             // 把图片链接字符串转回list

@@ -63,7 +63,9 @@ public class OfferReceivedListAdapter extends RecyclerView.Adapter<OfferReceived
 
             holder.itemName.setText(productOffer.getProductName());
             holder.buyerUsername.setText(productOffer.getBuyerName());
-            holder.itemPrice.setText("$" + productOffer.getProductPrice());
+
+            // TODO bug 修复
+            holder.itemPrice.setText("$" + productOffer.getOfferPrice());
             holder.myOfferTime.setText(formattedDate);
 
             // 把图片链接字符串转回list

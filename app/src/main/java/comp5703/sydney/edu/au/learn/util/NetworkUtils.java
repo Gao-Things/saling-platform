@@ -26,7 +26,7 @@ public class NetworkUtils {
     public static final String imageURL = "https://capstone-file-store.s3.amazonaws.com/";
 
     // local connect detail
-
+//
 //    public static final String apiURL = "http://capstone-loadbalancer-2005125113.us-east-1.elb.amazonaws.com";
 //    public static final String websocketUrl = "ws://capstone-loadbalancer-2005125113.us-east-1.elb.amazonaws.com";
     public static final String apiURL = "http://192.168.1.6:8082";

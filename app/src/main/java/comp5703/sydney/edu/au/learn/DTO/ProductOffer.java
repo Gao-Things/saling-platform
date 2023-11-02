@@ -5,7 +5,7 @@ public class ProductOffer {
     private Integer productId;
     private Integer buyerId;
     private Integer offerStatus;
-    private double price;
+    private double offerPrice;
     private String note;
     private Long timestamp;
     private String productName;
@@ -55,12 +55,12 @@ public class ProductOffer {
         this.offerStatus = offerStatus;
     }
 
-    public double getPrice() {
-        return price;
+    public double getOfferPrice() {
+        return offerPrice;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public void setOfferPrice(double offerPrice) {
+        this.offerPrice = offerPrice;
     }
 
     public String getNote() {

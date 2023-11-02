@@ -190,7 +190,7 @@ public class SettingFragment extends Fragment {
         if (isChecked) {
             backColor = ContextCompat.getColor(Objects.requireNonNull(getContext()), R.color.generalGreen);
         } else {
-            backColor = ContextCompat.getColor(Objects.requireNonNull(getContext()), R.color.red);
+            backColor = ContextCompat.getColor(Objects.requireNonNull(getContext()), R.color.textColorSecondary);
         }
         switchButton.setBackColor(ColorStateList.valueOf(backColor));
     }

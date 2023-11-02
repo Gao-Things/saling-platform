@@ -29,6 +29,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.result.PickVisualMediaRequest;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -53,7 +54,10 @@ import com.itheima.wheelpicker.WheelPicker;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -396,7 +400,7 @@ public class SellFragment extends Fragment {
 
     private void requestGalleryPermission() {
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_GALLERY_PERMISSION);
+            requestPermissions( new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_GALLERY_PERMISSION);
         } else {
             launchGallery();
         }
@@ -418,14 +422,15 @@ public class SellFragment extends Fragment {
 
         // 请求相册时候结果的处理
         if (requestCode == REQUEST_GALLERY_PERMISSION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                launchGallery();
-            } else {
-                // 权限被拒绝，添加额外的处理逻辑。
-                Snackbar.make(rootView, "You need to enable album permissions to proceed.", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-
-            }
+//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                launchGallery();
+//            } else {
+//                // 权限被拒绝，添加额外的处理逻辑。
+//                Snackbar.make(rootView, "You need to enable album permissions to proceed.", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//
+//            }
+            launchGallery();
         }
     }
 
@@ -449,8 +454,18 @@ public class SellFragment extends Fragment {
     }
 
     private void launchGallery() {
-        Intent pickPhoto = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(pickPhoto, REQUEST_GALLERY_IMAGE);
+//        Intent pickPhoto = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//        startActivityForResult(pickPhoto, REQUEST_GALLERY_IMAGE);
+
+        // create an instance of the
+        // intent of the type image
+        Intent i = new Intent();
+        i.setType("image/*");
+        i.setAction(Intent.ACTION_GET_CONTENT);
+
+        // pass the constant to compare it
+        // with the returned requestCode
+        startActivityForResult(Intent.createChooser(i, "Select Picture"), REQUEST_GALLERY_IMAGE);
     }
 
 
@@ -462,21 +477,36 @@ public class SellFragment extends Fragment {
 
         }else if (requestCode == REQUEST_GALLERY_IMAGE && resultCode == Activity.RESULT_OK) {
             if (data != null) {
-                Uri selectedImage = data.getData();
-                String[] filePathColumn = {MediaStore.Images.Media.DATA};
-                Cursor cursor = getActivity().getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-                if (cursor != null) {
-                    cursor.moveToFirst();
-                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                    String filePath = cursor.getString(columnIndex);
-                    cursor.close();
-                    File file = new File(filePath);
 
-                    uploadPhoto(file);
-                }
+                Uri selectedImageUri = data.getData();
+                uploadPhotoFromUri(selectedImageUri);
             }
         }
     }
+
+    private void uploadPhotoFromUri(Uri imageUri) {
+        try {
+            InputStream inputStream = getActivity().getContentResolver().openInputStream(imageUri);
+            if (inputStream != null) {
+                // 创建一个临时文件来存储图片
+                File photoFile = new File(getActivity().getCacheDir(), "temp_image.jpg");
+                try (OutputStream outputStream = new FileOutputStream(photoFile)) {
+                    // 将输入流的内容复制到文件
+                    byte[] buffer = new byte[4 * 1024]; // or other buffer size
+                    int read;
+                    while ((read = inputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, read);
+                    }
+                    outputStream.flush();
+                }
+                // 调用现有的上传方法
+                uploadPhoto(photoFile);
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "File upload failed: " + e.getMessage(), e);
+        }
+    }
+
 
     private void uploadPhoto(File photoFile){
         NetworkUtils.postFormDataRequest(photoFile, "xxx", new Callback() {
