@@ -64,7 +64,6 @@ public class OfferReceivedListAdapter extends RecyclerView.Adapter<OfferReceived
             holder.itemName.setText(productOffer.getProductName());
             holder.buyerUsername.setText(productOffer.getBuyerName());
 
-            // TODO bug 修复
             holder.itemPrice.setText("$" + productOffer.getOfferPrice());
             holder.myOfferTime.setText(formattedDate);
 

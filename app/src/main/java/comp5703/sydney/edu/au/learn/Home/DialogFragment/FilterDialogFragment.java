@@ -1,8 +1,7 @@
-package comp5703.sydney.edu.au.learn.Home.Fragment;
+package comp5703.sydney.edu.au.learn.Home.DialogFragment;
 
 import static android.content.ContentValues.TAG;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,13 +17,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.android.material.slider.RangeSlider;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 import comp5703.sydney.edu.au.learn.DTO.MinMaxWeight;
 import comp5703.sydney.edu.au.learn.R;
@@ -76,14 +73,27 @@ public class FilterDialogFragment extends DialogFragment {
 
         /**
          *
-         * 从全局变量中恢复筛选状态
+         * 从全局变量中清除筛选变量
          *
          */
+
+        // 获取SharedPreferences.Editor对象以进行修改
+        SharedPreferences.Editor editor = getActivity().getSharedPreferences("FilterPreferences", Context.MODE_PRIVATE).edit();
+
+        // 清除所有的数据
+        editor.clear();
+
+        // 提交更改
+        editor.apply(); // 或者使用 editor.commit()
+
+
         // ... 其他初始化代码
         SharedPreferences preferences = getActivity().getSharedPreferences("FilterPreferences", Context.MODE_PRIVATE);
         int savedCategoryOld = preferences.getInt("category", -1); // 默认值为-1，表示未选中任何按钮
-        int saveStatusOld = preferences.getInt("status", -1); // 默认值为-1，表示未选中任何按钮
+
         String savedPurityOld = preferences.getString("purity", null);
+
+        int saveStatusOld = preferences.getInt("status", -1); // 默认值为-1，表示未选中任何按钮
         double minPriceOld = preferences.getFloat("minPrice", 0f);
         double maxPriceOld = preferences.getFloat("maxPrice", 0f);
 
@@ -91,19 +101,31 @@ public class FilterDialogFragment extends DialogFragment {
 //        if (savedCategoryOld != -1) {
 //            switch (savedCategoryOld) {
 //                case 1:
+//                    // 选项 1 被选中
 //                    categoryGroup.check(R.id.radio_button_1);
+//
+//
 //                    goldTypeGroup.setVisibility(View.VISIBLE);
 //                    sliverTypeGroup.setVisibility(View.GONE);
+//
+//                    itemPurityText.setVisibility(View.VISIBLE);
+//                    category = 1;
 //                    break;
 //                case 2:
+//                    // 选项 2 被选中
 //                    categoryGroup.check(R.id.radio_button_2);
-//                    sliverTypeGroup.setVisibility(View.VISIBLE);
+//
 //                    goldTypeGroup.setVisibility(View.GONE);
+//                    sliverTypeGroup.setVisibility(View.VISIBLE);
+//
+//
+//                    itemPurityText.setVisibility(View.VISIBLE);
+//                    category = 2;
 //                    break;
 //            }
 //        }
-//
-//
+
+
 //        if (savedPurityOld != null) {
 //            switch (savedPurityOld) {
 //                case "24K":

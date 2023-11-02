@@ -78,7 +78,7 @@
                     android:layout_weight="1"
                     android:paddingLeft="20dp"
                     android:text="$5"
-                    android:textColor="@color/red"
+                    android:textColor="@color/darkGreen"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -117,7 +117,7 @@
                         android:text="Reject"
                         android:textSize="14sp"
                         app:cornerRadius="7dp"
-                        app:backgroundTint="@color/red"
+                        app:backgroundTint="@color/yellow"
                         />
 
 

@@ -29,6 +29,7 @@ import java.io.IOException;
 import comp5703.sydney.edu.au.learn.DTO.UserSetting;
 import comp5703.sydney.edu.au.learn.Home.Fragment.ItemDetailFragment;
 import comp5703.sydney.edu.au.learn.Home.Fragment.ItemListFragment;
+import comp5703.sydney.edu.au.learn.Home.Fragment.MessagesFragment;
 import comp5703.sydney.edu.au.learn.Home.Fragment.ProfileFragment;
 import comp5703.sydney.edu.au.learn.Home.Fragment.SellFragment;
 import comp5703.sydney.edu.au.learn.Home.Fragment.SettingFragment;
@@ -75,10 +76,9 @@ public class HomeUseActivity extends AppCompatActivity implements ItemDetailFrag
                     toolbar_title.setText("Selling An Item");  // 使用自定义标题
                     toolbar.setVisibility(View.VISIBLE); // 显示Toolbar
                     return true;
-                case R.id.navigation_notifications:
-                    loadFragment(new ItemDetailFragment());
-                    toolbar_title.setText("Notifications");  // 使用自定义标题
-                    toolbar.setVisibility(View.VISIBLE); // 显示Toolbar
+                case R.id.navigation_messages:
+                    loadFragment(new MessagesFragment());
+                    toolbar.setVisibility(View.GONE); // 显示Toolbar
                     return true;
                 case R.id.profile:
                     loadFragment(new ProfileFragment());

@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,25 +23,26 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-import org.w3c.dom.Text;
-
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
+import comp5703.sydney.edu.au.learn.Common.DialogFragment;
 import comp5703.sydney.edu.au.learn.DTO.ProductUser;
 import comp5703.sydney.edu.au.learn.DTO.Record;
 import comp5703.sydney.edu.au.learn.Home.Adapter.ItemListAdapter;
+import comp5703.sydney.edu.au.learn.Home.DialogFragment.FilterDialogFragment;
+import comp5703.sydney.edu.au.learn.Home.DialogFragment.SortDialogFragment;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.ProductFilter;
-import comp5703.sydney.edu.au.learn.VO.productListParameter;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
 
-public class ItemListFragment extends Fragment {
+public class ItemListFragment extends Fragment{
 
     private RecyclerView itemRecyclerView;
 
@@ -57,6 +57,12 @@ public class ItemListFragment extends Fragment {
     private EditText searchBox;
 
     private ImageView filterIcon;
+
+    private ImageView sortIcon;
+
+    private Integer sortByPurityNew = -1;
+
+    private Integer sortByWeightNew = -1;
 
 
     @Nullable
@@ -77,6 +83,7 @@ public class ItemListFragment extends Fragment {
         itemRecyclerView = view.findViewById(R.id.list_main);
         searchBox = view.findViewById(R.id.search_box);
         filterIcon = view.findViewById(R.id.filterIcon);
+        sortIcon = view.findViewById(R.id.sortIcon);
 
         // 创建并设置RecyclerView的LayoutManager
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -89,6 +96,7 @@ public class ItemListFragment extends Fragment {
 
         searchBox.setOnClickListener(this::dumpToSearchFragment);
         filterIcon.setOnClickListener(this::openFilterFragment);
+        sortIcon.setOnClickListener(this::showSortFragment);
 
 
     }
@@ -107,6 +115,20 @@ public class ItemListFragment extends Fragment {
             @Override
             public void onFilterApplied(int category, @Nullable String purity, int status, double minPrice, double maxPrice) {
 
+                // 获取 SharedPreferences.Editor 对象以进行修改
+                SharedPreferences.Editor editor = getActivity().getSharedPreferences("FilterPreferences", Context.MODE_PRIVATE).edit();
+
+                // 将过滤器的值保存到 SharedPreferences，用于filter
+                editor.putInt("category", category);
+                editor.putInt("status", status);
+                editor.putString("purity", purity);
+                editor.putFloat("minPrice", (float) minPrice); // SharedPreferences不支持直接存储double值
+                editor.putFloat("maxPrice", (float) maxPrice); // 因此我们将double值转换为float
+
+                // 应用更改
+                editor.apply(); // 使用apply()而不是commit()，因为apply()是异步的且不返回成功状态
+
+
                 getRecordList(category, purity, status, minPrice, maxPrice);
 
             }
@@ -116,6 +138,53 @@ public class ItemListFragment extends Fragment {
 
 
     }
+
+
+    // 弹出排序对话框
+    private void showSortFragment(View view) {
+
+        // 创建并显示筛选弹窗
+        SortDialogFragment sortDialogFragment = new SortDialogFragment();
+
+        // 设置监听器
+        sortDialogFragment.setSortDialogListener(new SortDialogFragment.SortDialogListener(){
+            @Override
+            public void onSortClosed() {
+
+            }
+
+            @Override
+            public void onSortApplied(Integer sortByPurity, Integer sortByWeight) {
+                SharedPreferences preferences = getActivity().getSharedPreferences("FilterPreferences", Context.MODE_PRIVATE);
+                int savedCategoryOld = preferences.getInt("category", -1); // 默认值为-1，表示未选中任何按钮
+
+                String savedPurityOld = preferences.getString("purity", null);
+
+                int saveStatusOld = preferences.getInt("status", -1); // 默认值为-1，表示未选中任何按钮
+                double minPriceOld = preferences.getFloat("minPrice", 0f);
+                double maxPriceOld = preferences.getFloat("maxPrice", 0f);
+
+                getRecordList(savedCategoryOld, savedPurityOld, saveStatusOld, minPriceOld, maxPriceOld);
+
+                sortByPurityNew = sortByPurity;
+                sortByWeightNew = sortByWeight;
+
+            }
+
+
+        });
+
+        sortDialogFragment.show(getChildFragmentManager(), "filterDialog");
+
+    }
+
+
+
+
+
+
+
+
 
     private void dumpToSearchFragment(View view) {
         // jump to item detail
@@ -132,7 +201,7 @@ public class ItemListFragment extends Fragment {
     }
 
 
-    private void getRecordList(int category, @Nullable String purity, int status, double minPrice, double maxPrice ){
+    private void getRecordList(int category, @Nullable String purity, int status, double minPrice, double maxPrice){
 
         ProductFilter productFilter = new ProductFilter();
         if (category != -1){
@@ -172,6 +241,34 @@ public class ItemListFragment extends Fragment {
         JSONArray recordsArray = jsonObject.getJSONArray("data");
 
         List<ProductUser> recordsListUse = recordsArray.toJavaList(ProductUser.class);
+
+        // 定义一个Comparator，它可以处理null值，将它们视为最小值
+        Comparator<ProductUser> weightComparator = Comparator
+                .comparing(ProductUser::getProductWeight, Comparator.nullsFirst(Double::compare));
+
+        if (sortByWeightNew == 1) {
+            // 降序排序，如果需要将null视为最大值则使用nullsLast
+            recordsListUse.sort(weightComparator.reversed());
+        } else if (sortByWeightNew == 0) {
+            // 升序排序，如果需要将null视为最小值则使用nullsFirst
+            recordsListUse.sort(weightComparator);
+        }
+
+
+        // 定义一个Comparator，它可以处理null值，将它们视为最小值
+        Comparator<ProductUser> TimeComparator = Comparator
+                .comparing(ProductUser::getProductCreateTime, Comparator.nullsFirst(Long::compare));
+
+        if (sortByPurityNew == 1) {
+            // 降序排序，如果需要将null视为最大值则使用nullsLast
+            recordsListUse.sort(TimeComparator.reversed());
+        } else if (sortByPurityNew == 0) {
+            // 升序排序，如果需要将null视为最小值则使用nullsFirst
+            recordsListUse.sort(TimeComparator);
+        }
+
+
+
 
         if (code == 200) {
 

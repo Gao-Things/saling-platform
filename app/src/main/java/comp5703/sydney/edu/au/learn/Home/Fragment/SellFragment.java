@@ -174,7 +174,7 @@ public class SellFragment extends Fragment {
                     autoCompleteTextView.setHint("Please select gold type");
 
 
-                    String[] items = new String[] {"24K", "21K", "18K"};
+                    String[] items = new String[] {"24K","22K", "21K", "18K"};
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(
                             getContext(),
                             R.layout.my_dropdown_item,  // 使用自定义布局
@@ -187,7 +187,7 @@ public class SellFragment extends Fragment {
                     autoCompleteTextView.setHint("Please select silver type");
 
 
-                    String[] items = new String[] {"999", "925", "alloy"};
+                    String[] items = new String[] {"999", "995", "925", "990"};
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(
                             getContext(),
                             R.layout.my_dropdown_item,  // 使用自定义布局

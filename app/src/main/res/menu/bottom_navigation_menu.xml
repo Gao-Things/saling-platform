@@ -9,8 +9,8 @@
         android:title="Sell"
         android:icon="@drawable/img_9" />
     <item
-        android:id="@+id/navigation_notifications"
-        android:title="Notifications"
+        android:id="@+id/navigation_messages"
+        android:title="Messages"
         android:icon="@drawable/ic_baseline_notifications_active_24" />
     <item
         android:id="@+id/profile"

@@ -247,7 +247,7 @@
                             android:layout_weight="1"
                             android:gravity="end"
                             android:text="8/7"
-                            android:textColor="@color/red"
+                            android:textColor="@color/darkGreen"
                             android:textSize="17sp"
                             android:textStyle="bold" />
 
