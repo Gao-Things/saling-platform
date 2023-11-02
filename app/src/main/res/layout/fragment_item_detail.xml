@@ -272,40 +272,47 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
+
+
         <LinearLayout
             android:id="@+id/offerHistory"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="13dp"
+            android:visibility="gone"
             android:layout_marginTop="10dp"
-            android:orientation="horizontal"
-            android:visibility="gone">
+            android:orientation="vertical"
+           >
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Offered History Price:"
-                android:textColor="@color/textColorSecondary"
-                android:textSize="22sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="22sp"
-                android:text="$"
+                android:text="Your offer History:"
                 android:textColor="@color/darkGreen"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textSize="22sp" />
 
             <TextView
                 android:id="@+id/offeredPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="3dp"
+                android:paddingStart="5dp"
+                android:layout_marginTop="5dp"
                 android:text="650"
-                android:textColor="@color/darkGreen"
-                android:textSize="22sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/offerHistoryTime"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_height="wrap_content"
+                android:text="offer time"
+                android:paddingStart="5dp"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
 
         </LinearLayout>
 

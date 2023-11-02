@@ -16,6 +16,7 @@
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/userAvatar"
             android:layout_width="50dp"
+            android:scaleType="centerCrop"
             android:layout_height="50dp"
             android:src="@drawable/avatar3"
             app:shapeAppearanceOverlay="@style/CircleImageViewStyle"/>

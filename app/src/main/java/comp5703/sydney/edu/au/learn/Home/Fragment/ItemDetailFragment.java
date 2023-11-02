@@ -72,6 +72,7 @@ import comp5703.sydney.edu.au.learn.VO.productOfferParameter;
 import comp5703.sydney.edu.au.learn.VO.productParameter;
 import comp5703.sydney.edu.au.learn.VO.userIdVO;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
+import comp5703.sydney.edu.au.learn.util.TimeCalculateUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -98,6 +99,8 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
     private LinearLayout offerHistory;
 
     private TextView offeredPrice;
+
+    private TextView offerHistoryTime;
 
     private Integer productId;
 
@@ -133,6 +136,7 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
 
 
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -162,6 +166,8 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
         offeredPrice = view.findViewById(R.id.offeredPrice);
         sellerGetOfferBtn = view.findViewById(R.id.sellerGetOfferBtn);
         contactSellerBtn = view.findViewById(R.id.contactSellerBtn);
+
+        offerHistoryTime = view.findViewById(R.id.offerHistoryTime);
 
 
         // 设置商品基础信息
@@ -517,7 +523,10 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
                         public void run() {
                             // 如果后端返回的不为空值就更新历史记录
                             offerHistory.setVisibility(View.VISIBLE);
-                            offeredPrice.setText(Double.toString(offer.getPrice()));
+
+                            // TODO 加上上一次offer的时间
+                            offeredPrice.setText("Your Offered Price -- " + offer.getPrice());
+                            offerHistoryTime.setText("Offered Time -- " + TimeCalculateUtil.getTimeElapsed(offer.getTimestamp()));
                         }
                     });
                 }

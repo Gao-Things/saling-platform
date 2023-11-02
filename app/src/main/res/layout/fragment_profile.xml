@@ -63,7 +63,7 @@
                 android:layout_gravity="center"
                 android:scaleType="centerCrop"
                 android:src="@drawable/avatar3"
-                app:shapeAppearanceOverlay="@style/CircleImageViewStyle"/>
+                app:shapeAppearanceOverlay="@style/CircleImageViewStyle" />
 
             <LinearLayout
                 android:layout_width="wrap_content"

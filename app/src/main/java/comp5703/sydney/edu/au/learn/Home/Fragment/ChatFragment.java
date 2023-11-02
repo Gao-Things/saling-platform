@@ -40,6 +40,7 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -400,18 +401,36 @@ public class ChatFragment extends Fragment {
 
     }
 
-    private String formatTimeStamp(Long currentTimeMillis){
+    private String formatTimeStamp(Long currentTimeMillis) {
+        // 获取当前时间
+        Calendar now = Calendar.getInstance();
 
-        // 创建一个 Date 对象
+        // 重置当前时间到今天的凌晨 0 点，即当天日期的开始
+        now.set(Calendar.HOUR_OF_DAY, 0);
+        now.set(Calendar.MINUTE, 0);
+        now.set(Calendar.SECOND, 0);
+        now.set(Calendar.MILLISECOND, 0);
+
+        // 创建要格式化的日期对象
         Date date = new Date(currentTimeMillis);
 
-        // 使用 SimpleDateFormat 来格式化日期为12小时制
-        SimpleDateFormat sdf = new SimpleDateFormat("h:mm a", Locale.US);
-        String formattedTime = sdf.format(date);
+        // 创建 SimpleDateFormat 对象
+        SimpleDateFormat sdf;
 
-        return formattedTime;
+        // 如果时间戳是今天凌晨之前的，即昨天或更早
+        if (date.before(now.getTime())) {
+            // 显示日期和时间，不包含年份
+            sdf = new SimpleDateFormat("MMM dd, h:mm a", Locale.US);
+        } else {
+            // 否则，只显示12小时制的时间
+            sdf = new SimpleDateFormat("h:mm a", Locale.US);
+        }
 
+        // 返回格式化的时间字符串
+        return sdf.format(date);
     }
+
+
 
     private void initWebSocket(Integer userId) {
         Request request = new Request.Builder()
