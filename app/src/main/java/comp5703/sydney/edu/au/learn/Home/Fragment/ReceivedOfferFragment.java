@@ -314,7 +314,7 @@ public class ReceivedOfferFragment extends Fragment {
     public void onResume() {
         super.onResume();
         // 当Fragment重新变为活动状态时更新Toolbar
-        ((HomeUseActivity) getActivity()).updateToolbar(true, "Home");
+        ((HomeUseActivity) getActivity()).updateToolbar(false, "Home");
     }
 
 }

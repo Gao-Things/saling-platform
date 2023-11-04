@@ -364,7 +364,11 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
                         @Override
                         public void run() {
                             offerHistory.setVisibility(View.VISIBLE);
-                            offeredPrice.setText(setPrice.getText().toString());
+
+                            // TODO 加上上一次offer的时间
+                            offeredPrice.setText("Offered Price: " + setPrice.getText().toString());
+                            offerHistoryTime.setText("Offered Time: " + TimeCalculateUtil.getTimeElapsed(System.currentTimeMillis()));
+
                             Snackbar.make(view, "Make offer successful!", Snackbar.LENGTH_LONG)
                                     .setAction("Action", null).show();
 
@@ -526,8 +530,8 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
                             offerHistory.setVisibility(View.VISIBLE);
 
                             // TODO 加上上一次offer的时间
-                            offeredPrice.setText("Your Offered Price -- " + offer.getPrice());
-                            offerHistoryTime.setText("Offered Time -- " + TimeCalculateUtil.getTimeElapsed(offer.getTimestamp()));
+                            offeredPrice.setText("Offered Price: " + offer.getPrice());
+                            offerHistoryTime.setText("Offered Time: " + TimeCalculateUtil.getTimeElapsed(offer.getTimestamp()));
                         }
                     });
                 }

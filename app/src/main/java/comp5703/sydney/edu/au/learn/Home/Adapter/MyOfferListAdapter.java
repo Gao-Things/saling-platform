@@ -100,7 +100,7 @@ public class MyOfferListAdapter extends RecyclerView.Adapter<MyOfferListAdapter.
                 holder.offerStatus.setText("Rejected");
                 holder.offerStatus.setTextColor(mcontext.getResources().getColor(R.color.red));
                 holder.resentButton.setVisibility(View.VISIBLE);
-                holder.cancelClick.setVisibility(View.VISIBLE);
+                holder.cancelClick.setVisibility(View.INVISIBLE);
 
             }
 
