@@ -131,8 +131,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onClick(View view) {
-//        // 测试。直接放行
-//        startActivity(new Intent(MainActivity.this, HomeUseActivity.class));
+
         boolean isValid = FormValidator.validateEmail(inputLayoutEmail, userName.getText().toString())
                 & FormValidator.validatePassword(inputLayoutPassword, password.getText().toString());
 
@@ -250,10 +249,9 @@ public class MainActivity extends AppCompatActivity {
         String responseBody = response.body().string();
         JSONObject jsonObject = JSONObject.parseObject(responseBody);
         int code = jsonObject.getIntValue("code");
-        JSONObject data = jsonObject.getJSONObject("data");
-        Object dataValue = jsonObject.get("data");
 
         if (code == 200) {
+            JSONObject data = jsonObject.getJSONObject("data");
             String token = jsonObject.getString("jwttoken"); // 根据实际 JSON 键获取 Token
             System.out.println(jsonObject);
             // 获取用户id
@@ -270,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
 
             startActivity(new Intent(MainActivity.this, HomeUseActivity.class));
         } else {
-            showErrorDialog("Login failed", dataValue.toString(), MainActivity.this);
+            showErrorDialog("Login failed", jsonObject.getString("data"), MainActivity.this);
         }
     }
 

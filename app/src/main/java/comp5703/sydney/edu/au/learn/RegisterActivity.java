@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -236,14 +237,13 @@ public class RegisterActivity extends AppCompatActivity {
         String responseBody = response.body().string();
         JSONObject jsonObject = JSONObject.parseObject(responseBody);
         int code = jsonObject.getIntValue("code");
-        Object dataValue = jsonObject.get("data");
 
         if (code == 200) {
             String msg = jsonObject.getString("msg"); // 根据实际 JSON 键获取 Token
             Log.d(TAG, "info: " + msg);
             startActivity(new Intent(RegisterActivity.this, vertifyEmailShow.class));
         } else {
-            System.out.println("wdffffffffffffffffffffffffffffffffffff");
+            showErrorDialog("Register failed", jsonObject.getString("msg"), RegisterActivity.this);
         }
     }
 
@@ -252,6 +252,17 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
 
+    private void showErrorDialog(String title, String Message, Context context) {
+        runOnUiThread(() -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
+            builder.setTitle(title);
+            builder.setMessage(Message);
+            builder.setPositiveButton("OK", (dialog, which) -> {
+                // 处理确定按钮点击事件
+            });
+            builder.create().show();
+        });
+    }
 
     private String getFormattedHtml(String content) {
         return "<html><head>"
