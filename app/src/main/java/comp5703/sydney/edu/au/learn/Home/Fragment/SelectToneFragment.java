@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
 
+import comp5703.sydney.edu.au.learn.Home.HomeUseActivity;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
 
@@ -173,6 +174,15 @@ public class SelectToneFragment extends Fragment {
             NetworkUtils.updateUserSetting(sharedPreferences);
 
         }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // 当Fragment重新变为活动状态时更新Toolbar
+        ((HomeUseActivity) getActivity()).updateToolbar(false, "setting");
+    }
+
 
 
 }

@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import comp5703.sydney.edu.au.learn.Common.DialogFragment;
 import comp5703.sydney.edu.au.learn.DTO.ProductUser;
@@ -34,6 +35,7 @@ import comp5703.sydney.edu.au.learn.DTO.Record;
 import comp5703.sydney.edu.au.learn.Home.Adapter.ItemListAdapter;
 import comp5703.sydney.edu.au.learn.Home.DialogFragment.FilterDialogFragment;
 import comp5703.sydney.edu.au.learn.Home.DialogFragment.SortDialogFragment;
+import comp5703.sydney.edu.au.learn.Home.HomeUseActivity;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.ProductFilter;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
@@ -198,6 +200,9 @@ public class ItemListFragment extends Fragment{
         transaction.replace(R.id.fl_container, searchFragment); // R.id.fragment_container 是用于放置 Fragment 的容器
         transaction.addToBackStack(null); // 将 FragmentA 添加到返回栈，以便用户可以返回到它
         transaction.commitAllowingStateLoss();
+
+        // 更新Activity中的Toolbar
+        ((HomeUseActivity) Objects.requireNonNull(getActivity())).updateToolbar(true, "Search");
     }
 
 
@@ -313,6 +318,9 @@ public class ItemListFragment extends Fragment{
             transaction.addToBackStack(null); // 将 FragmentA 添加到返回栈，以便用户可以返回到它
             transaction.commitAllowingStateLoss();
 
+            // 更新Activity中的Toolbar
+            ((HomeUseActivity) Objects.requireNonNull(getActivity())).updateToolbar(true, "Product Detail");
+
         }
     };
 
@@ -322,6 +330,15 @@ public class ItemListFragment extends Fragment{
         itemRecyclerView = null;
         searchBox = null;
     }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // 当Fragment重新变为活动状态时更新Toolbar
+        ((HomeUseActivity) getActivity()).updateToolbar(true, "Home");
+    }
+
 
 
 }

@@ -323,4 +323,12 @@ public class MyOfferFragment extends Fragment {
             Log.e(TAG, "IOException: " + e.getMessage());
         }
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // 当Fragment重新变为活动状态时更新Toolbar
+        ((HomeUseActivity) getActivity()).updateToolbar(false, "Home");
+    }
+
 }

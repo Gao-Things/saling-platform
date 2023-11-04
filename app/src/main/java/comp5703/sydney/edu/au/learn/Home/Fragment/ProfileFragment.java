@@ -45,6 +45,7 @@ import java.util.Date;
 import java.util.Objects;
 
 import comp5703.sydney.edu.au.learn.DTO.User;
+import comp5703.sydney.edu.au.learn.Home.HomeUseActivity;
 import comp5703.sydney.edu.au.learn.MainActivity;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.userIdVO;
@@ -222,6 +223,8 @@ public class ProfileFragment extends Fragment {
         transaction.replace(R.id.fl_container, fragmentB); // R.id.fragment_container 是用于放置 Fragment 的容器
         transaction.addToBackStack(null); // 将 FragmentA 添加到返回栈，以便用户可以返回到它
         transaction.commit();
+        // 更新Activity中的Toolbar
+        ((HomeUseActivity) Objects.requireNonNull(getActivity())).updateToolbar(true, "Message List");
     }
 
     private void dumpToOfferContainer(View view) {

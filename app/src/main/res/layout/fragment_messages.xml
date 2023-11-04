@@ -4,40 +4,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_height="match_parent">
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/simple_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:paddingStart="0dp"
-        android:paddingEnd="0dp"
-        android:background="@color/backgroundGreen"
-        app:titleTextColor="@color/black">
-
-        <ImageView
-            android:id="@+id/header_logo"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|top"
-            android:paddingTop="13dp"
-            android:paddingBottom="13dp"
-            android:src="@drawable/img_13" />
-        <TextView
-            android:id="@+id/toolbar_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Home"
-            android:textSize="18sp"
-            android:textColor="@color/black"
-            android:textStyle="bold" />
-        <ImageView
-            android:id="@+id/toolbar_logo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|end"
-            android:layout_marginRight="10dp"
-            android:src="@drawable/ic_baseline_sell_24" />
-    </androidx.appcompat.widget.Toolbar>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messageListRecyclerView"
         android:layout_marginTop="20dp"

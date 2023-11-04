@@ -10,10 +10,13 @@ import static comp5703.sydney.edu.au.learn.util.NetworkUtils.websocketUrl;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -54,6 +58,7 @@ import comp5703.sydney.edu.au.learn.DTO.MessageFormat;
 import comp5703.sydney.edu.au.learn.DTO.MessageHistory;
 import comp5703.sydney.edu.au.learn.DTO.User;
 import comp5703.sydney.edu.au.learn.Home.Adapter.ChatAdapter;
+import comp5703.sydney.edu.au.learn.Home.HomeUseActivity;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.ReceivedMessage;
 import comp5703.sydney.edu.au.learn.VO.SendMessage;
@@ -94,6 +99,8 @@ public class ChatFragment extends Fragment {
     SharedPreferences sharedPreferences;
 
     private ImageView backClick;
+
+    private ItemDetailFragment itemDetailFragment;
 
     @Nullable
     @Override
@@ -140,6 +147,33 @@ public class ChatFragment extends Fragment {
         sentBtn = view.findViewById(R.id.sentBtn);
         sendContent = view.findViewById(R.id.myEditText);
 
+        sentBtn.setEnabled(false); // 禁用按钮
+
+        sendContent.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // 这里不需要实现任何代码
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // 文本改变时的操作
+                if (s.toString().trim().length() > 0) {
+                    sentBtn.setEnabled(true); // 启用按钮
+                } else {
+                    sentBtn.setEnabled(false); // 禁用按钮
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // 这里也不需要实现任何代码
+            }
+        });
+
+
+
+
         sendContent.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -178,7 +212,33 @@ public class ChatFragment extends Fragment {
 
 
         // 创建并设置RecyclerView的Adapter
-        chatAdapter = new ChatAdapter(getContext(),new ArrayList<Message>());
+        chatAdapter = new ChatAdapter(getContext(), new ArrayList<Message>(), new ChatAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Integer productId) {
+                /**
+                 * 跳转去商品详情页面
+                 */
+                // jump to item detail
+                if (itemDetailFragment == null){
+                    itemDetailFragment = new ItemDetailFragment();
+                }
+                // 准备要传递的数据
+                Bundle args = new Bundle();
+                args.putInt("productId", productId); // 这里的 "key" 是传递数据的键名，"value" 是要传递的值
+                itemDetailFragment.setArguments(args);
+
+                // 执行 Fragment 跳转
+                assert getFragmentManager() != null;
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.replace(R.id.fl_container, itemDetailFragment); // R.id.fragment_container 是用于放置 Fragment 的容器
+                transaction.addToBackStack(null); // 将 FragmentA 添加到返回栈，以便用户可以返回到它
+                transaction.commitAllowingStateLoss();
+
+                // 更新Activity中的Toolbar
+                ((HomeUseActivity) Objects.requireNonNull(getActivity())).updateToolbar(true, "Product Detail");
+            }
+        });
+
         chatRecyclerView.setAdapter(chatAdapter);
 
 
@@ -323,7 +383,13 @@ public class ChatFragment extends Fragment {
                         if (messageFormat.getCardDescription() ==null){
                             messageFormat.setCardDescription("No Description by seller");
                         }
-                        message = new Message(messageFormat.getCardTitle(),messageFormat.getCardDescription(), messageHistory.getFromUserAvatar(), messageFormat.getCardImageUrl(),  SENTCARD, formatTimeStamp(messageHistory.getPostTime()));
+                        message = new Message(messageFormat.getCardTitle(),
+                                messageFormat.getCardDescription(),
+                                messageHistory.getFromUserAvatar(),
+                                messageFormat.getCardImageUrl(),
+                                SENTCARD,
+                                formatTimeStamp(messageHistory.getPostTime()),
+                                messageFormat.getProductId());
                         messageList.add(message);
                     }
 
@@ -338,7 +404,13 @@ public class ChatFragment extends Fragment {
                         if (messageFormat.getCardDescription() ==null){
                             messageFormat.setCardDescription("No Description by seller");
                         }
-                        message = new Message(messageFormat.getCardTitle(),messageFormat.getCardDescription(), messageHistory.getFromUserAvatar(), messageFormat.getCardImageUrl(),  RECEIVEDCARD, formatTimeStamp(messageHistory.getPostTime()));
+                        message = new Message(messageFormat.getCardTitle(),
+                                messageFormat.getCardDescription(),
+                                messageHistory.getFromUserAvatar(),
+                                messageFormat.getCardImageUrl(),
+                                RECEIVEDCARD,
+                                formatTimeStamp(messageHistory.getPostTime()),
+                                messageFormat.getProductId());
                         messageList.add(message);
                     }
 
@@ -489,7 +561,13 @@ public class ChatFragment extends Fragment {
                                 if (messageFormat.getCardDescription() == null){
                                     messageFormat.setCardDescription("The seller has no description");
                                 }
-                                newSentMessage = new Message(messageFormat.getCardTitle(), messageFormat.getCardDescription(),remoteUserAvatarUrl,messageFormat.getCardImageUrl() , RECEIVEDCARD, formatTimeStamp(System.currentTimeMillis()));
+                                newSentMessage = new Message(messageFormat.getCardTitle(),
+                                        messageFormat.getCardDescription(),
+                                        remoteUserAvatarUrl,
+                                        messageFormat.getCardImageUrl(),
+                                        RECEIVEDCARD,
+                                        formatTimeStamp(System.currentTimeMillis()),
+                                        messageFormat.getProductId());
                             }
 
                             // 更新Adapter的数据
@@ -631,6 +709,16 @@ public class ChatFragment extends Fragment {
         bottomNavigationView.setVisibility(View.VISIBLE);
 
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // 当Fragment重新变为活动状态时更新Toolbar
+        ((HomeUseActivity) getActivity()).updateToolbar(false, "message");
+    }
+
+
+
 
 
 }

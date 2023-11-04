@@ -42,11 +42,17 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class HomeUseActivity extends AppCompatActivity implements ItemDetailFragment.IOMessageClick{
+public class HomeUseActivity extends AppCompatActivity  implements ItemDetailFragment.IOMessageClick, BottomNavigationListener{
     private static final int REQUEST_CODE_OVERLAY_PERMISSION = 123;
     private Integer userId;
     private String token;
     SharedPreferences sharedPreferences;
+
+    Toolbar toolbar;
+    TextView toolbar_title;
+
+    private BottomNavigationView bottomNavigationView;
+
     @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,15 +65,15 @@ public class HomeUseActivity extends AppCompatActivity implements ItemDetailFrag
         userId = sharedPreferences.getInt("userId", 9999);
         token = sharedPreferences.getString("token", null);
 
-        Toolbar toolbar = findViewById(R.id.simple_toolbar);
+        toolbar = findViewById(R.id.simple_toolbar);
 
 
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);  // 禁用默认的标题
-        TextView toolbar_title = findViewById(R.id.toolbar_title);
+        toolbar_title = findViewById(R.id.toolbar_title);
 
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
@@ -82,7 +88,8 @@ public class HomeUseActivity extends AppCompatActivity implements ItemDetailFrag
                     return true;
                 case R.id.navigation_messages:
                     loadFragment(new MessagesFragment());
-                    toolbar.setVisibility(View.GONE); // 显示Toolbar
+                    toolbar_title.setText("Message List");  // 使用自定义标题
+                    toolbar.setVisibility(View.VISIBLE); // 显示Toolbar
                     return true;
                 case R.id.profile:
                     loadFragment(new ProfileFragment());
@@ -254,4 +261,19 @@ public class HomeUseActivity extends AppCompatActivity implements ItemDetailFrag
             }
         }, delayMillis);
     }
+
+    @Override
+    public void onBottomNavigationItemSelected(int itemId) {
+        bottomNavigationView.setSelectedItemId(itemId);
+    }
+
+    public void updateToolbar(boolean isVisible, String title) {
+        if (isVisible) {
+            toolbar.setVisibility(View.VISIBLE);
+            toolbar_title.setText(title);
+        } else {
+            toolbar.setVisibility(View.GONE);
+        }
+    }
+
 }

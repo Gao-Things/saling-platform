@@ -690,6 +690,11 @@ public class SellFragment extends Fragment {
         Log.e(TAG, "Exception: " + e.getMessage());
     }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        // 当Fragment重新变为活动状态时更新Toolbar
+        ((HomeUseActivity) getActivity()).updateToolbar(true, "Selling An Item");
+    }
 
 }

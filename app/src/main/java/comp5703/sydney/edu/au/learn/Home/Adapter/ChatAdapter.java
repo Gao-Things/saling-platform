@@ -28,8 +28,12 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int SENT_CARD = 2;
     private static final int RECEIVED_CARD = 3;
     private List<Message> messages;
+    private OnItemClickListener listener;
 
-    public ChatAdapter(Context context, List<Message> messages) {
+    // Adapter的构造函数
+
+    public ChatAdapter(Context context, List<Message> messages, OnItemClickListener listener) {
+        this.listener = listener;
         this.messages = messages;
     }
 
@@ -159,7 +163,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         TextView cardDescription;
         ImageView userAvatar;
         TextView tvTime;
-
+        // 添加成员变量来存储当前消息或其产品ID
+        private Integer currentProductId;
         public SentCardViewHolder(View itemView) {
             super(itemView);
             // Initialize your card view components
@@ -168,10 +173,22 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             cardImage = itemView.findViewById(R.id.tvCardImage);
             userAvatar = itemView.findViewById(R.id.userAvatar);
             tvTime = itemView.findViewById(R.id.tvTime);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null && getAdapterPosition() != RecyclerView.NO_POSITION) {
+                        listener.onItemClick(currentProductId);
+                    }
+                }
+            });
         }
 
         public void bind(Message message) {
             // Bind your card data
+            // 在绑定时更新成员变量
+            currentProductId = message.getProductId();
+
             cardTitle.setText(message.getCardTitle());
             cardDescription.setText(message.getCardDescription());
 
@@ -188,6 +205,16 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     .into(userAvatar);
 
             tvTime.setText(message.getPostTime());
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null && getAdapterPosition() != RecyclerView.NO_POSITION) {
+                        listener.onItemClick(message.getProductId());
+                    }
+                }
+            });
+
 
         }
     }
@@ -200,6 +227,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         ImageView userAvatar;
         TextView tvTime;
 
+        // 添加成员变量来存储当前消息或其产品ID
+        private Integer currentProductId;
+
         public ReceivedCardViewHolder(View itemView) {
             super(itemView);
             // Initialize your card view components
@@ -209,10 +239,22 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             userAvatar = itemView.findViewById(R.id.userAvatar);
             tvTime = itemView.findViewById(R.id.tvTime);
 
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null && getAdapterPosition() != RecyclerView.NO_POSITION) {
+                        listener.onItemClick(currentProductId);
+                    }
+                }
+            });
+
         }
 
         public void bind(Message message) {
             // Bind your card data
+            // 在绑定时更新成员变量
+            currentProductId = message.getProductId();
+
             cardTitle.setText(message.getCardTitle());
             cardDescription.setText(message.getCardDescription());
 
@@ -231,7 +273,13 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             tvTime.setText(message.getPostTime());
 
 
+
         }
+    }
+
+
+    public interface OnItemClickListener {
+        void onItemClick(Integer productId);
     }
 
 

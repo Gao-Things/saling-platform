@@ -11,6 +11,7 @@ public class Message {
     MessageType type;
 
     // 卡片专用字段
+    private Integer productId;
     private String cardImageUrl;
     private String cardTitle;
     private String cardDescription;
@@ -28,15 +29,29 @@ public class Message {
 
 
     // 构造函数用于卡片消息
-    public Message(String cardTitle, String cardDescription,String avatarUrl, String cardImageUrl, MessageType type, String postTime) {
+    public Message(String cardTitle,
+                   String cardDescription,
+                   String avatarUrl,
+                   String cardImageUrl,
+                   MessageType type,
+                   String postTime,
+                   Integer productId) {
         this.cardTitle = cardTitle;
         this.cardDescription = cardDescription;
         this.cardImageUrl = cardImageUrl;
         this.type = type;
         this.postTime = postTime;
         this.avatarUrl = avatarUrl;
+        this.productId = productId;
     }
 
+    public Integer getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Integer productId) {
+        this.productId = productId;
+    }
 
     public String getAvatarUrl() {
         return avatarUrl;

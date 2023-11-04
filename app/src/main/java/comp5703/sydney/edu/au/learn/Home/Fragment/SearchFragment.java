@@ -43,6 +43,7 @@ import comp5703.sydney.edu.au.learn.DTO.Search;
 import comp5703.sydney.edu.au.learn.DTO.TopSearch;
 import comp5703.sydney.edu.au.learn.Home.Adapter.SearchResultListAdapter;
 import comp5703.sydney.edu.au.learn.Home.Adapter.TopSearchListAdapter;
+import comp5703.sydney.edu.au.learn.Home.HomeUseActivity;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.SearchHistoryParameter;
 import comp5703.sydney.edu.au.learn.VO.userIdVO;
@@ -522,6 +523,14 @@ public class SearchFragment extends Fragment {
             }
         });
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // 当Fragment重新变为活动状态时更新Toolbar
+        ((HomeUseActivity) getActivity()).updateToolbar(true, "Search");
+    }
+
 
 
 }

@@ -34,6 +34,7 @@ import java.util.Objects;
 
 import comp5703.sydney.edu.au.learn.DTO.UserMessage;
 import comp5703.sydney.edu.au.learn.Home.Adapter.MessageListAdapter;
+import comp5703.sydney.edu.au.learn.Home.HomeUseActivity;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.userIdVO;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
@@ -228,5 +229,13 @@ public class MessagesFragment extends Fragment {
 
         }
     };
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // 当Fragment重新变为活动状态时更新Toolbar
+        ((HomeUseActivity) getActivity()).updateToolbar(true, "Message List");
+    }
+
 
 }

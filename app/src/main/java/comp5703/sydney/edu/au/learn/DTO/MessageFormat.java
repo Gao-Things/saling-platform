@@ -9,6 +9,9 @@ public class MessageFormat {
 
     private String messageText;
 
+
+    private Integer productId;
+
     private String cardTitle;
 
     private String cardImageUrl;
@@ -23,12 +26,26 @@ public class MessageFormat {
         this.messageText = messageText;
     }
 
-    public MessageFormat(Integer messageType, String cardTitle, String cardImageUrl, String cardDescription) {
+    public MessageFormat(Integer messageType,
+                         String cardTitle,
+                         String cardImageUrl,
+                         String cardDescription,
+                         Integer productId) {
+
         this.messageType = messageType;
 
         this.cardTitle = cardTitle;
         this.cardImageUrl = cardImageUrl;
         this.cardDescription = cardDescription;
+        this.productId = productId;
+    }
+
+    public Integer getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Integer productId) {
+        this.productId = productId;
     }
 
     public Integer getMessageType() {

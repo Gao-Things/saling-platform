@@ -206,5 +206,10 @@ public class SettingFragment extends Fragment {
         transaction.commit();
     }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        // 当Fragment重新变为活动状态时更新Toolbar
+        ((HomeUseActivity) getActivity()).updateToolbar(false, "setting");
+    }
 }

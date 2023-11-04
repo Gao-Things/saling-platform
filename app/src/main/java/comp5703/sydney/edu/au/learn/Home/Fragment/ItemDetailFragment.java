@@ -64,6 +64,7 @@ import comp5703.sydney.edu.au.learn.DTO.Offer;
 import comp5703.sydney.edu.au.learn.DTO.Product;
 import comp5703.sydney.edu.au.learn.DTO.UserSetting;
 import comp5703.sydney.edu.au.learn.Home.Adapter.ProductOfferListAdapter;
+import comp5703.sydney.edu.au.learn.Home.HomeUseActivity;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.makeAnOfferParameter;
 import comp5703.sydney.edu.au.learn.VO.modifyProductStatusParameter;
@@ -759,6 +760,13 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
         Log.e(TAG, "Exception: " + e.getMessage());
     }
 
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // 当Fragment重新变为活动状态时更新Toolbar
+        ((HomeUseActivity) getActivity()).updateToolbar(true, "Product Detail");
+    }
 
 
 }

@@ -14,6 +14,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="7dp"
+            android:gravity="end"
             android:orientation="vertical">
 
             <TextView
@@ -24,7 +25,7 @@
                 android:textColor="#FFFFFF"
                 android:maxWidth="200dp"
                 android:textSize="18sp"
-                android:text="xxxxxxxxccccasdasxx"
+                android:text="xsaxsaxsaxsaxascscascascxx"
                 android:lineSpacingExtra="2dp"
                 android:padding="7dp" />
 
@@ -36,7 +37,6 @@
                 android:textColor="@color/textColorBlackGray"
                 android:textSize="12sp"
                 android:text="6:03 PM"
-                android:paddingEnd="10dp"
                 android:paddingBottom="5dp" />
         </LinearLayout>
 
