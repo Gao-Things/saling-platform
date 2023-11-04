@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:background="@color/white"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:layout_marginHorizontal="10dp"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -14,17 +16,18 @@
 
     <ImageView
         android:id="@+id/guide_image"
-        android:layout_margin="20dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/reject1" />
+        android:layout_marginTop="10dp"
+        android:layout_height="250dp"
+        android:src="@drawable/reject1"
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_low_price"
         android:layout_width="match_parent"
         android:layout_marginHorizontal="20dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:text="Not satisfied with the price" />
 
     <androidx.appcompat.widget.AppCompatButton
@@ -47,7 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="20dp"
-        android:hint="custom_reason" />
+        android:hint="custom reason" />
 
     <LinearLayout
         android:layout_width="match_parent"

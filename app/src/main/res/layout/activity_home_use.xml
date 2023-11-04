@@ -18,9 +18,8 @@
             android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|top"
-            android:paddingTop="13dp"
-            android:paddingBottom="13dp"
-            android:src="@drawable/img_13" />
+            android:paddingVertical="16dp"
+            android:src="@drawable/logo2" />
         <TextView
             android:id="@+id/toolbar_title"
             android:layout_width="wrap_content"
@@ -32,11 +31,12 @@
             android:textStyle="bold" />
         <ImageView
             android:id="@+id/toolbar_logo"
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|end"
+            android:paddingVertical="17dp"
             android:layout_marginRight="10dp"
-            android:src="@drawable/ic_baseline_sell_24" />
+            android:src="@drawable/sell_top" />
     </androidx.appcompat.widget.Toolbar>
 
 

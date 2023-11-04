@@ -42,6 +42,8 @@ public class forgotPassword extends AppCompatActivity {
     private Handler handler = new Handler(Looper.getMainLooper());
     private Runnable runnable;
     public Button sendBtn;
+
+    private TextView hiddenMention;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +56,7 @@ public class forgotPassword extends AppCompatActivity {
         progressText = findViewById(R.id.progressText);
 
         sendBtn = findViewById(R.id.btnSend);
-
+        hiddenMention = findViewById(R.id.hiddenMention);
 
         inputLayoutEmail.getEditText().addTextChangedListener(new TextWatcher() {
 
@@ -90,6 +92,11 @@ public class forgotPassword extends AppCompatActivity {
         boolean isValid = FormValidator.validateEmail(inputLayoutEmail, email.getText().toString());
 
         if (isValid) {
+            runOnUiThread(() -> {
+                sendBtn.setEnabled(false);
+                sendBtn.setBackgroundResource(R.drawable.custom_button_background4);
+            });
+
             // 执行提交逻辑
             forgetPassword(email.getText().toString());
 
@@ -99,7 +106,7 @@ public class forgotPassword extends AppCompatActivity {
     private void forgetPassword(String emailAddress){
         EmailAddress emailUse = new EmailAddress();
         emailUse.setEmailAddress(emailAddress);
-        NetworkUtils.postJsonRequest(emailUse, "/user/forgetPassword",null, new Callback() {
+        NetworkUtils.postJsonRequest(emailUse, "/public/forgetPassword",null, new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 handleResponse(response);
@@ -121,12 +128,11 @@ public class forgotPassword extends AppCompatActivity {
         Object dataValue = jsonObject.get("data");
 
         if (code == 200) {
+
             runOnUiThread(() -> {
-                toastUtil.showToast(forgotPassword.this, "The email has been sent");
-                progressBar.setVisibility(View.VISIBLE); // 显示进度条
-                progressText.setVisibility(View.VISIBLE);
+                hiddenMention.setVisibility(View.VISIBLE);
             });
-            polling();
+
         } else {
             showDialog("failed", (String) dataValue);
         }
@@ -144,7 +150,7 @@ public class forgotPassword extends AppCompatActivity {
             @Override
             public void run() {
                 // 在这里执行你想要进行的操作
-                NetworkUtils.getWithParamsRequest(queryParamsUse, "/user/pollingResult",null, new Callback() {
+                NetworkUtils.getWithParamsRequest(queryParamsUse, "/public/pollingResult",null, new Callback() {
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         handleResponse2(response);
@@ -171,9 +177,10 @@ public class forgotPassword extends AppCompatActivity {
 
     private void handleResponse2(Response response) throws IOException {
         String responseBody = response.body().string();
+
+        Log.d("polling", responseBody);
         JSONObject jsonObject = JSONObject.parseObject(responseBody);
         int code = jsonObject.getIntValue("code");
-        Object dataValue = jsonObject.get("data");
 
         if (code == 200) {
             handler.removeCallbacks(runnable);

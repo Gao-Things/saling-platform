@@ -22,6 +22,7 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +37,8 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.IOException;
 
+import comp5703.sydney.edu.au.learn.Common.OnSingleClickListener;
+import comp5703.sydney.edu.au.learn.Home.HomeUseActivity;
 import comp5703.sydney.edu.au.learn.VO.RegisterParameter;
 import comp5703.sydney.edu.au.learn.util.FormValidator;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
@@ -67,6 +70,8 @@ public class RegisterActivity extends AppCompatActivity {
 
     private CheckBox privatePolicyCheckBox;
 
+    private LinearLayout backClick;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,8 +98,14 @@ public class RegisterActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         privatePolicyCheckBox = findViewById(R.id.privatePolicyCheckBox);
+        backClick = findViewById(R.id.backClick);
 
-
+        backClick.setOnClickListener(new OnSingleClickListener() {
+            @Override
+            public void onSingleClick(View v) {
+                startActivity(new Intent(RegisterActivity.this, MainActivity.class));
+            }
+        });
 
         String text1 = "Login now";
         SpannableString spannableString1 = new SpannableString(text1);
@@ -105,6 +116,8 @@ public class RegisterActivity extends AppCompatActivity {
 
         // 添加蓝色字体颜色
         spannableString1.setSpan(new ForegroundColorSpan(Color.parseColor("#006104")), 0, text1.length(), 0);
+
+
 
 
         String text2 = "Terms & Conditions";
@@ -118,6 +131,14 @@ public class RegisterActivity extends AppCompatActivity {
 
         // 将 SpannableString 设置到 TextView
         loginTextView.setText(spannableString1);
+
+        loginTextView.setOnClickListener(new OnSingleClickListener() {
+            @Override
+            public void onSingleClick(View v) {
+                startActivity(new Intent(RegisterActivity.this, MainActivity.class));
+            }
+        });
+
         warningText.setText(spannableString2);
         // 绑定用户隐私策略的按钮
         warningText.setOnClickListener(this::getUserConfirm);

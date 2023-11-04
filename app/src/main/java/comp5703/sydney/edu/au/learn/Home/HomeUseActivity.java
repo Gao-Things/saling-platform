@@ -18,6 +18,7 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONArray;
@@ -59,6 +60,9 @@ public class HomeUseActivity extends AppCompatActivity implements ItemDetailFrag
         token = sharedPreferences.getString("token", null);
 
         Toolbar toolbar = findViewById(R.id.simple_toolbar);
+
+
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);  // 禁用默认的标题
         TextView toolbar_title = findViewById(R.id.toolbar_title);
@@ -88,6 +92,16 @@ public class HomeUseActivity extends AppCompatActivity implements ItemDetailFrag
 
             }
             return false;
+        });
+
+        ImageView headerLogo = findViewById(R.id.toolbar_logo);
+        // 给ImageView设置OnClickListener
+        headerLogo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 设置底部导航栏的选中项为首页
+                bottomNavigationView.setSelectedItemId(R.id.navigation_sell);
+            }
         });
 
         // 默认加载一个Fragment
