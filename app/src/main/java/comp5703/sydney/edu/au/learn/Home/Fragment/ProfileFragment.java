@@ -45,6 +45,7 @@ import java.util.Date;
 import java.util.Objects;
 
 import comp5703.sydney.edu.au.learn.DTO.User;
+import comp5703.sydney.edu.au.learn.Home.ContainerFragment.ProductContainerFragment;
 import comp5703.sydney.edu.au.learn.Home.HomeUseActivity;
 import comp5703.sydney.edu.au.learn.MainActivity;
 import comp5703.sydney.edu.au.learn.R;
@@ -64,6 +65,8 @@ public class ProfileFragment extends Fragment {
     private Integer userId;
 
     private String token;
+
+    private CardView mySellingCardView;
 
     private CardView myOfferCardView;
     
@@ -108,6 +111,8 @@ public class ProfileFragment extends Fragment {
         myOfferCardView = view.findViewById(R.id.myOfferCardView);
         myMessageCardView = view.findViewById(R.id.myMessageCardView);
         settingCardView = view.findViewById(R.id.settingCardView);
+        mySellingCardView = view.findViewById(R.id.mySellingCardView);
+
         logout = view.findViewById(R.id.logout);
         shapeableImageView = view.findViewById(R.id.userAvatar);
 
@@ -120,10 +125,12 @@ public class ProfileFragment extends Fragment {
         settingCardView.setOnClickListener(this::dumpToSetting);
         logout.setOnClickListener(this::logout);
         shapeableImageView.setOnClickListener(this::openCameraClick);
+        mySellingCardView.setOnClickListener(this::dumpToProductContainer);
 
         getUserInfoById();
 
     }
+
 
     private void getUserInfoById() {
         userIdVO userIdVO = new userIdVO();
@@ -225,6 +232,22 @@ public class ProfileFragment extends Fragment {
         transaction.commit();
         // 更新Activity中的Toolbar
         ((HomeUseActivity) Objects.requireNonNull(getActivity())).updateToolbar(true, "Message List");
+    }
+
+    private void dumpToProductContainer(View view) {
+        // 在 FragmentA 中
+        ProductContainerFragment fragmentB = new ProductContainerFragment();
+
+//        // 准备要传递的数据
+//        Bundle args = new Bundle();
+//        args.putString("Category", category); // 这里的 "key" 是你传递数据的键名，"value" 是你要传递的值
+
+        // 执行 Fragment 跳转
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.fl_container, fragmentB); // R.id.fragment_container 是用于放置 Fragment 的容器
+        transaction.addToBackStack(null); // 将 FragmentA 添加到返回栈，以便用户可以返回到它
+        transaction.commit();
+
     }
 
     private void dumpToOfferContainer(View view) {

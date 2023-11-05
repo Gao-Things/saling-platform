@@ -1,6 +1,8 @@
 package comp5703.sydney.edu.au.learn.DTO;
 
 
+import java.util.List;
+
 public class Product {
     private Integer id;
     private String productName;
@@ -26,6 +28,16 @@ public class Product {
     private Integer category;
 
     private int searchCount;
+
+    private List<Offer> offers;
+
+    public List<Offer> getOffers() {
+        return offers;
+    }
+
+    public void setOffers(List<Offer> offers) {
+        this.offers = offers;
+    }
 
     public int getSearchCount() {
         return searchCount;

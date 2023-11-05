@@ -2,6 +2,8 @@ package comp5703.sydney.edu.au.learn.Home.Fragment;
 
 import static android.content.ContentValues.TAG;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -11,14 +13,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -32,34 +33,37 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import comp5703.sydney.edu.au.learn.DTO.UserMessage;
-import comp5703.sydney.edu.au.learn.Home.Adapter.MessageListAdapter;
+import comp5703.sydney.edu.au.learn.DTO.Product;
+import comp5703.sydney.edu.au.learn.Home.Adapter.MyProductListAdapter;
+import comp5703.sydney.edu.au.learn.Home.Adapter.UnavaliableProductListAdapter;
 import comp5703.sydney.edu.au.learn.Home.HomeUseActivity;
 import comp5703.sydney.edu.au.learn.R;
-import comp5703.sydney.edu.au.learn.VO.userIdVO;
+import comp5703.sydney.edu.au.learn.VO.MyProductVO;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class MessagesFragment extends Fragment {
+public class MyProductUnavaliableFragment extends Fragment {
+    private View rootView;
 
-    private MessageListAdapter messageListAdapter;
-    private RecyclerView messageListRecyclerView;
+    private RecyclerView itemRecyclerView;
 
-    private ChatFragment chatFragment;
+    private UnavaliableProductListAdapter unavaliableProductListAdapter;
 
     private Integer userId;
+
     private String token;
 
-    private List<UserMessage> userMessages;
+    private Integer selectOfferId;
+
+    private Fragment itemDetailFragment;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_messages, container, false);
-
-
+        rootView = inflater.inflate(R.layout.fragment_unavaliable_product, container, false);
         // get SharedPreferences instance
         SharedPreferences sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences("comp5703", Context.MODE_PRIVATE);
 
@@ -67,42 +71,24 @@ public class MessagesFragment extends Fragment {
         userId = sharedPreferences.getInt("userId", 9999);
         token = sharedPreferences.getString("token", "null");
 
-        return view;
+        // get offer list from back-end
+        getMyProductList();
+        return rootView;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
-
-        Toolbar toolbar = view.findViewById(R.id.simple_toolbar);
-
-        TextView toolbar_title = view.findViewById(R.id.toolbar_title);
-
-        // 确保 toolbar_title 不是 null
-        if (toolbar_title != null) {
-            toolbar_title.setText("Message List");
-        } else {
-            Log.e("MessagesFragment", "toolbar_title is null");
-        }
-
-
-
-
-
-        messageListRecyclerView = view.findViewById(R.id.messageListRecyclerView);
+        itemRecyclerView = view.findViewById(R.id.list_main);
 
         // 创建并设置RecyclerView的LayoutManager
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        messageListRecyclerView.setLayoutManager(layoutManager);
-
+        itemRecyclerView.setLayoutManager(layoutManager);
 
         // 创建并设置RecyclerView的Adapter
-        messageListAdapter = new MessageListAdapter(getContext(),new ArrayList<UserMessage>(),userId, clickListener);
-        messageListRecyclerView.setAdapter(messageListAdapter);
-
-        getMessageList();
+        unavaliableProductListAdapter = new UnavaliableProductListAdapter(getContext(),new ArrayList<Product>(),clickListener);
+        itemRecyclerView.setAdapter(unavaliableProductListAdapter);
 
 
 
@@ -119,14 +105,14 @@ public class MessagesFragment extends Fragment {
                         .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // 这里写删除数据的代码
-                                messageListAdapter.deleteItem(viewHolder.getAdapterPosition(), token, userId);
+                                unavaliableProductListAdapter.deleteItem(viewHolder.getAdapterPosition(), token, userId);
 
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // 撤消滑动效果
-                                messageListAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
+                                unavaliableProductListAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
                             }
                         })
                         .setCancelable(false);  // 这里设置对话框为不可取消;
@@ -147,17 +133,15 @@ public class MessagesFragment extends Fragment {
             }
         };
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
-        itemTouchHelper.attachToRecyclerView(messageListRecyclerView);
-
+        itemTouchHelper.attachToRecyclerView(itemRecyclerView);
 
 
     }
 
-    // send request to get message list
-    private void getMessageList() {
-        userIdVO userIdVO = new userIdVO();
-        userIdVO.setUserId(userId);
-        NetworkUtils.getWithParamsRequest( userIdVO, "/normal/message/getMessageListByUserId",token, new Callback() {
+    private void getMyProductList(){
+        MyProductVO myProductVO = new MyProductVO(userId, false);
+
+        NetworkUtils.getWithParamsRequest( myProductVO, "/normal/getProductListByUserID", token, new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 handleResponse(response);
@@ -168,74 +152,70 @@ public class MessagesFragment extends Fragment {
                 handleFailure(e);
             }
         });
-
     }
 
-    private void handleFailure(IOException e) {
-    }
 
     private void handleResponse(Response response) throws IOException {
         String responseBody = response.body().string();
         JSONObject jsonObject = JSONObject.parseObject(responseBody);
         int code = jsonObject.getIntValue("code");
 
-        // 提取 "records" 数组并转换为List
-        JSONArray messageArray = jsonObject.getJSONArray("data");
-
-        List<UserMessage> recordsListUse = messageArray.toJavaList(UserMessage.class);
-
         if (code == 200) {
+            // 提取 数组并转换为List
+            JSONArray recordsArray = jsonObject.getJSONArray("data");
 
-            userMessages = recordsListUse;
+            List<Product> ProductList = recordsArray.toJavaList(Product.class);
 
+            System.out.println("这是offer list" +  ProductList);
             // 通知adapter数据更新
             getActivity().runOnUiThread(new Runnable() {
+                @SuppressLint("NotifyDataSetChanged")
                 @Override
                 public void run() {
                     // 更新Adapter的数据
-                    messageListAdapter.setRecordList(userMessages);
+                    unavaliableProductListAdapter.setRecordList(ProductList);
                     // 在UI线程上更新Adapter的数据
-                    messageListAdapter.notifyDataSetChanged();
+                    unavaliableProductListAdapter.notifyDataSetChanged();
                 }
             });
 
-
         } else {
-            Log.d(TAG, "errowwwwwww");
+            Log.d(TAG, "error");
         }
     }
 
 
-    MessageListAdapter.OnItemClickListener clickListener = new MessageListAdapter.OnItemClickListener() {
-        @Override
-        public void onClick(int pos, Integer remoteUserId) {
-            // jump to item detail
-            if (chatFragment == null){
-                chatFragment = new ChatFragment();
-            }
-            // 准备要传递的数据
-            Bundle args = new Bundle();
-            args.putInt("userId", userId);
-            args.putInt("receiverId", remoteUserId); // 这里的 "key" 是传递数据的键名，"value" 是要传递的值
-            args.putString("token", token);
-            chatFragment.setArguments(args);
+    private void handleFailure(IOException e) {
+        Log.e(TAG, "Exception: " + e.getMessage());
+    }
 
-            // 执行 Fragment 跳转
-            assert getFragmentManager() != null;
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            transaction.replace(R.id.fl_container, chatFragment); // R.id.fragment_container 是用于放置 Fragment 的容器
-            transaction.addToBackStack(null); // 将 FragmentA 添加到返回栈，以便用户可以返回到它
-            transaction.commitAllowingStateLoss();
+    UnavaliableProductListAdapter.OnItemClickListener clickListener = (pos, itemId) -> {
+        ItemDetailFragment itemDetailFragment = new ItemDetailFragment();
+        Bundle args = new Bundle();
+        args.putInt("productId", itemId);
+        itemDetailFragment.setArguments(args);
 
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager(); // 使用兼容库的FragmentManager
+        if (fragmentManager != null) {
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.replace(R.id.fl_container, itemDetailFragment);
+            transaction.addToBackStack(null);
+            transaction.commit(); // 如果您了解commitAllowingStateLoss()的风险，可以使用它
+        }
+
+        Activity activity = getActivity();
+        if (activity instanceof HomeUseActivity) {
+            ((HomeUseActivity) activity).updateToolbar(true, "Product Detail");
         }
     };
+
+
 
     @Override
     public void onResume() {
         super.onResume();
         // 当Fragment重新变为活动状态时更新Toolbar
-        ((HomeUseActivity) getActivity()).updateToolbar(true, "Message List");
+        ((HomeUseActivity) getActivity()).updateToolbar(false, "Home");
     }
-
 
 }
