@@ -630,18 +630,23 @@ public class ChatFragment extends Fragment {
         switch (toneChoice) {
             // 获取系统默认的通知音频的 URI
             case "playful":
-                Uri customSound2 = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.meng);
+                Uri customSound2 = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.y831);
                 ringtone = RingtoneManager.getRingtone(getActivity(), customSound2);
                 break;
 
             case "crisp":
-                Uri customSound = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.y831);
+                Uri customSound = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.y1878);
                 ringtone = RingtoneManager.getRingtone(getActivity(), customSound);
                 break;
 
             case "electronic":
-                Uri customSound3 = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.y831);
+                Uri customSound3 = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.y2170);
                 ringtone = RingtoneManager.getRingtone(getActivity(), customSound3);
+                break;
+
+            case "rock":
+                Uri customSound4 = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.y2225);
+                ringtone = RingtoneManager.getRingtone(getActivity(), customSound4);
                 break;
 
             default:

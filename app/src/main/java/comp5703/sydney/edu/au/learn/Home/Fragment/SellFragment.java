@@ -75,6 +75,7 @@ import comp5703.sydney.edu.au.learn.MainActivity;
 import comp5703.sydney.edu.au.learn.R;
 import comp5703.sydney.edu.au.learn.VO.ItemVO;
 import comp5703.sydney.edu.au.learn.VO.productDetailParameter;
+import comp5703.sydney.edu.au.learn.util.FormValidator;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
 import comp5703.sydney.edu.au.learn.util.WeightConverter;
 import okhttp3.Call;
@@ -122,6 +123,8 @@ public class SellFragment extends Fragment {
 
     private String userChooseUnit = "g";
 
+    private TextInputLayout inputLayoutTitle, inputLayoutDescription, inputLayoutWeight, inputLayoutPrice;
+
 
     private View rootView;
     @Nullable
@@ -145,6 +148,11 @@ public class SellFragment extends Fragment {
         materialCheckBox =view.findViewById(R.id.checkBoxHiddenPrice);
         textInputLayout = view.findViewById(R.id.textInputLayout);
         textInputLayout2 = view.findViewById(R.id.textInputLayout2);
+
+        inputLayoutTitle = view.findViewById(R.id.inputLayoutTitle);
+        inputLayoutDescription = view.findViewById(R.id.inputLayoutDescription);
+        inputLayoutWeight = view.findViewById(R.id.inputLayoutWeight);
+        inputLayoutPrice = view.findViewById(R.id.inputLayoutPrice);
 
         String[] items2 = new String[] {"gold", "silver"};
         ArrayAdapter<String> adapter2 = new ArrayAdapter<>(
@@ -202,8 +210,6 @@ public class SellFragment extends Fragment {
                 textInputLayout.setVisibility(View.VISIBLE);
             }
         });
-
-
 
 
 
@@ -551,84 +557,107 @@ public class SellFragment extends Fragment {
 
 
     private void submitClick(View view){
-        // title value
-        String itemTitle = editTitle.getText().toString();
 
-        // description
-        String itemDescription = editDescription.getText().toString();
+        boolean isValid = FormValidator.validateTextInputLayout(inputLayoutTitle, editTitle.getText().toString(), "Title can`t be empty")
+                & FormValidator.validateTextInputLayout(inputLayoutDescription,  editDescription.getText().toString(), "Description can`t be empty")
+                & FormValidator.validateTextInputLayoutAsFloat(
+                        inputLayoutWeight,
+                editWeight.getText().toString(),
+                "Weight can`t be empty",
+                "Please enter a valid number")
+                & FormValidator.validateTextInputLayoutAsFloat(
+                        inputLayoutPrice,
+                editPrice.getText().toString(),
+                "price can`t be empty",
+                "Please enter a valid number");
 
-        // weight
-        String itemWeight = editWeight.getText().toString();
-
-
-        // 根据单元进行重量转化
-        double standWeight;
-        if (userChooseUnit.equals("oz")){
-            standWeight = WeightConverter.ozToGrams(Double.parseDouble(itemWeight));
-        }else if (userChooseUnit.equals("kg")){
-            standWeight = WeightConverter.kgToGrams(Double.parseDouble(itemWeight));
-
-        }else {
-            standWeight = Double.parseDouble(itemWeight);
+        if (uploadImageUrls.isEmpty()){
+            isValid = false;
+            Snackbar.make(rootView, "You need upload at least one picture for the product", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
         }
 
-        // drop box value
-        String selectedCategory = autoCompleteTextView2.getText().toString();  // 获取选择的种类，比如“gold”或“silver”
-        String selectedPurity = autoCompleteTextView.getText().toString();     // 获取对应的纯度，如"24K"、"999"等
+        if (isValid){
+            // title value
+            String itemTitle = editTitle.getText().toString();
 
-        String itemPrice = editPrice.getText().toString();
+            // description
+            String itemDescription = editDescription.getText().toString();
 
-        boolean hiddenPrice = materialCheckBox.isChecked();
-
-        // get SharedPreferences instance
-        SharedPreferences sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences("comp5703", Context.MODE_PRIVATE);
-
-        // get global userID
-        Integer userId = sharedPreferences.getInt("userId", 9999);
+            // weight
+            String itemWeight = editWeight.getText().toString();
 
 
-        /**
-         *
-         * 上传product的表单
-         */
-        ItemVO itemVO = new ItemVO();
+            // 根据单元进行重量转化
+            double standWeight;
+            if (userChooseUnit.equals("oz")){
+                standWeight = WeightConverter.ozToGrams(Double.parseDouble(itemWeight));
+            }else if (userChooseUnit.equals("kg")){
+                standWeight = WeightConverter.kgToGrams(Double.parseDouble(itemWeight));
 
-        if (productId !=null){
-            itemVO.setProductId(productId);
-        }
-        itemVO.setItemTitle(itemTitle);
-        itemVO.setItemDescription(itemDescription);
-        itemVO.setItemWeight(standWeight);
-        itemVO.setItemPrice(Double.parseDouble(itemPrice));
-        itemVO.setItemPurity(selectedPurity);
-
-        if (selectedCategory.equals("gold")){
-            itemVO.setCategory(1);
-        }else {
-            itemVO.setCategory(2);
-        }
-
-        if (hiddenPrice){
-            itemVO.setHiddenPrice(1);
-        }else {
-            itemVO.setHiddenPrice(0);
-        }
-
-        // 将图片url数组转为字符串
-        itemVO.setImageUrl(uploadImageUrls.toString());
-        itemVO.setUserId(userId);
-
-        NetworkUtils.postJsonRequest(itemVO, "/public/product/uploadProduct", null, new Callback() {
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                handleResponse(response);
+            }else {
+                standWeight = Double.parseDouble(itemWeight);
             }
 
-            @Override
-            public void onFailure(Call call, IOException e) {
-                handleFailure(e);
+            // drop box value
+            String selectedCategory = autoCompleteTextView2.getText().toString();  // 获取选择的种类，比如“gold”或“silver”
+            String selectedPurity = autoCompleteTextView.getText().toString();     // 获取对应的纯度，如"24K"、"999"等
+
+            String itemPrice = editPrice.getText().toString();
+
+            boolean hiddenPrice = materialCheckBox.isChecked();
+
+            // get SharedPreferences instance
+            SharedPreferences sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences("comp5703", Context.MODE_PRIVATE);
+
+            // get global userID
+            Integer userId = sharedPreferences.getInt("userId", 9999);
+
+
+            /**
+             *
+             * 上传product的表单
+             */
+            ItemVO itemVO = new ItemVO();
+
+            if (productId !=null){
+                itemVO.setProductId(productId);
             }
-        });
+            itemVO.setItemTitle(itemTitle);
+            itemVO.setItemDescription(itemDescription);
+            itemVO.setItemWeight(standWeight);
+            itemVO.setItemPrice(Double.parseDouble(itemPrice));
+            itemVO.setItemPurity(selectedPurity);
+
+            if (selectedCategory.equals("gold")){
+                itemVO.setCategory(1);
+            }else {
+                itemVO.setCategory(2);
+            }
+
+            if (hiddenPrice){
+                itemVO.setHiddenPrice(1);
+            }else {
+                itemVO.setHiddenPrice(0);
+            }
+
+            // 将图片url数组转为字符串
+            itemVO.setImageUrl(uploadImageUrls.toString());
+            itemVO.setUserId(userId);
+
+            NetworkUtils.postJsonRequest(itemVO, "/public/product/uploadProduct", null, new Callback() {
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    handleResponse(response);
+                }
+
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    handleFailure(e);
+                }
+            });
+        }
+
     }
 
 

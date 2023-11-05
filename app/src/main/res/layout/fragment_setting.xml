@@ -198,7 +198,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="120dp"
                 android:layout_marginTop="30dp"
                 android:background="@color/backgroundGray"
                 android:orientation="vertical">
@@ -254,39 +254,6 @@
                     android:background="@color/lineColor"
                     />
 
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/settingCardView"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center_vertical"
-                        android:background="@color/backgroundGreen"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:gravity="center_vertical"
-                            android:paddingLeft="15dp"
-                            android:text="Blacklist"
-                            android:textSize="21sp"
-                            android:textStyle="bold" />
-
-                        <ImageView
-                            android:layout_width="30dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginRight="10dp"
-                            android:src="@drawable/ic_baseline_keyboard_arrow_right_24" />
-
-                    </LinearLayout>
-
-
-                </androidx.cardview.widget.CardView>
 
                 <View
                     android:layout_width="match_parent"
@@ -300,6 +267,7 @@
                     android:layout_weight="1">
 
                     <LinearLayout
+                        android:id="@+id/aboutUs"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_gravity="center_vertical"

@@ -43,6 +43,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 import com.kyleduo.switchbutton.SwitchButton;
 import com.squareup.picasso.Picasso;
 import com.youth.banner.Banner;
@@ -72,6 +73,7 @@ import comp5703.sydney.edu.au.learn.VO.productDetailParameter;
 import comp5703.sydney.edu.au.learn.VO.productOfferParameter;
 import comp5703.sydney.edu.au.learn.VO.productParameter;
 import comp5703.sydney.edu.au.learn.VO.userIdVO;
+import comp5703.sydney.edu.au.learn.util.FormValidator;
 import comp5703.sydney.edu.au.learn.util.NetworkUtils;
 import comp5703.sydney.edu.au.learn.util.TimeCalculateUtil;
 import okhttp3.Call;
@@ -135,6 +137,8 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
     private TextView itemPostTime;
     private TextView offerTime;
 
+    private TextInputLayout inputLayoutPrice;
+
 
 
 
@@ -165,6 +169,8 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
         itemCloseImg = view.findViewById(R.id.itemCloseImg);
         offerHistory = view.findViewById(R.id.offerHistory);
         offeredPrice = view.findViewById(R.id.offeredPrice);
+        inputLayoutPrice = view.findViewById(R.id.inputLayoutPrice);
+
         sellerGetOfferBtn = view.findViewById(R.id.sellerGetOfferBtn);
         contactSellerBtn = view.findViewById(R.id.contactSellerBtn);
 
@@ -317,32 +323,41 @@ public class ItemDetailFragment extends Fragment implements OnBannerListener<Str
         isClickBlocked = true;
 
         // 处理点击事件
+        boolean isValid =  FormValidator.validateTextInputLayoutAsFloat(
+                inputLayoutPrice,
+                setPrice.getText().toString(),
+                "Null input",
+                "Invalid input");
 
         // 在逻辑执行完毕后重置标志变量，可以使用Handler来延迟重置
         new Handler().postDelayed(() -> isClickBlocked = false, 1000); // 延迟1秒
 
-        makeAnOfferParameter makeAnOfferParameter = new makeAnOfferParameter();
-        String stringPrice =setPrice.getText().toString();
-        String notes = optionNotes.getText().toString();
-        double doubleValue = Double.parseDouble(stringPrice);
 
-        makeAnOfferParameter.setToken(token);
-        makeAnOfferParameter.setPrice(doubleValue);
-        makeAnOfferParameter.setNote(notes);
-        makeAnOfferParameter.setProductId(productId);
+        if (isValid){
+            makeAnOfferParameter makeAnOfferParameter = new makeAnOfferParameter();
+            String stringPrice =setPrice.getText().toString();
+            String notes = optionNotes.getText().toString();
+            double doubleValue = Double.parseDouble(stringPrice);
 
-        // 发送一份offer
-        NetworkUtils.postJsonRequest(makeAnOfferParameter,"/normal/makeOrUpdateAnOffer",token, new Callback() {
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                handleResponseForMakeOffer(response, view);
-            }
+            makeAnOfferParameter.setToken(token);
+            makeAnOfferParameter.setPrice(doubleValue);
+            makeAnOfferParameter.setNote(notes);
+            makeAnOfferParameter.setProductId(productId);
 
-            @Override
-            public void onFailure(Call call, IOException e) {
-                handleFailure(e);
-            }
-        });
+            // 发送一份offer
+            NetworkUtils.postJsonRequest(makeAnOfferParameter,"/normal/makeOrUpdateAnOffer",token, new Callback() {
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    handleResponseForMakeOffer(response, view);
+                }
+
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    handleFailure(e);
+                }
+            });
+        }
+
 
     }
 

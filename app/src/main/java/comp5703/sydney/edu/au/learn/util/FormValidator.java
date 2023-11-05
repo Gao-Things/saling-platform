@@ -20,6 +20,23 @@ public class FormValidator {
         }
     }
 
+    public static boolean validateTextInputLayoutAsFloat(TextInputLayout inputLayout, String value, String errorMessageEmpty, String errorMessageInvalid) {
+        if (value.isEmpty()) {
+            inputLayout.setError(errorMessageEmpty);
+            return false;
+        } else {
+            try {
+                Float.parseFloat(value);
+                inputLayout.setError(null);
+                return true;
+            } catch (NumberFormatException e) {
+                inputLayout.setError(errorMessageInvalid);
+                return false;
+            }
+        }
+    }
+
+
     public static boolean validateEmail(TextInputLayout inputLayout, String email) {
         if (!isValidEmail(email)) {
             inputLayout.setError("Invalid email address");

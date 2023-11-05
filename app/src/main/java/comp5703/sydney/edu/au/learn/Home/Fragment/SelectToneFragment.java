@@ -11,11 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import java.util.Objects;
 
@@ -39,6 +41,7 @@ public class SelectToneFragment extends Fragment {
     SharedPreferences sharedPreferences;
 
     ImageView elegantImage, playfulImage, crispImage, electronicImage, rockImage;
+    private ImageView backClick;
 
     @Nullable
     @Override
@@ -63,6 +66,7 @@ public class SelectToneFragment extends Fragment {
             Crisp = view.findViewById(R.id.Crisp);
             electronic = view.findViewById(R.id.electronic);
             rock = view.findViewById(R.id.rock);
+            backClick = view.findViewById(R.id.backClick);
 
             elegantImage = elegant.findViewById(R.id.chooseImg);
             playfulImage = Playful.findViewById(R.id.chooseImg2);
@@ -98,6 +102,14 @@ public class SelectToneFragment extends Fragment {
                         break;
                 }
             }
+
+            backClick.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    fragmentManager.popBackStack(); // 返回上一级
+                }
+            });
         }
 
         private void selectTone(View view) {
@@ -126,7 +138,7 @@ public class SelectToneFragment extends Fragment {
                 case R.id.Playful:
                     playfulImage.setVisibility(View.VISIBLE);
                     // 处理Playful音效的逻辑
-                    Uri customSound2 = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.meng);
+                    Uri customSound2 = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.y831);
                     Ringtone ringtone3 = RingtoneManager.getRingtone(getActivity(), customSound2);
                     ringtone3.play();
 
@@ -138,7 +150,7 @@ public class SelectToneFragment extends Fragment {
                 case R.id.Crisp:
                     crispImage.setVisibility(View.VISIBLE);
                     // 处理Crisp音效的逻辑
-                    Uri customSound = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.y831);
+                    Uri customSound = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.y1878);
                     Ringtone ringtone2 = RingtoneManager.getRingtone(getActivity(), customSound);
                     ringtone2.play();
 
@@ -151,7 +163,7 @@ public class SelectToneFragment extends Fragment {
                 case R.id.electronic:
                     electronicImage.setVisibility(View.VISIBLE);
                     // 处理electronic音效的逻辑
-                    Uri customSound3 = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.y831);
+                    Uri customSound3 = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.y2170);
                     Ringtone ringtone4 = RingtoneManager.getRingtone(getActivity(), customSound3);
                     ringtone4.play();
 
@@ -162,7 +174,13 @@ public class SelectToneFragment extends Fragment {
                 case R.id.rock:
                     rockImage.setVisibility(View.VISIBLE);
                     // 处理rock音效的逻辑
+                    // 处理electronic音效的逻辑
+                    Uri customSound4 = Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.y2225);
+                    Ringtone ringtone5 = RingtoneManager.getRingtone(getActivity(), customSound4);
+                    ringtone5.play();
 
+                    editor.putString("chooseTone", "rock");
+                    editor.apply();
                     break;
 
                 default:

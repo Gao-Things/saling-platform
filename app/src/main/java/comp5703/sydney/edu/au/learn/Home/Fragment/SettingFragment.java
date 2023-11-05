@@ -41,13 +41,15 @@ public class SettingFragment extends Fragment {
     private String token;
 
     private LinearLayout selectTone;
-
+    
+    private LinearLayout aboutUs;
+    
     private SwitchButton switchPopup;
 
     private SwitchButton switchMessage;
 
     private SwitchButton switchMessageToneOpen;
-
+    
     private TextView userSelectedTone;
 
     // 用户设置
@@ -89,6 +91,7 @@ public class SettingFragment extends Fragment {
         switchPopup = view.findViewById(R.id.switchPopup);
         switchMessageToneOpen = view.findViewById(R.id.switchMessageToneOpen);
         userSelectedTone = view.findViewById(R.id.userSelectedTone);
+        aboutUs = view.findViewById(R.id.aboutUs);
         // 获取用户设置状态
         setUserSetting(switchMessage, switchPopup, switchMessageToneOpen);
 
@@ -139,11 +142,26 @@ public class SettingFragment extends Fragment {
         switchMessage.setOnCheckedChangeListener(listener);
         switchPopup.setOnCheckedChangeListener(listener);
         switchMessageToneOpen.setOnCheckedChangeListener(listener);
-
-
-
+        
 
         selectTone.setOnClickListener(this::dumpToToneSelect);
+
+        aboutUs.setOnClickListener(this::dumpToAboutUs);
+        
+
+    }
+
+    private void dumpToAboutUs(View view) {
+
+        // 在 FragmentA 中
+        AboutUsFragment fragmentB = new AboutUsFragment();
+
+        // 执行 Fragment 跳转
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.fl_container, fragmentB); // R.id.fragment_container 是用于放置 Fragment 的容器
+        transaction.addToBackStack(null); // 将 FragmentA 添加到返回栈，以便用户可以返回到它
+        transaction.commit();
+
     }
 
     private boolean modifyService(boolean isOpen) {
