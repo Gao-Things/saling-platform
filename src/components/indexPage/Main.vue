@@ -71,9 +71,6 @@ export default {
     margin-right: 5px; /* 调整按钮之间的间距 */
 }
 
-.Main {
-    background-color: black;
-}
 
 .el-table td.el-table__cell {
     border: 0;

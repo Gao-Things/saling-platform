@@ -9,22 +9,23 @@
         <div class="header-item" style="text-align: center">
             <span class="title">CS COMPANY</span>
         </div>
-        <el-select class="header-item custom-select" v-model="selectedValue" @change="handleSelectChange">
-            <el-option
-                v-for="option in options"
-                :key="option.id"
-                :label="option.exchangeName"
-                :value="option.exchangeName"
-            ></el-option>
-        </el-select>
+      <el-input
+          class="header-item custom-search-input"
+          style="width: 400px; margin-left: 30px"
+          placeholder="Enter search term"
+          v-model="searchTerm"
+          @input="handleSearchChange"
+          @clear="handleSearchClear"
+          clearable>
+      </el-input>
 
-        <div class="header-item" style="padding: 10px">
-            <img src="../../assets/img_2.png" width="100px">
+      <div class="header-item" style="padding: 10px; margin-top: 20px">
+            <img src="../../assets/search.png" width="30px">
         </div>
 
         <template v-if="isLoggedIn"> <!-- 根据登录状态进行条件渲染 -->
             <el-dropdown class="header-item" style="margin-left: 15%">
-                <span style="color: #eeeeee">{{getRole}}</span>
+                <span >{{getRole}}</span>
                 <i class="el-icon-arrow-down" style="margin-left: 5px"></i>
                 <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item @click.native="toUser">personal central</el-dropdown-item>
@@ -47,9 +48,7 @@
 .header-container {
     display: flex; /* 使用 Flex 布局 */
     align-items: center; /* 垂直居中对齐 */
-    background-color: black;
     flex-direction: row;
-    color: white;
 }
 
 .header-item {
@@ -76,7 +75,7 @@
 
 /* 可根据需要调整下拉菜单的样式 */
 .el-dropdown-menu {
-    background-color: black;
+    //background-color: black;
 }
 .el-dropdown-item {
     color: white;

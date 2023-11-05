@@ -1,8 +1,11 @@
 import VueRouter from 'vue-router'
-import index from '../components/indexPage/index.vue'
 import login from "../components/login/login.vue";
 import adminPage from "../components/adminPage/admin.vue"
 import settingPage from "../components/settingPage/setting.vue"
+import Verification from "@/components/EmailVertify/Verification.vue";
+import ForgetPasswordVerification from "@/components/EmailVertify/ForgetPasswordVerification.vue";
+
+
 import store from '../store'; // 导入Vuex store
 
 
@@ -11,27 +14,34 @@ const router = new VueRouter({
     routes: [
         {
             path: '/',
-            name: 'index',
-            component: index
-        },
-        {
-            path: '/login',
             name: 'login',
             component: login
         },
+
         {
             path: '/admin',
             name: 'admin',
             component: adminPage,
             meta: { requiresAuth: true, allowedRoles: ['ADMIN', 'SUPERADMIN'] }
         },
+
         {
             path: '/superadmin/setting',
             name: 'setting',
             component: settingPage,
             meta: { requiresAuth: true, allowedRoles: ['SUPERADMIN'] }
 
-        }
+        },
+        {
+            path: '/verification',
+            name: 'Verification',
+            component: Verification,
+        },
+        {
+            path: '/forgetPassword',
+            name: 'ForgetPassword',
+            component: ForgetPasswordVerification,
+        },
     ]
 })
 

@@ -1,5 +1,5 @@
 <template>
-  <el-container style="height: 100%; border: 1px solid #000000; margin-left: -1px; background-color: black">
+  <el-container style="height: 100%; border: 1px solid #000000; margin-left: -1px;">
     <el-container style="height: 100%">
       <el-header style="text-align: right; font-size: 12px; width: 100%;height: 100%; border-bottom: rgba(169,169,169,0.35) 2px solid">
           <Header @doCollapse = "doCollapse" @selectedValue="selectedValue"  :icon = "icon"></Header>

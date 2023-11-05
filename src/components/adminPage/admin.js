@@ -1,6 +1,6 @@
 import Aside from "../aside/Aside.vue"
 import Header from "../header/Header.vue"
-import adminMain from "./adminMain.vue"
+import adminMain from "../Product/adminMain.vue"
 export default {
     name: "Index",
     components: {Aside, Header, adminMain},

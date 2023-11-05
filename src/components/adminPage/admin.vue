@@ -1,6 +1,6 @@
 <template>
-    <el-container style="height: 100%; border: 1px solid #000000; background-color: black">
-        <el-aside :width="aside_width" style="background-color: rgba(70,69,69,0.6);;margin-left: -1px ">
+    <el-container style="height: 100%; border: 1px solid #000000;">
+        <el-aside :width="aside_width" style="background-color: #008604;margin-left: -1px ">
             <!--            将从vuex中拿出的当前用户的sidebar传给Aside组件-->
             <Aside :isCollapse="isCollapse"></Aside>
         </el-aside>
@@ -11,7 +11,7 @@
                 <Header @doCollapse="doCollapse" @selectedValue="selectedValue" :icon="icon"></Header>
             </el-header>
 
-            <el-main style="height: 100%;  background-color: black; margin-left: -1px">
+            <el-main style="height: 100%;  margin-left: -1px">
                 <adminMain :exchangeValue="exchangeValue"></adminMain>
             </el-main>
         </el-container>

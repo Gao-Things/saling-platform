@@ -2,11 +2,11 @@
     <div class="big-container">
         <div class="logo-container">
             <img src="../../assets/aside_logo.png" alt="Logo" class="logo" v-if="!isCollapse">
-            <h2 style="margin-top: 20px" v-if="!isCollapse">{{ getRole }}</h2>
+            <h2 style="margin-top: 20px; color: white" v-if="!isCollapse">{{ getRole }}</h2>
         </div>
 
         <el-menu
-                text-color="#fff"
+                text-color="white"
                 active-text-color="#ffd04b"
                 default-active="/Home"
                 class="custom-menu"

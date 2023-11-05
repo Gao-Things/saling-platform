@@ -2,8 +2,14 @@ import { mapGetters, mapActions } from 'vuex';
 export default {
     data() {
         return {
-            selectedValue: 'USD', // 存储选择的值
-            options: [] // 选项数据
+            selectedValue: '1', // 存储选择的值
+            options: [
+                { value: '1', label: 'Gold' },
+                { value: '2', label: 'Silver' },
+                { value: '0', label: 'All' }
+            ],// 选项数据
+
+            searchTerm: '',
         };
     },
     name: "Header.vue",
@@ -15,10 +21,24 @@ export default {
         ...mapGetters(['getRole'])
     },
     mounted() {
-        this.loadCurrencyList(); // 在组件挂载后获取选项数据
+
     },
     methods:{
         ...mapActions(['logout']), // 导入 logout action
+
+        handleSearchChange(value) {
+            console.log('User is typing:', value);
+
+            // 你可以在这里执行搜索逻辑，比如 debounce 搜索请求
+            this.$emit('selectedValue', value);
+
+        },
+        handleSearchClear() {
+            console.log('Search input cleared');
+            // 清除操作后你可能想要执行的逻辑
+        },
+
+
         // 登出并跳转到登录页面
         logoutAndRedirect() {
             this.logout(); // 调用登出 action
@@ -33,22 +53,9 @@ export default {
         collapse(){
             this.$emit('doCollapse')
         },
-        handleSelectChange(){
+        handleSelectChange(value){
+            console.log('Selected value is:', value);
             this.$emit('selectedValue', this.selectedValue);
-        },
-        loadCurrencyList(){
-
-            this.$axios.get(this.$httpurl + '/public/product/currencyList').then(res => res.data).then(res => {
-
-                if (res.code === 200) {
-                    console.log(res.data);
-                    this.options = res.data;
-
-                } else {
-                    alert("failed to get the data")
-                }
-            })
-
         },
     }
 }
