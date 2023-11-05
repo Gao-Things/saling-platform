@@ -24,4 +24,7 @@
         WHERE product.owner_id = #{ownerId} AND offer.offer_status = 0;
 
     </select>
+    <select id="selectOffersByProductId" resultType="com.usyd.capstone.entity.Offer">
+        SELECT * FROM offer WHERE product_id = #{productId}
+    </select>
 </mapper>

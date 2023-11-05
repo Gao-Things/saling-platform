@@ -97,15 +97,15 @@ public class PublicServiceImpl extends ServiceImpl<NormalUserMapper, NormalUser>
             return Result.fail("Wrong email or password");
         }
 
-//        String machUse = userLogin.getEmail() + userLogin.getPassword() + SYSTEM_SECURITY_KEY.PASSWORD_SECRET_KEY.getValue();
-//
-//        if (!passwordEncoder.matches(machUse, user.getPassword())){
-//            return Result.fail("Wrong email or password");
-//        }
-//
-//        if (!user.isActivationStatus()){
-//            return Result.fail("your account has not been activation");
-//        }
+        String machUse = userLogin.getEmail() + userLogin.getPassword() + SYSTEM_SECURITY_KEY.PASSWORD_SECRET_KEY.getValue();
+
+        if (!passwordEncoder.matches(machUse, user.getPassword())){
+            return Result.fail("Wrong email or password");
+        }
+
+        if (!user.isActivationStatus()){
+            return Result.fail("your account has not been activation");
+        }
 
         String token = JwtToken.generateToken(user.getId(), userLogin.getEmail(), role);
 
@@ -157,10 +157,7 @@ public class PublicServiceImpl extends ServiceImpl<NormalUserMapper, NormalUser>
             notSuperUserNew.setPassword(passwordToken);
             notSuperUserNew.setActivationStatus(false);
 
-            /**
-             *  暂时注释发邮件方法
-             */
-//            sentEmail.sentRegistrationEmail(email, registrationTimeStamp, passwordToken, userRole);
+            sentEmail.sentRegistrationEmail(email, registrationTimeStamp, passwordToken, userRole);
 
             // 可以直接调用mybatisplus的insert方法
             mapper.insert(notSuperUserNew);
@@ -232,6 +229,7 @@ public class PublicServiceImpl extends ServiceImpl<NormalUserMapper, NormalUser>
             }
             else
             {
+                notSuperUser.setActivationStatus(true);
                 mapper.updateById(notSuperUser);
                 return new Result(200, "Your account has been activated!", 0L, null, null);
             }

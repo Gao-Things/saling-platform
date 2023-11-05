@@ -1,5 +1,6 @@
 package com.usyd.capstone.mapper;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.usyd.capstone.common.DTO.ProductUserDTO;
 import com.usyd.capstone.common.VO.ProductFilter;
 import com.usyd.capstone.entity.Product;
@@ -20,4 +21,8 @@ import java.util.List;
 public interface ProductMapper extends BaseMapper<Product> {
 
     List<ProductUserDTO> listProduct(ProductFilter productFilter);
+
+    Page<Product> selectProductsWithOffers(Page<Product> page, String searchValue);
+
+    List<Product> getProductListByUserID(Integer userId, boolean isSelling);
 }

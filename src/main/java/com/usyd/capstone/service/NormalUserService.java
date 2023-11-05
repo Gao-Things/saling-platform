@@ -3,6 +3,7 @@ package com.usyd.capstone.service;
 import com.github.dreamyoung.mprelation.IService;
 import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.entity.NormalUser;
+import com.usyd.capstone.entity.Product;
 
 public interface NormalUserService {
 
@@ -23,4 +24,5 @@ public interface NormalUserService {
     NormalUser findUserInfoById(Integer userId);
 
     Boolean updateUserInfo(NormalUser normalUser);
+
 }

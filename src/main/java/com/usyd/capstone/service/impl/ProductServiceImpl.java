@@ -2,6 +2,7 @@ package com.usyd.capstone.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.usyd.capstone.common.DTO.ProductUserDTO;
 import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.common.DTO.productAdmin;
@@ -188,6 +189,18 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         } else {
             return 0; // 如果没有找到商品，则返回0或者抛出一个异常
         }
+    }
+
+    @Override
+    public Page<Product> getProductListAndOffer( Integer pageNum,  Integer pageSize, String searchValue) {
+        Page<Product> page = new Page<>(pageNum, pageSize);
+        return productMapper.selectProductsWithOffers(page, searchValue);
+    }
+
+    @Override
+    public List<Product> getProductListByUserID(Integer userId, boolean isSelling) {
+
+        return productMapper.getProductListByUserID(userId, isSelling);
     }
 
 }

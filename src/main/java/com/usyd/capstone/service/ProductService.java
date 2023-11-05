@@ -31,4 +31,8 @@ public interface ProductService extends IService<Product> {
     double getMinWeight();
 
     double getMaxWeight();
+
+    Page<Product> getProductListAndOffer( Integer pageNum,  Integer pageSize, String searchValue);
+
+    List<Product> getProductListByUserID(Integer userId, boolean isSelling);
 }

@@ -107,6 +107,8 @@ public class MessageController {
             messageFormat.setCardDescription(rejectMessage.getCardDescription());
         }
 
+        messageFormat.setProductId(Math.toIntExact(product.getId()));
+
         // 封装成JSON类型字符串存入数据库
         String rejectCardMessage =  JSON.toJSONString(messageFormat);
 

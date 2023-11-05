@@ -26,6 +26,7 @@
         LEFT JOIN normal_user
         ON product.owner_id = normal_user.id
         <where>
+                AND product.product_status != 3
             <if test="category != null">
                 AND product.category = #{category}
             </if>
@@ -42,6 +43,30 @@
                 AND product.product_weight &lt;= #{maxPrice}
             </if>
         </where>
+    </select>
+
+    <resultMap id="ProductResultMap" type="com.usyd.capstone.entity.Product">
+        <id column="id" property="id" />
+        <!-- 添加其它Product属性的映射 -->
+        <collection property="offers" ofType="com.usyd.capstone.entity.Offer"
+                    select="com.usyd.capstone.mapper.OfferMapper.selectOffersByProductId"
+                    column="id" />
+    </resultMap>
+
+    <select id="selectProductsWithOffers" resultMap="ProductResultMap">
+        SELECT * FROM product
+        WHERE ('' = #{searchValue} OR product_name LIKE CONCAT('%', #{searchValue}, '%') OR product_description LIKE CONCAT('%', #{searchValue}, '%'))
+    </select>
+
+    <select id="getProductListByUserID" resultMap="ProductResultMap">
+        SELECT * FROM product
+        WHERE owner_id = #{userId} AND product_status !=3
+        <if test="isSelling">
+            AND product_status = 0
+        </if>
+        <if test="!isSelling">
+            AND product_status != 0
+        </if>
     </select>
 
 

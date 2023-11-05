@@ -1,6 +1,7 @@
 package com.usyd.capstone.controller;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.usyd.capstone.common.DTO.ProductUserDTO;
 import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.common.VO.ProductVO;
@@ -58,6 +59,7 @@ public class ProductController {
     }
 
 
+
     @GetMapping("/getMinMaxWeight")
     public Result getMinMaxWeight() {
         Map<String, Double> resultMap = new HashMap<>();
@@ -65,7 +67,7 @@ public class ProductController {
         double maxWeight = productService.getMaxWeight();
 
         resultMap.put("minWeight", minWeight);
-        resultMap.put("maxWeight", maxWeight);
+            resultMap.put("maxWeight", maxWeight);
         return Result.suc(resultMap);
     }
 

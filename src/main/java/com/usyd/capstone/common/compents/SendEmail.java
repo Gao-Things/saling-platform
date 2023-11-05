@@ -2,6 +2,7 @@ package com.usyd.capstone.common.compents;
 
 import com.usyd.capstone.entity.AdminUserProduct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -37,8 +38,10 @@ public class SendEmail {
         }
     }
 
+    @Value("${base.weburl}")
+    private static String webUrl;
     private static String getRegistEmailContent(String email, long registrationTimestamp, String passwordToken, int userRole) {
-        String url = "http://localhost:8082/user/registrationVerification?email=" + email + "&registrationTimestamp=" +
+        String url = "http://comp5703-capstone-web.s3-website-us-east-1.amazonaws.com/verification?email=" + email + "&registrationTimestamp=" +
                 registrationTimestamp + "&passwordToken=" + passwordToken + "&userRole=" + userRole;
         String emailContent = "<p>Dear user,</p>" +
                 "<p>Thank you for registering with us! To complete your registration, please click the link below to verify your email:</p>" +
@@ -75,7 +78,7 @@ public class SendEmail {
     }
 
     private static String getForgetEmailContent(String email, long resettingPasswordTimestamp) {
-        String url = "http://localhost:8082/user/forgetPasswordVerification?email=" + email + "&resettingPasswordTimestamp=" +
+        String url = "http://comp5703-capstone-web.s3-website-us-east-1.amazonaws.com/forgetPassword?email=" + email + "&resettingPasswordTimestamp=" +
                 resettingPasswordTimestamp;
         String emailContent = "<p>Dear user,</p>" +
                 "<p>We noticed that you recently requested a password reset. To ensure the security of your account, " +

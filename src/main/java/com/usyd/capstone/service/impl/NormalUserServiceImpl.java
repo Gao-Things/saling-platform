@@ -493,7 +493,12 @@ public class NormalUserServiceImpl implements NormalUserService {
 //            NotificationServer.sendMessage(result, product.getOwnerId().intValue());
 
         } else{
-            NotificationServer.sendMessage(result, offer.getBuyerId().intValue());
+
+            Map<Integer, String> rabbitMessageList = new HashMap<>();
+            rabbitMessageList.put(offer.getBuyerId().intValue(), result);
+//            NotificationServer.sendMessage(result, offer.getBuyerId().intValue());
+
+            fanoutSender.sendMessage(rabbitMessageList);
         }
 
     }
