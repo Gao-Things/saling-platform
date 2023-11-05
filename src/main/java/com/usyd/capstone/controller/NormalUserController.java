@@ -1,12 +1,14 @@
 package com.usyd.capstone.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.common.VO.*;
-import com.usyd.capstone.entity.Offer;
-import com.usyd.capstone.entity.UserSetting;
+import com.usyd.capstone.entity.*;
+import com.usyd.capstone.entity.abstractEntities.User;
 import com.usyd.capstone.service.NormalUserService;
 import com.usyd.capstone.service.OfferService;
+import com.usyd.capstone.service.ProductService;
 import com.usyd.capstone.service.UserSettingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +27,9 @@ public class NormalUserController {
 
     @Autowired
     private UserSettingService userSettingService;
+
+    @Autowired
+    private ProductService productService;
 
     @GetMapping("/hello")
     public String hello(){
@@ -119,6 +124,57 @@ public class NormalUserController {
         userSetting.setUserSettingId(settingId);
         return Result.suc(userSettingService.updateById(userSetting));
     }
+
+    @GetMapping("/getUserInfo")
+    public Result getUserInfo(@RequestParam Integer userId){
+
+        if (userId == null){
+            return Result.fail();
+        }
+
+        return Result.suc(normalUserService.findUserInfoById(userId)) ;
+    }
+    @PostMapping("/updateUserAvatar")
+    public Result updateUserAvatar(@RequestBody UpdateUserInfo updateUserInfo){
+
+        if (updateUserInfo.getId() == null || updateUserInfo.getAvatarUrl() == null){
+            return Result.fail();
+        }
+
+        NormalUser normalUser = normalUserService.findUserInfoById(Math.toIntExact(updateUserInfo.getId()));
+
+        normalUser.setAvatarUrl(updateUserInfo.getAvatarUrl());
+
+        return Result.suc(normalUserService.updateUserInfo(normalUser));
+    }
+
+
+    @GetMapping("/getProductListByUserID")
+    public Result getProductListByUserID(
+            @RequestParam Integer userId,
+            @RequestParam boolean isSelling) {
+
+        List<Product> productList = productService.getProductListByUserID(userId, isSelling);
+        return Result.suc(productList);
+    }
+
+
+    @GetMapping("/deleteProduct")
+    public Result adminDeleteProduct(@RequestParam Integer productID) {
+
+        Product product = productService.getById(productID);
+        product.setProductStatus(3);
+
+        if (productService.updateById(product)){
+
+            return Result.suc();
+        }else {
+            return Result.fail();
+        }
+
+    }
+
+
 
 
     @PostMapping("/setPriceThreshold")

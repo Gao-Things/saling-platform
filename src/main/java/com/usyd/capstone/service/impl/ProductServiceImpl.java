@@ -2,9 +2,11 @@ package com.usyd.capstone.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.usyd.capstone.common.DTO.ProductUserDTO;
 import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.common.DTO.productAdmin;
+import com.usyd.capstone.common.VO.ProductFilter;
 import com.usyd.capstone.common.utils.pageUtil;
 import com.usyd.capstone.entity.ExchangeRateUsd;
 import com.usyd.capstone.entity.Product;
@@ -113,8 +115,8 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     }
 
     @Override
-    public List<ProductUserDTO> listProduct() {
-        return productMapper.listProduct();
+    public List<ProductUserDTO> listProduct(ProductFilter productFilter) {
+        return productMapper.listProduct(productFilter);
     }
     @Override
     public Result getProductListAfterFiltered(String filter1, Integer value1, String filter2, String value2) {
@@ -147,6 +149,58 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
                 .orderByDesc("search_count")
                 .last("LIMIT 10"));
         return Result.suc(top10Products);
+    }
+
+    @Override
+    public double getMinWeight() {
+
+        // 假设Product类中有一个price字段来表示价格
+        // 使用QueryWrapper来构建查询条件
+        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByAsc("product_weight"); // 按照价格升序排序
+        queryWrapper.last("LIMIT 1"); // 限制结果只有一个，即最低价格的商品
+
+        // 执行查询，selectOne方法会返回查询结果中的第一个对象
+        Product product = productMapper.selectOne(queryWrapper);
+
+        // 检查product是否为null，以防数据库为空或查询出错
+        if (product != null) {
+            return product.getProductWeight(); // 返回找到的商品的价格
+        } else {
+            return 0; // 如果没有找到商品，则返回0或者抛出一个异常
+        }
+    }
+
+    @Override
+    public double getMaxWeight() {
+
+        // 假设Product类中有一个price字段来表示价格
+        // 使用QueryWrapper来构建查询条件
+        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByDesc("product_weight");
+        queryWrapper.last("LIMIT 1"); // 限制结果只有一个，即最高重量的商品
+
+        // 执行查询，selectOne方法会返回查询结果中的第一个对象
+        Product product = productMapper.selectOne(queryWrapper);
+
+        // 检查product是否为null，以防数据库为空或查询出错
+        if (product != null) {
+            return product.getProductWeight(); // 返回找到的商品的价格
+        } else {
+            return 0; // 如果没有找到商品，则返回0或者抛出一个异常
+        }
+    }
+
+    @Override
+    public Page<Product> getProductListAndOffer( Integer pageNum,  Integer pageSize, String searchValue) {
+        Page<Product> page = new Page<>(pageNum, pageSize);
+        return productMapper.selectProductsWithOffers(page, searchValue);
+    }
+
+    @Override
+    public List<Product> getProductListByUserID(Integer userId, boolean isSelling) {
+
+        return productMapper.getProductListByUserID(userId, isSelling);
     }
 
 }

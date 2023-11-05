@@ -34,6 +34,9 @@ public class Notification implements Serializable {
     @TableId(value = "notification_id")
     private Integer notificationId;
 
+    /**
+     * 9 为系统消息
+     */
     @TableField("notification_type")
     private Integer notificationType;
 

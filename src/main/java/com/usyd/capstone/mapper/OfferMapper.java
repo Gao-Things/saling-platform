@@ -11,4 +11,6 @@ import java.util.List;
 @Mapper
 public interface OfferMapper extends BaseMapper<Offer>  {
     List<OfferProductDTO> getOfferListBySellerId(@Param("ownerId") Long ownerId);
+
+    List<Offer> selectOffersByProductId(@Param("productId") Long productId);
 }

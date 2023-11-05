@@ -13,7 +13,6 @@ public class ProductVO {
     private String imageUrl;
     private Integer userId;
 
-    private Integer itemCategory;
     private Integer hiddenPrice;
     private String itemPurity;
     private double itemPrice;

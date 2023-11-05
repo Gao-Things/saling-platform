@@ -36,9 +36,13 @@ public class SearchController {
     public Result getSearchResultByInput(@RequestParam String userInput){
 
         List<Product> productList =  productService.list(
-                new QueryWrapper<Product>().like("product_name", userInput)
-                        .or()
-                        .like("product_description", userInput)
+                new QueryWrapper<Product>()
+                        .ne("product_status", 3) // 添加不等于条件
+                        .and(wrapper -> wrapper
+                                .like("product_name", userInput)
+                                .or()
+                                .like("product_description", userInput)
+                        )
         );
 
         return Result.suc(productList);
@@ -54,6 +58,8 @@ public class SearchController {
         Product product = productService.getById(search.getProductId());
         if(product != null) {
             product.setSearchCount(product.getSearchCount() + 1);
+
+            productService.updateById(product);
             Search oldSearchResult = searchService.getOne(
                     new QueryWrapper<Search>().eq("search_content", search.getSearchContent())
             );

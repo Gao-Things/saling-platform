@@ -1,14 +1,11 @@
 package com.usyd.capstone.controller;
 
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.usyd.capstone.common.DTO.ProductUserDTO;
 import com.usyd.capstone.common.DTO.Result;
-import com.usyd.capstone.common.DTO.productAdmin;
-import com.usyd.capstone.common.Enums.CATEGORY;
-import com.usyd.capstone.common.Enums.PURITY;
 import com.usyd.capstone.common.VO.ProductVO;
+import com.usyd.capstone.common.VO.ProductFilter;
 import com.usyd.capstone.entity.Product;
 import com.usyd.capstone.service.ExchangeRateUsdService;
 import com.usyd.capstone.service.ProductService;
@@ -19,13 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,12 +53,24 @@ public class ProductController {
     }
 
     @GetMapping("/productList")
-    public Result getProductsWithPrices() {
-        List<ProductUserDTO> productList = productService.listProduct();
+    public Result getProductsWithPrices(@ModelAttribute ProductFilter productFilter) {
+        List<ProductUserDTO> productList = productService.listProduct(productFilter);
         return Result.suc(productList);
     }
-    @Value("${upload.dir}") // 从配置文件获取上传目录
-    private String uploadDir;
+
+
+
+    @GetMapping("/getMinMaxWeight")
+    public Result getMinMaxWeight() {
+        Map<String, Double> resultMap = new HashMap<>();
+        double minWeight = productService.getMinWeight();
+        double maxWeight = productService.getMaxWeight();
+
+        resultMap.put("minWeight", minWeight);
+            resultMap.put("maxWeight", maxWeight);
+        return Result.suc(resultMap);
+    }
+
 
     @PostMapping("/uploadImage")
     public Result uploadImage(@RequestParam("file") MultipartFile file) {
@@ -128,7 +133,7 @@ public class ProductController {
         product.setInResettingProcess(false);
 
         product.setPriceStatus(productVO.getHiddenPrice());
-        product.setCategory(productVO.getItemCategory());
+        product.setCategory(productVO.getCategory());
         product.setProductCreateTime(System.currentTimeMillis());
         product.setProductDescription(productVO.getItemDescription());
         product.setProductImage(productVO.getImageUrl());

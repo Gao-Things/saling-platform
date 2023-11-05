@@ -3,10 +3,15 @@ package com.usyd.capstone.common.compents;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.usyd.capstone.common.DTO.MessageNotificationDTO;
 import com.usyd.capstone.entity.Message;
+import com.usyd.capstone.entity.abstractEntities.User;
 import com.usyd.capstone.mapper.MessageMapper;
+import com.usyd.capstone.mapper.NormalUserMapper;
+import com.usyd.capstone.rabbitMq.FanoutSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +19,9 @@ import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -95,30 +102,93 @@ public class WebSocketServer {
         JSONObject obj = JSONUtil.parseObj(message);
         Integer toUserId = obj.getInt("to"); // to表示发送给哪个用户，比如 admin
         String text = obj.getStr("text"); // 发送的消息文本  hello
-        // 存入数据库
-        MessageMapper messageMapper = applicationContext.getBean(MessageMapper.class);
-        Message messageDB = new Message();
-        messageDB.setPostMessageContent(text);
-        messageDB.setFromUserId(userId);
-        messageDB.setToUserId(toUserId);
-        messageDB.setPostTime(System.currentTimeMillis());
-        messageMapper.insert(messageDB);
 
-        // {"to": "admin", "text": "聊天文本"}
-        Session toSession = sessionMap2.get(toUserId); // 根据 to用户名来获取 session，再通过session发送消息文本
-        if (toSession != null) {
+        /**
+         *
+         *  userID == 0为websocket心跳包
+         */
+
+        // 注入sender到bean
+        FanoutSender fanoutSender = applicationContext.getBean(FanoutSender.class);
+        if (Objects.equals(toUserId, userId)){
+
+//            /**
+//             *  发送消息通知到rabbitMQ 通知 交换机
+//             */
+//            Map<Integer, String> rabbitMessageList2 = new HashMap<>();
+//
+//            // 心跳续约
+//            rabbitMessageList2.put(0, "Pong");
+//            fanoutSender.sendMessage(rabbitMessageList2);
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("from", userId);  // from 是 zhang
+            jsonObject.put("text", "pong");  // text 同上面的text
+
+            sendMessage(jsonObject.toString(), toUserId);
+
+        }else{
+
+            // 存入数据库
+            MessageMapper messageMapper = applicationContext.getBean(MessageMapper.class);
+            Message messageDB = new Message();
+            messageDB.setPostMessageContent(text);
+            messageDB.setFromUserId(userId);
+            messageDB.setToUserId(toUserId);
+            messageDB.setPostTime(System.currentTimeMillis());
+            messageMapper.insert(messageDB);
+
             // 服务器端 再把消息组装一下，组装后的消息包含发送人和发送的文本内容
             // {"from": "zhang", "text": "hello"}
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("from", userId);  // from 是 zhang
             jsonObject.put("text", text);  // text 同上面的text
 
-            this.sendMessage(jsonObject.toString(), toUserId);
 
-            log.info("发送给用户userId={}，消息：{}", toUserId, jsonObject.toString());
-        } else {
-            log.info("发送失败，未找到用户userId={}的session，已经留言", toUserId);
+            /**
+             * 发送消息到rabbitMQ聊天交换机
+             */
+
+            Map<Integer, String> rabbitMessageList = new HashMap<>();
+            rabbitMessageList.put(toUserId, jsonObject.toString());
+            fanoutSender.sendChatMessage(rabbitMessageList);
+
+//            this.sendMessage(jsonObject.toString(), toUserId);
+
+            log.info("发送给用户userId={}，消息：{}", toUserId, jsonObject);
+
+
+            /**
+             * 发送消息弹窗提示
+             */
+            // 接受此消息用户的类型
+            NormalUserMapper normalUserMapper = applicationContext.getBean(NormalUserMapper.class);
+            User localUser = normalUserMapper.selectById(userId);
+
+            MessageNotificationDTO messageNotificationDTO = new MessageNotificationDTO();
+
+            // 消息类型
+            messageNotificationDTO.setMessageType(999);
+            messageNotificationDTO.setRemoteUser(localUser);
+
+            // 为远程用户加载本地用户的信息
+            messageNotificationDTO.setNotificationContent(text);
+
+            String result = com.alibaba.fastjson.JSONObject.toJSONString(messageNotificationDTO);
+
+            /**
+             *  发送消息通知到rabbitMQ 通知 交换机
+             */
+            Map<Integer, String> rabbitMessageList2 = new HashMap<>();
+            rabbitMessageList2.put(toUserId, result);
+            fanoutSender.sendMessage(rabbitMessageList2);
+
+//            NotificationServer.sendMessage(result, toUserId);
         }
+
+
+
+
     }
     @OnError
     public void onError(Session sess, Throwable e) {
@@ -141,7 +211,7 @@ public class WebSocketServer {
     /**
      * 服务端发送消息给客户端
      */
-    private void sendMessage(String message, Integer userId) {
+    public static void sendMessage(String message, Integer userId) {
         System.out.println("开始调用sendMessage方法");
         Session session = sessionMap2.get(userId);
         if (session == null) {

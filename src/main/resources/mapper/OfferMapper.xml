@@ -6,10 +6,12 @@
         <result column="offer_id" property="offerId"/>  <!-- 映射 offer.id 到 offerId -->
         <result column="product_id" property="productId"/>  <!-- 映射 product.id 到 productId -->
         <result column="buyer_name" property="buyerName"/>
+        <result column="offer_price" property="offerPrice"/>
     </resultMap>
     <select id="getOfferListBySellerId" resultMap="OfferProductDTO">
         SELECT
             offer.id as offer_id,
+            offer.price as offer_price,
             product.id as product_id,
             normal_user.name as buyer_name,
             offer.*,
@@ -21,5 +23,8 @@
                            ON offer.buyer_id = normal_user.id
         WHERE product.owner_id = #{ownerId} AND offer.offer_status = 0;
 
+    </select>
+    <select id="selectOffersByProductId" resultType="com.usyd.capstone.entity.Offer">
+        SELECT * FROM offer WHERE product_id = #{productId}
     </select>
 </mapper>
