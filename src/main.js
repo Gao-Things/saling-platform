@@ -12,8 +12,8 @@ import VueRouter from 'vue-router'
 import { Loading } from 'element-ui';
 Vue.prototype.$axios = axios;
 
-// Vue.prototype.$httpurl = 'http://localhost:8082'
-Vue.prototype.$httpurl = 'http://capstone-loadbalancer-2005125113.us-east-1.elb.amazonaws.com'
+Vue.prototype.$httpurl = 'http://localhost:8082'
+// Vue.prototype.$httpurl = 'http://capstone-loadbalancer-2005125113.us-east-1.elb.amazonaws.com'
 Vue.prototype.$imageurl = 'https://capstone-file-store.s3.amazonaws.com/'
 
 Vue.config.productionTip = false;

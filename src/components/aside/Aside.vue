@@ -8,7 +8,7 @@
         <el-menu
                 text-color="white"
                 active-text-color="#ffd04b"
-                default-active="/Home"
+                default-active="/admin"
                 class="custom-menu"
                 :collapse="isCollapse"
                 :collapse-transition="false"

@@ -2,6 +2,9 @@ import VueRouter from 'vue-router'
 import login from "../components/login/login.vue";
 import adminPage from "../components/adminPage/admin.vue"
 import settingPage from "../components/settingPage/setting.vue"
+import offer from "@/components/Offer/offer.vue";
+
+
 import Verification from "@/components/EmailVertify/Verification.vue";
 import ForgetPasswordVerification from "@/components/EmailVertify/ForgetPasswordVerification.vue";
 
@@ -32,6 +35,16 @@ const router = new VueRouter({
             meta: { requiresAuth: true, allowedRoles: ['SUPERADMIN'] }
 
         },
+        {
+            path: '/superadmin/offer/:productId',
+            name: 'offer',
+            component: offer,
+            props: true, // 允许组件接收路由参数作为props
+            meta: { requiresAuth: true, allowedRoles: ['SUPERADMIN'] }
+
+        },
+
+
         {
             path: '/verification',
             name: 'Verification',

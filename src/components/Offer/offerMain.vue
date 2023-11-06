@@ -1,7 +1,20 @@
 <template>
   <div class="admin-Main">
+    <!-- 产品详情区域 -->
+    <div class="product-details">
+      <img :src="getImageUrl(selectedProduct.productImage)" alt="Product Image" class="product-image" style="margin-left: 20px">
+
+        <h3 style="margin-left: 10px; margin-top: 25px; color: #008604">Product name: {{ selectedProduct.productName }}</h3>
+
+        <h3 style="margin-left: 40px; margin-top: 25px;color: #008604">Purity: {{ selectedProduct.purity }}</h3>
+
+        <h3 style="margin-left: 40px; margin-top: 25px;color: #008604" >Post Time: {{ formatDate(selectedProduct.productCreateTime) }}</h3>
+
+
+      <!-- ... 其他产品信息 ... -->
+    </div>
+
     <el-table :data="tableData"
-              @row-click="handleRowClick"
               :cell-style="{padding: '0',textAlign: 'center'}"
               style="font-size: 18px; width: max-content; min-width: 105%;"
               @sort-change="handleSortChange"
@@ -10,28 +23,24 @@
               row-key="id"
     >
 
-      <el-table-column prop="productName" label="Product Name">
-      </el-table-column>
-      <el-table-column prop="id" label="Image">
+
+
+      <el-table-column prop="id" label="Buyer Avatar">
         <template slot-scope="scope">
-          <img :src="getImageUrl(scope.row.productImage)" alt="Product Image" class="logo">
+          <img :src="getAvatarUrl(scope.row.buyer.avatarUrl)" @error="setDefaultAvatar" alt="Buyer Avatar" class="avatar">
         </template>
 
       </el-table-column>
-      <el-table-column
-          prop="category"
-          label="Category"
-          :filters="categoryFilters"
-          :filter-method="filterCategory"
-          filterable
-      >
 
-        <template slot-scope="scope">
-          <!-- 根据category的值来显示不同的图片 -->
-          <img v-if="scope.row.category === 1" src="../../assets/gold.png" alt="Gold" class="logo2">
-          <img v-else-if="scope.row.category === 2" src="../../assets/sliver.png" alt="Silver" class="logo2">
-        </template>
+      <el-table-column prop="buyer.name" label="Buyer Name">
       </el-table-column>
+
+      <el-table-column prop="price" label="Offer Price($)" sortable>
+      </el-table-column>
+
+      <el-table-column prop="note" label="Offer Note">
+      </el-table-column>
+
 
       <el-table-column
           prop="productStatus"
@@ -41,33 +50,24 @@
 
         <template slot-scope="scope">
           <!-- 使用条件渲染来显示不同的标签 -->
-          <el-tag v-if="scope.row.productStatus === 0" type="success">Open</el-tag>
-          <el-tag v-else-if="scope.row.productStatus === 1" type="info">Closed</el-tag>
-          <el-tag v-else-if="scope.row.productStatus === 2" type="danger">Sold</el-tag>
-          <el-tag v-else-if="scope.row.productStatus === 3" type="danger">Cancelled</el-tag>
+          <el-tag v-if="scope.row.offerStatus === 0" type="info">Send</el-tag>
+          <el-tag v-else-if="scope.row.offerStatus === 1" type="success">Accepted</el-tag>
+          <el-tag v-else-if="scope.row.offerStatus === 2" type="danger">rejected</el-tag>
+          <el-tag v-else-if="scope.row.offerStatus === 3" type="error">Cancelled</el-tag>
+          <el-tag v-else-if="scope.row.offerStatus === 4" type="danger">Expired</el-tag>
         </template>
       </el-table-column>
 
 
       <el-table-column
-          prop="productCreateTime"
-          label="Upload time"
+          prop="timestamp"
+          label="offer time"
           sortable>
         <template v-slot="scope">
-          <span>{{ formatDate(scope.row.productCreateTime) }}</span>
+          <span>{{ formatDate(scope.row.timestamp) }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column
-          prop="offerNumber"
-          label="Offer Number"
-          sortable="custom"
-          width="250">
-        <template slot-scope="scope">
-          <!-- 这里直接展示当前产品的offer数量 -->
-          <span>{{ scope.row.offers ? scope.row.offers.length : 0 }}</span>
-        </template>
-      </el-table-column>
 
       <el-table-column prop="operation" label="OPERATE">
         <template slot-scope="scope">
@@ -82,44 +82,27 @@
 
     </el-table>
 
-    <el-dialog :visible.sync="dialogVisible" title="Edit Product" custom-class="dark-dialog">
+    <el-dialog :visible.sync="dialogVisible" title="Edit Offer" custom-class="dark-dialog">
       <el-form ref="editForm" :model="editingProduct">
-        <el-form-item label="Product Name">
-          <el-input v-model="editingProduct.productName"></el-input>
+        <el-form-item label="Offer Price">
+          <el-input v-model="editingProduct.price"></el-input>
         </el-form-item>
-        <el-form-item label="Product Description">
-          <el-input type="textarea" v-model="editingProduct.productDescription"></el-input>
+
+        <el-form-item label="Offer Note">
+          <el-input type="textarea" v-model="editingProduct.note"></el-input>
         </el-form-item>
-        <el-form-item label="Category">
-          <!-- 假设 category 是一个选择项 -->
-          <el-select v-model="editingProduct.category">
-            <el-option label="Gold" :value="1"></el-option>
-            <el-option label="Silver" :value="2"></el-option>
-          </el-select>
-        </el-form-item>
+
         <el-form-item label="Status">
           <!-- 状态也是选择项 -->
-          <el-select v-model="editingProduct.productStatus">
-            <el-option label="Open" :value="0"></el-option>
-            <el-option label="Closed" :value="1"></el-option>
-            <el-option label="Deleted" :value="2"></el-option>
+          <el-select v-model="editingProduct.offerStatus">
+            <el-option label="Send" :value="0"></el-option>
+            <el-option label="Accepted" :value="1"></el-option>
+            <el-option label="rejected" :value="2"></el-option>
+            <el-option label="Cancelled" :value="3"></el-option>
+            <el-option label="Expired" :value="4"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="Images">
-          <div v-if="getImageUrls(editingProduct.productImage).length > 0" class="image-preview-container">
-            <div v-for="(image, index) in getImageUrls(editingProduct.productImage)" :key="index" class="image-preview-item">
-              <img :src="image.url" class="image-preview">
-              <el-button
-                  class="delete-image-button"
-                  type="danger"
-                  icon="el-icon-close"
-                  circle
-                  @click.stop="removeImage(image.filename)"
-              ></el-button>
-            </div>
-          </div>
-          <p v-else class="image-empty">The picture is Empty</p>
-        </el-form-item>
+
         <!-- ...其他表单项... -->
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -143,9 +126,35 @@
 
 </template>
 
-<script src="./adminMain.js"></script>
+<script src="./offerMain.js">
+</script>
 
 <style>
+.product-details {
+  /* 样式定义 */
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px; /* 表格和详情之间的间距 */
+}
+
+.product-image {
+  /* 样式定义 */
+  width: 100px; /* 图片宽度 */
+  height: 100px; /* 图片高度 */
+  margin-right: 20px; /* 图片和标题之间的间距 */
+}
+
+.product-details h2 {
+  /* 样式定义 */
+  margin: 0;
+  font-size: 24px;
+}
+
+.product-details p {
+  /* 样式定义 */
+  margin: 0;
+  font-size: 18px;
+}
 /* ...其他样式... */
 .image-preview-container {
   display: flex;
@@ -237,6 +246,16 @@
 
 .normal-row {
   color: #eeeeee;
+}
+
+/* 头像样式 */
+.avatar {
+  width: 70px; /* 设置头像的大小，根据需要调整 */
+  height: 70px; /* 设置头像的大小，根据需要调整 */
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-radius: 50%; /* 圆形效果 */
+  object-fit: cover; /* 确保图片覆盖整个内容区域 */
 }
 </style>
 

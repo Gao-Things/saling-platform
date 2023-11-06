@@ -6,6 +6,7 @@ export default {
     components: {lineChart},
     data() {
         return {
+            productId:null,
             id:null,
             tableData: [],
             totalItems: 1000, // 总记录数
@@ -19,15 +20,17 @@ export default {
                 { text: 'Silver', value: '2' }
             ],
             statusFilters: [
-                { text: 'Open', value: 0 },
-                { text: 'Closed', value: 1 },
-                { text: 'Sold', value: 2 },
-                { text: 'Cancelled', value: 3 }
+                { text: 'Send', value: 0 },
+                { text: 'Accepted', value: 1 },
+                { text: 'rejected', value: 3 },
+                { text: 'Cancelled', value: 4 },
+                { text: 'Expired', value: 5 }
             ],
             dialogVisible: false,
             editingProduct: {}, // 存储当前正在编辑的产品信息
-            // chartCategories: ['8/7', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14'],
-            // chartValues: [120, 132, 101, 134, 90, 230, 210, 120, 132, 101, 134, 90, 230, 210]
+            selectedProduct: {
+            },
+
         }
     },
     props:{
@@ -40,20 +43,15 @@ export default {
         exchangeValue(newValue) {
             // 搜索的value
             this.exchangeValue = newValue
-            this.loadGet({ pageNum: this.currentPage, pageSize: this.pageSize, searchValue: this.exchangeValue});
+            this.loadGet();
             console.log("真督"+ this.exchangeValue)
 
         }
     },
     methods: {
-        handleRowClick(row, event, column) {
-            // 检查是否点击的是操作列，如果不是，则进行跳转
-            if (column.property !== 'operation') {
-                this.$router.push({ name: 'offer', params: { productId: row.id }});
-            }
-        },
+
         confirmDelete(row) {
-            this.$confirm('Are you sure you want to delete this item?', 'Warning', {
+            this.$confirm('Are you sure you want to delete this offer ?', 'Warning', {
                 confirmButtonText: 'OK',
                 cancelButtonText: 'Cancel',
                 type: 'warning'
@@ -68,20 +66,20 @@ export default {
             console.log('Product deleted:', productId);
 
             const queryParams = {
-                productID: productId
+                offerId: productId
             }
-            this.$axios.get(this.$httpurl + '/public/admin/adminDeleteProduct', { params: queryParams })
+            this.$axios.get(this.$httpurl + '/public/admin/adminDeleteOffer', { params: queryParams })
                 .then(res => res.data)
                 .then(res => {
 
-                if (res.code === 200) {
-                    this.loadGet({ pageNum: this.currentPage, pageSize: this.pageSize, searchValue: this.exchangeValue});
-                    this.$message.success("Delete product successful");
+                    if (res.code === 200) {
+                        this.loadGet();
+                        this.$message.success("Delete Offer successful");
 
-                } else {
-                    alert("failed to get the data")
-                }
-            })
+                    } else {
+                        alert("failed to get the data")
+                    }
+                })
         },
         openDialog(row) {
             this.editingProduct = { ...row }; // 复制行数据到编辑对象
@@ -107,17 +105,11 @@ export default {
         prepareDataForBackend(frontendData) {
             // 创建一个新的对象来匹配后端期望的参数格式
             const backendData = {
-                productId: frontendData.id,
-                category: frontendData.categoryValue, // 或者 frontendData.category，根据后端的实际要求
-                itemTitle: frontendData.productName,
-                itemDescription: frontendData.productDescription,
-                itemWeight: frontendData.productWeight,
-                // 假设后端需要单个图片URL作为字符串，而不是数组
-                imageUrl: frontendData.productImage,
-                userId: frontendData.ownerId,
-                hiddenPrice: frontendData.priceStatus, // 这里假设priceStatus是hiddenPrice，根据实际调整
-                itemPurity: frontendData.purity,
-                itemPrice: frontendData.productPrice,
+                id: frontendData.id,
+                price: frontendData.price, // 或者 frontendData.category，根据后端的实际要求
+                note: frontendData.note,
+                offerStatus: frontendData.offerStatus
+
             };
 
             // 返回处理后的数据
@@ -142,14 +134,14 @@ export default {
                 }
             };
 
-            this.$axios.post(this.$httpurl + '/public/admin/adminUploadProduct', this.prepareDataForBackend(this.editingProduct), config)
+            this.$axios.post(this.$httpurl + '/public/admin/adminUploadOffer', this.prepareDataForBackend(this.editingProduct), config)
                 .then(res => res.data)
                 .then(res => {
                     console.log(res);
                     if (res.code === 200) {
                         // 关闭 Loading
                         loadingInstance.close();
-                        this.loadGet({ pageNum: this.currentPage, pageSize: this.pageSize, searchValue: this.exchangeValue});
+                        this.loadGet();
                         this.$message({
                             message: 'Product modify successfully !',
                             type: 'success' // 设置消息类型，可以是success、warning、info、error等
@@ -194,7 +186,7 @@ export default {
         },
         filterStatus(value, row) {
             // value 是筛选器选项的值，row.productStatus 是行数据中的状态值
-            return row.productStatus == value;
+            return row.offerStatus == value;
         },
         filterCategory(value, row) {
             // 确保这个方法返回一个布尔值
@@ -203,7 +195,13 @@ export default {
             return row.category == value;
         },
 
-        loadGet(queryParams) {
+        loadGet() {
+           const queryParams = {
+               pageNum: this.currentPage,
+               pageSize: this.pageSize,
+               productId: this.productId,
+               searchValue: this.exchangeValue
+           }
             const token = store.getters.getToken;
             const config = {
                 headers: {
@@ -218,23 +216,57 @@ export default {
                 background: 'rgba(0, 0, 0, 0.4)'
             });
 
-            this.$axios.get(this.$httpurl + '/public/admin/productListAdmin', { params: queryParams }, config)
+            this.$axios.get(this.$httpurl + '/public/admin/getOfferListAdmin', { params: queryParams }, config)
                 .then(res => res.data)
                 .then(res => {
 
-                if (res.code === 200) {
-                    // 关闭 Loading
-                    loadingInstance.close();
-                    this.tableData = res.data.records
-                    this.totalItems = res.data.total
-                    console.log("wdfffffffffff");
-                    console.log(this.tableData);
+                    if (res.code === 200) {
+                        // 关闭 Loading
+                        loadingInstance.close();
+                        this.tableData = res.data.records
+                        this.totalItems = res.data.total
+                        console.log("wdfffffffffff");
+                        console.log(this.tableData);
 
 
-                } else {
-                    alert("failed to get the data")
+                    } else {
+                        alert("failed to get the data")
+                    }
+                })
+        },
+
+        loadProductDetail() {
+            const token = store.getters.getToken;
+            const config = {
+                headers: {
+                    'Authorization': `Bearer ${token}` // 添加 Bearer token 请求头
                 }
-            })
+            };
+            // 开启全局 Loading
+            let loadingInstance = this.$loading({
+                lock: true,
+                text: 'Loading...',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.4)'
+            });
+
+           const  queryParams = {
+                productId: this.productId
+            }
+
+            this.$axios.get(this.$httpurl + '/public/admin/getProductDetailById', { params: queryParams }, config)
+                .then(res => res.data)
+                .then(res => {
+
+                    if (res.code === 200) {
+                        // 关闭 Loading
+                        loadingInstance.close();
+                        this.selectedProduct = res.data;
+
+                    } else {
+                        alert("failed to get the data")
+                    }
+                })
         },
 
         filterHandler(value, row, column) {
@@ -255,12 +287,12 @@ export default {
         handleSizeChange(newSize) {
             this.pageSize = newSize;
             // 重新获取数据
-            this.loadGet({ pageNum: this.currentPage, pageSize: this.pageSize, searchValue: this.exchangeValue});
+            this.loadGet();
         },
         handleCurrentChange(newPage) {
             this.currentPage = newPage;
             // 重新获取数据
-            this.loadGet({ pageNum: this.currentPage, pageSize: this.pageSize, searchValue: this.exchangeValue});
+            this.loadGet();
         },
 
         getImageUrl(imageString) {
@@ -274,6 +306,18 @@ export default {
 
             console.log(imageUrl)
             return imageUrl;
+        },
+
+        getAvatarUrl(imageString) {
+
+            const imageUrl = this.$imageurl + imageString;
+
+            console.log(imageUrl)
+            return imageUrl;
+        },
+
+        setDefaultAvatar(event) {
+            event.target.src = 'https://icons.iconarchive.com/icons/papirus-team/papirus-status/256/avatar-default-icon.png'; // 设置默认头像的路径
         },
 
         getImageUrls(imageString) {
@@ -293,8 +337,12 @@ export default {
 
 
     },
-    beforeMount() {
-        this.loadGet({ pageNum: this.currentPage, pageSize: this.pageSize, searchValue: "" });
+    created() {
+        // 获取路由参数
+        const  productId = this.$route.params.productId;
+        this.productId = productId;
+        this.loadGet();
+        this.loadProductDetail();
     },
 
 

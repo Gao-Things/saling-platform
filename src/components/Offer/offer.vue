@@ -12,7 +12,7 @@
       </el-header>
 
       <el-main style="height: 100%;  margin-left: -1px">
-        <setting-main></setting-main>
+        <offer-main :exchangeValue="exchangeValue"></offer-main>
       </el-main>
     </el-container>
   </el-container>
@@ -22,15 +22,15 @@
 
 import Aside from "../aside/Aside.vue"
 import Header from "../header/Header.vue"
-import settingMain from "./settingMain.vue"
-import adminMain from "@/components/Product/adminMain";
+import offerMain from "./offerMain.vue"
 export default {
-  components: {adminMain, Aside, Header, settingMain},
+  components: { Aside, Header, offerMain},
   data(){
     return {
       isCollapse:false,
       aside_width:'230px',
       icon:'el-icon-s-fold',
+      exchangeValue:""
     }
   },
   methods:{
@@ -44,6 +44,9 @@ export default {
         this.aside_width = '64px'
         this.icon = 'el-icon-s-unfold'
       }
+    },
+    selectedValue(exchangeValue){
+      this.exchangeValue = exchangeValue
     }
   }
 };
