@@ -3,6 +3,7 @@ import login from "../components/login/login.vue";
 import adminPage from "../components/adminPage/admin.vue"
 import settingPage from "../components/settingPage/setting.vue"
 import offer from "@/components/Offer/offer.vue";
+import user from "@/components/User/user.vue";
 
 
 import Verification from "@/components/EmailVertify/Verification.vue";
@@ -36,6 +37,13 @@ const router = new VueRouter({
 
         },
         {
+            path: '/superadmin/user',
+            name: 'user',
+            component: user,
+            meta: { requiresAuth: true, allowedRoles: ['SUPERADMIN'] }
+
+        },
+        {
             path: '/superadmin/offer/:productId',
             name: 'offer',
             component: offer,
@@ -43,6 +51,7 @@ const router = new VueRouter({
             meta: { requiresAuth: true, allowedRoles: ['SUPERADMIN'] }
 
         },
+
 
 
         {

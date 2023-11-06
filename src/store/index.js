@@ -19,7 +19,7 @@ const store = new Vuex.Store({
         superAdminSidebarLinks: [
             { index: '/Home', icon: 'el-icon-s-home', title: 'Main' },
             { index: '/admin', icon: 'el-icon-alarm-clock', title: 'Product'  },
-            { index: '/user', icon: 'el-icon-aim', title: 'User' },
+            { index: '/superadmin/user', icon: 'el-icon-aim', title: 'User' },
             { index: '/superadmin/setting', icon: 'el-icon-s-tools', title: 'Setting' },
             { index: '/adminControl', icon: 'el-icon-s-custom', title: 'Admin Control' }
         ]
