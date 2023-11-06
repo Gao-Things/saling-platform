@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.usyd.capstone.common.DTO.ProductUserDTO;
 import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.common.VO.ProductFilter;
+import com.usyd.capstone.entity.Offer;
 import com.usyd.capstone.entity.Product;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -32,7 +33,9 @@ public interface ProductService extends IService<Product> {
 
     double getMaxWeight();
 
-    Page<Product> getProductListAndOffer( Integer pageNum,  Integer pageSize, String searchValue);
+    Page<Product> getProductListAndOffer(Integer pageNum, Integer pageSize, String searchValue);
 
     List<Product> getProductListByUserID(Integer userId, boolean isSelling);
+
+    Page<Offer> getOfferListAdmin(Integer pageNum, Integer pageSize, Integer productId, String searchValue);
 }

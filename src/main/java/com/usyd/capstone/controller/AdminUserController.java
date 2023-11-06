@@ -5,15 +5,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.usyd.capstone.common.DTO.NotificationDTO;
 import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.common.VO.AdminResetingPrice;
+import com.usyd.capstone.common.VO.OfferVO;
 import com.usyd.capstone.common.VO.ProductVO;
 import com.usyd.capstone.common.VO.UserLogin;
 import com.usyd.capstone.entity.Notification;
+import com.usyd.capstone.entity.Offer;
 import com.usyd.capstone.entity.Product;
 import com.usyd.capstone.rabbitMq.FanoutSender;
-import com.usyd.capstone.service.AdminUserService;
-import com.usyd.capstone.service.NormalUserService;
-import com.usyd.capstone.service.NotificationService;
-import com.usyd.capstone.service.ProductService;
+import com.usyd.capstone.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +32,9 @@ public class AdminUserController {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private OfferService offerService;
 
     @Autowired
     private NotificationService notificationService;
@@ -113,6 +115,38 @@ public class AdminUserController {
     }
 
 
+    @PostMapping("/adminUploadOffer")
+    public Result adminUploadOffer(@RequestBody OfferVO offerVO){
+
+        Offer offer;
+
+        if (offerVO.getId()!=null){
+            offer = offerService.getById(offerVO.getId());
+        }else {
+            return Result.fail();
+        }
+
+        offer.setPrice(offerVO.getPrice());
+        offer.setOfferStatus(offerVO.getOfferStatus());
+        offer.setNote(offerVO.getNote());
+
+        if (offerService.saveOrUpdate(offer)){
+
+            return Result.suc();
+        }else {
+            return Result.fail();
+        }
+
+    }
+
+    @GetMapping("/adminDeleteOffer")
+    public Result adminDeleteOffer(@RequestParam Integer offerId) {
+
+        return Result.suc(offerService.removeById(offerId));
+
+    }
+
+
     @GetMapping("/adminDeleteProduct")
     public Result adminDeleteProduct(@RequestParam Integer productID) {
 
@@ -142,7 +176,24 @@ public class AdminUserController {
     }
 
 
+    @GetMapping("/getOfferListAdmin")
+    public Result getOfferListAdmin(
+            @RequestParam Integer pageNum,
+            @RequestParam Integer pageSize,
+            @RequestParam Integer productId,
+            @RequestParam String searchValue) {
 
+        Page<Offer> productPage = productService.getOfferListAdmin(pageNum, pageSize,productId, searchValue);
+        return Result.suc(productPage);
+    }
+
+
+    @GetMapping("/getProductDetailById")
+    public Result getProductDetailById( @RequestParam Integer productId ) {
+
+
+        return Result.suc(productService.getById(productId));
+    }
 
 
 

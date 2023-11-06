@@ -16,5 +16,10 @@
         SELECT * FROM normalUser
             WHERE 1=1 AND Email = #{email} AND registration_timestamp = #{registrationTimestamp} AND password = #{password}
     </select>
+    <select id="getUserByUserID" resultType="com.usyd.capstone.entity.NormalUser">
+        SELECT * FROM normal_user
+            WHERE id = #{userId}
+        LIMIT 1;
+    </select>
 
 </mapper>

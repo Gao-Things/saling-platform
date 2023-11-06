@@ -9,9 +9,11 @@ import com.usyd.capstone.common.DTO.productAdmin;
 import com.usyd.capstone.common.VO.ProductFilter;
 import com.usyd.capstone.common.utils.pageUtil;
 import com.usyd.capstone.entity.ExchangeRateUsd;
+import com.usyd.capstone.entity.Offer;
 import com.usyd.capstone.entity.Product;
 import com.usyd.capstone.entity.ProductPriceRecord;
 import com.usyd.capstone.mapper.ExchangeRateUsdMapper;
+import com.usyd.capstone.mapper.OfferMapper;
 import com.usyd.capstone.mapper.ProductMapper;
 import com.usyd.capstone.mapper.ProductPriceRecordMapper;
 import com.usyd.capstone.service.ProductService;
@@ -38,6 +40,9 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
     @Autowired
     ProductMapper productMapper;
+
+    @Autowired
+    OfferMapper offerMapper;
 
     @Autowired
     ExchangeRateUsdMapper exchangeRateUsdMapper;
@@ -192,7 +197,10 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     }
 
     @Override
-    public Page<Product> getProductListAndOffer( Integer pageNum,  Integer pageSize, String searchValue) {
+    public Page<Product> getProductListAndOffer( Integer pageNum,
+                                                 Integer pageSize,
+                                                 String searchValue) {
+
         Page<Product> page = new Page<>(pageNum, pageSize);
         return productMapper.selectProductsWithOffers(page, searchValue);
     }
@@ -201,6 +209,17 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     public List<Product> getProductListByUserID(Integer userId, boolean isSelling) {
 
         return productMapper.getProductListByUserID(userId, isSelling);
+    }
+
+    @Override
+    public Page<Offer> getOfferListAdmin(Integer pageNum,
+                                         Integer pageSize,
+                                         Integer productId,
+                                         String searchValue) {
+
+        Page<Offer> page = new Page<>(pageNum, pageSize);
+
+        return offerMapper.PageOffersByProductId(page, productId, searchValue);
     }
 
 }

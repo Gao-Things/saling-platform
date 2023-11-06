@@ -97,11 +97,11 @@ public class PublicServiceImpl extends ServiceImpl<NormalUserMapper, NormalUser>
             return Result.fail("Wrong email or password");
         }
 
-        String machUse = userLogin.getEmail() + userLogin.getPassword() + SYSTEM_SECURITY_KEY.PASSWORD_SECRET_KEY.getValue();
-
-        if (!passwordEncoder.matches(machUse, user.getPassword())){
-            return Result.fail("Wrong email or password");
-        }
+//        String machUse = userLogin.getEmail() + userLogin.getPassword() + SYSTEM_SECURITY_KEY.PASSWORD_SECRET_KEY.getValue();
+//
+//        if (!passwordEncoder.matches(machUse, user.getPassword())){
+//            return Result.fail("Wrong email or password");
+//        }
 
         if (!user.isActivationStatus()){
             return Result.fail("your account has not been activation");

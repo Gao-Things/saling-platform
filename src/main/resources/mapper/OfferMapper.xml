@@ -24,7 +24,25 @@
         WHERE product.owner_id = #{ownerId} AND offer.offer_status = 0;
 
     </select>
+
+
     <select id="selectOffersByProductId" resultType="com.usyd.capstone.entity.Offer">
         SELECT * FROM offer WHERE product_id = #{productId}
     </select>
+
+
+    <resultMap id="OfferResultMap" type="com.usyd.capstone.entity.Offer">
+        <id column="id" property="id" />
+        <result column="buyer_id" property="buyerId" />
+        <association property="buyer" javaType="com.usyd.capstone.entity.NormalUser"
+                     select="com.usyd.capstone.mapper.NormalUserMapper.getUserByUserID"
+                     column="buyer_id" />
+    </resultMap>
+
+    <select id="PageOffersByProductId" resultMap="OfferResultMap">
+        SELECT * FROM offer
+        WHERE product_id = #{productId}
+          AND ('' = #{searchValue} OR note LIKE CONCAT('%', #{searchValue}, '%') )
+    </select>
+
 </mapper>
