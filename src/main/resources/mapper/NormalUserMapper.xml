@@ -21,5 +21,9 @@
             WHERE id = #{userId}
         LIMIT 1;
     </select>
+    <select id="getUserListAdmin" resultType="com.usyd.capstone.entity.NormalUser">
+        SELECT * FROM normal_user
+        WHERE ('' = #{searchValue} OR name LIKE CONCAT('%', #{searchValue}, '%') OR email LIKE CONCAT('%', #{searchValue}, '%'))
+    </select>
 
 </mapper>

@@ -2,6 +2,7 @@ package com.usyd.capstone.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.usyd.capstone.common.DTO.NotificationDTO;
 import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.common.compents.JwtToken;
@@ -440,6 +441,14 @@ public class NormalUserServiceImpl implements NormalUserService {
     @Override
     public Boolean updateUserInfo(NormalUser normalUser) {
       return   normalUserMapper.updateById(normalUser) == 1;
+    }
+
+    @Override
+    public Page<NormalUser> getUserListAdmin(Integer pageNum, Integer pageSize, String searchValue) {
+
+        Page<Product> page = new Page<>(pageNum, pageSize);
+        return normalUserMapper.getUserListAdmin(page, searchValue);
+
     }
 
 

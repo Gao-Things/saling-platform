@@ -4,18 +4,23 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.usyd.capstone.common.DTO.NotificationDTO;
 import com.usyd.capstone.common.DTO.Result;
-import com.usyd.capstone.common.VO.AdminResetingPrice;
-import com.usyd.capstone.common.VO.OfferVO;
-import com.usyd.capstone.common.VO.ProductVO;
-import com.usyd.capstone.common.VO.UserLogin;
+import com.usyd.capstone.common.VO.*;
+import com.usyd.capstone.entity.NormalUser;
 import com.usyd.capstone.entity.Notification;
 import com.usyd.capstone.entity.Offer;
 import com.usyd.capstone.entity.Product;
 import com.usyd.capstone.rabbitMq.FanoutSender;
 import com.usyd.capstone.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +43,15 @@ public class AdminUserController {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private NormalUserService normalUserService;
+
+    @Autowired
+    private S3Client s3Client;
+
+    @Value("${aws.s3.bucket}")
+    private String s3Bucket;
 
     @PostMapping("/resettingSingleProductPrice")
     public Result test(@RequestBody AdminResetingPrice adminResetingPrice)
@@ -194,6 +208,86 @@ public class AdminUserController {
 
         return Result.suc(productService.getById(productId));
     }
+
+    @GetMapping("/getUserListAdmin")
+    public Result getUserListAdmin(
+            @RequestParam Integer pageNum,
+            @RequestParam Integer pageSize,
+            @RequestParam String searchValue) {
+
+        Page<NormalUser> userPage = normalUserService.getUserListAdmin(pageNum, pageSize, searchValue);
+        return Result.suc(userPage);
+    }
+
+    @PostMapping("/adminUploadUserInfo")
+    public Result adminUploadUserInfo(@RequestBody UserVO userVO){
+
+        NormalUser normalUser = normalUserService.findUserInfoById(userVO.getUserId());
+
+        normalUser.setName(userVO.getName());
+        normalUser.setGender(userVO.getGender());
+        normalUser.setEmail(userVO.getEmail());
+        normalUser.setActivationStatus(userVO.isActivationStatus());
+
+        if (normalUserService.updateUserInfo(normalUser)){
+
+            return Result.suc();
+        }else {
+            return Result.fail();
+        }
+
+    }
+
+
+
+    @PostMapping("/adminUploadLogo")
+    public Result uploadImage(@RequestParam("file") MultipartFile file, @RequestParam("uploadType") int uploadType) {
+        // Check if the file is empty
+        if (file.isEmpty()) {
+            return Result.fail("Please select a file to upload.");
+        }
+
+        // Get the original file name
+        String originalFilename = file.getOriginalFilename();
+
+        // Check if the file format is .png
+        if (!"image/png".equals(file.getContentType())) {
+            return Result.fail("Only PNG files are allowed.");
+        }
+
+        String newFilename = ""; // Initialize the new file name variable
+
+        // Depending on the uploadType, rename the file to logo1.png or logo2.png
+        if (uploadType == 1) {
+            newFilename = "logo1.png";
+        } else if (uploadType == 2) {
+            newFilename = "logo2.png";
+        } else {
+            // Handle the case where uploadType is neither 1 nor 2
+            return Result.fail("Invalid upload type. Please choose a valid option.");
+        }
+
+        try {
+            // Create a PutObjectRequest with the new file name instead of the original
+            PutObjectRequest objectRequest = PutObjectRequest.builder()
+                    .bucket(s3Bucket)
+                    .key(newFilename) // Use the new file name here
+                    .contentType(file.getContentType())
+                    .build();
+
+            // Convert the file's bytes to a RequestBody object
+            software.amazon.awssdk.core.sync.RequestBody requestBody = software.amazon.awssdk.core.sync.RequestBody.fromBytes(file.getBytes());
+            // Upload the file to S3 with the new file name
+            s3Client.putObject(objectRequest, requestBody);
+
+            // Return success result and the new file name
+            return Result.suc(newFilename);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload file to S3", e);
+        }
+    }
+
 
 
 

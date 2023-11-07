@@ -1,6 +1,7 @@
 package com.usyd.capstone.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.usyd.capstone.entity.NormalUser;
 import com.usyd.capstone.entity.Offer;
 import com.usyd.capstone.entity.Product;
@@ -22,4 +23,5 @@ public interface NormalUserMapper extends BaseMapper<NormalUser> {
 
     NormalUser getUserByUserID(@Param("userId") Long userId);
 
+    Page<NormalUser> getUserListAdmin(Page<Product> page, String searchValue);
 }
