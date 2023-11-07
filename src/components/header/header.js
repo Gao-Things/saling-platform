@@ -42,10 +42,10 @@ export default {
         // 登出并跳转到登录页面
         logoutAndRedirect() {
             this.logout(); // 调用登出 action
-            this.$router.push('/login'); // 跳转到登录页面
+            this.$router.push('/'); // 跳转到登录页面
         },
         toLogin(){
-          this.$router.push('/login');
+          this.$router.push('/');
         },
         toUser(){
             console.log("aaaaaaaa")
