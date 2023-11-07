@@ -6,6 +6,10 @@
     </el-aside>
 
     <el-container style="height: 100%;">
+      <el-header
+          style="text-align: right; font-size: 12px; height: 100%; border-bottom: rgb(255,255,255) 2px solid">
+        <Header @doCollapse="doCollapse" @selectedValue="selectedValue" :icon="icon"></Header>
+      </el-header>
       <el-main style="height: 100%;  margin-left: -1px">
         <data-main :exchangeValue="exchangeValue"></data-main>
       </el-main>

@@ -31,7 +31,7 @@ export default {
                             this.loginRole = "SUPERADMIN"
                             this.login({ token: res.jwttoken, role:this.loginRole }); // 使用映射的 action 方法
                         }
-                        this.$router.push('/admin');
+                        this.$router.push('/superadmin/data');
                         console.log('登录');
                     } else {
                         alert("failed to get the data");

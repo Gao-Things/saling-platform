@@ -7,7 +7,7 @@
             <img src="../../assets/img_1.png" width="100px">
         </div>
         <div class="header-item" style="text-align: center">
-            <span class="title">CS COMPANY</span>
+            <span class="title">Metal Trading</span>
         </div>
       <el-input
           class="header-item custom-search-input"

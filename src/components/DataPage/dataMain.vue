@@ -7,18 +7,18 @@
     </el-row>
     <el-row gutter="20" class="echart-row" type="flex" justify="center">
       <el-col :span="11" class="echart-container" >
-        <PieChart :data="genderData" title="User Gender Distribution"/>
+        <PieChart :data="genderData" title="User Gender Distribution" chartName="gender type"/>
       </el-col>
       <el-col :span="11" class="echart-container">
-        <PieChart :data="genderData" title="User Gender Distribution"/>
+        <PieChart :data="goldData" title="Types of gold products" chartName="gold type"/>
       </el-col>
     </el-row>
     <el-row gutter="20" class="echart-row" type="flex" justify="center">
       <el-col :span="11" class="echart-container">
-        <PieChart :data="genderData" title="User Gender Distribution"/>
+        <PieChart :data="sliverData" title="Types of silver products" chartName="sliver type"/>
       </el-col>
       <el-col :span="11" class="echart-container">
-        <BarChart :data="barChartData" title="某某数据统计"/>
+        <BarChart :data="barChartData" title="Top search product"/>
       </el-col>
     </el-row>
   </div>
@@ -43,29 +43,43 @@ export default {
     return {
       // 初始化饼图数据
       genderData: [],
+      goldData: [],
+      sliverData: [],
       barChartData: []
     };
   },
 
   mounted() {
-    this.fetchGenderData();
+    this.getGenderStatistic();
+    this.getProductStatistic(1);
+    this.getProductStatistic(2);
+    this.getHotProductStatistic();
   },
   methods: {
     fetchGenderData() {
       // 调用API获取数据的代码
-      this.getGenderStatistic();
-
       // 假设这是从API获取的数据
-      this.barChartData = [
-        { name: '产品A', value: 20 },
-        { name: '产品B', value: 50 },
-        { name: '产品C', value: 30 },
-        // ...其他数据
-      ];
+      // this.barChartData = [
+      //   { name: '产品A', value: 20 },
+      //   { name: '产品B', value: 50 },
+      //   { name: '产品C', value: 30 },
+      //   // ...其他数据
+      // ];
 
 
     },
+    transformGenderData(data) {
+      const genderMap = {
+        '1': 'Male',
+        '2': 'Female',
+        '0': 'Unknown'
+      };
 
+      return data.map(item => ({
+        ...item,
+        name: genderMap[item.name] || item.name
+      }));
+    },
     getGenderStatistic() {
       // 格式化数据以适应ECharts的数据格式
       // this.genderData = [
@@ -89,13 +103,71 @@ export default {
             if (res.code === 200) {
               // 关闭 Loading
               loadingInstance.close();
-              this.genderData = res.data
+              this.genderData =  this.transformGenderData(res.data)
 
             } else {
               alert("failed to get the data")
             }
           })
+    },
+
+    getProductStatistic(category) {
+      const token = store.getters.getToken;
+      const config = {
+        headers: {
+          'Authorization': `Bearer ${token}` // 添加 Bearer token 请求头
+        }
+      };
+      const requestParameter = {
+          "category": category
+      }
+
+      this.$axios.get(this.$httpurl + '/public/admin/productStatistic', { params: requestParameter }, config )
+          .then(res => res.data)
+          .then(res => {
+
+            if (res.code === 200) {
+
+              if (category ===1){
+                /**
+                 * 金制品统计数据
+                 */
+                this.goldData = res.data;
+              }else {
+                this.sliverData = res.data;
+              }
+
+
+            } else {
+              alert("failed to get the data")
+            }
+          })
+    },
+
+    getHotProductStatistic(){
+
+      this.barChartData = [
+        { name: '产品A', value: 20 },
+        { name: '产品B', value: 50 },
+        { name: '产品C', value: 30 },
+        // ...其他数据
+      ];
+
+      this.$axios.get(this.$httpurl + '/public/admin/getHotProductStatistic')
+          .then(res => res.data)
+          .then(res => {
+
+            if (res.code === 200) {
+
+              this.barChartData =  res.data
+
+            } else {
+              alert("failed to get the data")
+            }
+          })
+
     }
+
   }
 };
 </script>

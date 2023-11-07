@@ -9,7 +9,8 @@ export default {
   name: 'PieChart',
   props: {
     data: Array,
-    title: String
+    title: String,
+    chartName: String // 添加新的prop
   },
   mounted() {
     this.initPieChart();
@@ -41,7 +42,7 @@ export default {
         },
         series: [
           {
-            name: 'User Gender',
+            name: this.chartName,
             type: 'pie',
             radius: ['40%', '70%'],
             avoidLabelOverlap: false,
