@@ -28,6 +28,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Objects;
 
 
 @Service
@@ -97,11 +98,27 @@ public class PublicServiceImpl extends ServiceImpl<NormalUserMapper, NormalUser>
             return Result.fail("Wrong email or password");
         }
 
-//        String machUse = userLogin.getEmail() + userLogin.getPassword() + SYSTEM_SECURITY_KEY.PASSWORD_SECRET_KEY.getValue();
-//
-//        if (!passwordEncoder.matches(machUse, user.getPassword())){
-//            return Result.fail("Wrong email or password");
-//        }
+        /**
+         * 不好验证，暂时绕行
+         */
+        if (userLogin.getUserRole() == 3){
+            System.out.println(user.getPassword());
+            System.out.println(userLogin.getPassword());
+            if (!userLogin.getPassword().equals(user.getPassword())){
+                return Result.fail("wrong email or password");
+            }
+            LoginResponse loginResponse = new LoginResponse();
+            loginResponse.setId(user.getId());
+            loginResponse.setRole(userLogin.getUserRole());
+            String token = JwtToken.generateToken(user.getId(), userLogin.getEmail(), role);
+            return new Result(200, "Login successfully!", 0L, loginResponse, token);
+        }
+
+        String machUse = userLogin.getEmail() + userLogin.getPassword() + SYSTEM_SECURITY_KEY.PASSWORD_SECRET_KEY.getValue();
+
+        if (!passwordEncoder.matches(machUse, user.getPassword())){
+            return Result.fail("Wrong email or password");
+        }
 
         if (!user.isActivationStatus()){
             return Result.fail("your account has not been activation");

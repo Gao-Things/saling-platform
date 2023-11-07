@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.usyd.capstone.common.DTO.ProductUserDTO;
 import com.usyd.capstone.common.DTO.Result;
+import com.usyd.capstone.common.DTO.StatisticsData;
 import com.usyd.capstone.common.VO.ProductFilter;
 import com.usyd.capstone.entity.Offer;
 import com.usyd.capstone.entity.Product;
@@ -38,4 +39,7 @@ public interface ProductService extends IService<Product> {
     List<Product> getProductListByUserID(Integer userId, boolean isSelling);
 
     Page<Offer> getOfferListAdmin(Integer pageNum, Integer pageSize, Integer productId, String searchValue);
+
+
+    List<StatisticsData> productStatistic(Integer category);
 }

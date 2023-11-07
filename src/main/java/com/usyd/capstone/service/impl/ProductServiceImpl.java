@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.usyd.capstone.common.DTO.ProductUserDTO;
 import com.usyd.capstone.common.DTO.Result;
+import com.usyd.capstone.common.DTO.StatisticsData;
 import com.usyd.capstone.common.DTO.productAdmin;
 import com.usyd.capstone.common.VO.ProductFilter;
 import com.usyd.capstone.common.utils.pageUtil;
@@ -221,5 +222,12 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
 
         return offerMapper.PageOffersByProductId(page, productId, searchValue);
     }
+
+    @Override
+    public List<StatisticsData> productStatistic(Integer category) {
+
+        return productMapper.productStatistic(category);
+    }
+
 
 }

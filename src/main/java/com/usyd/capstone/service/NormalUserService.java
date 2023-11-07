@@ -1,10 +1,11 @@
 package com.usyd.capstone.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.dreamyoung.mprelation.IService;
+import com.usyd.capstone.common.DTO.StatisticsData;
 import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.entity.NormalUser;
-import com.usyd.capstone.entity.Product;
+
+import java.util.List;
 
 public interface NormalUserService {
 
@@ -27,4 +28,9 @@ public interface NormalUserService {
     Boolean updateUserInfo(NormalUser normalUser);
 
     Page<NormalUser> getUserListAdmin(Integer pageNum, Integer pageSize, String searchValue);
+
+
+    List<StatisticsData> getGenderStatistics();
+
+
 }

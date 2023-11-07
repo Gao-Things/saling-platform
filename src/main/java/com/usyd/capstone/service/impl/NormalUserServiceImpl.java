@@ -3,15 +3,14 @@ package com.usyd.capstone.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.usyd.capstone.common.DTO.StatisticsData;
 import com.usyd.capstone.common.DTO.NotificationDTO;
 import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.common.compents.JwtToken;
-import com.usyd.capstone.common.compents.NotificationServer;
 import com.usyd.capstone.entity.*;
 import com.usyd.capstone.mapper.*;
 import com.usyd.capstone.rabbitMq.FanoutSender;
 import com.usyd.capstone.service.NormalUserService;
-import com.usyd.capstone.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -510,6 +509,11 @@ public class NormalUserServiceImpl implements NormalUserService {
             fanoutSender.sendMessage(rabbitMessageList);
         }
 
+    }
+
+
+    public List<StatisticsData> getGenderStatistics() {
+        return normalUserMapper.selectGenderStatistics();
     }
 
 

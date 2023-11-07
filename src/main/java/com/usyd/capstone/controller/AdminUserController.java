@@ -1,15 +1,13 @@
 package com.usyd.capstone.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.usyd.capstone.common.DTO.NotificationDTO;
+import com.usyd.capstone.common.DTO.StatisticsData;
 import com.usyd.capstone.common.DTO.Result;
 import com.usyd.capstone.common.VO.*;
 import com.usyd.capstone.entity.NormalUser;
 import com.usyd.capstone.entity.Notification;
 import com.usyd.capstone.entity.Offer;
 import com.usyd.capstone.entity.Product;
-import com.usyd.capstone.rabbitMq.FanoutSender;
 import com.usyd.capstone.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,10 +17,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/public/admin")
@@ -288,6 +283,18 @@ public class AdminUserController {
         }
     }
 
+
+    @GetMapping("/genderStatistic")
+    public Result getGenderStatistics() {
+        List<StatisticsData> statistics = normalUserService.getGenderStatistics();
+        return Result.suc(statistics);
+    }
+
+    @GetMapping("/productStatistic")
+    public Result productStatistic(@RequestParam Integer category ) {
+        List<StatisticsData> statistics = productService.productStatistic(category);
+        return Result.suc(statistics);
+    }
 
 
 
