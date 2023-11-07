@@ -30,7 +30,7 @@
 
 .logo {
   width: 160px; /* 可以根据实际Logo大小调整 */
-  height: 160px; /* 可以根据实际Logo大小调整 */
+  height: 140px; /* 可以根据实际Logo大小调整 */
   margin-bottom: 30px;
 }
 
