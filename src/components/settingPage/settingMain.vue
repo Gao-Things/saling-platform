@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="h1-container">
-      <h1>You can express this requirement in English as follows:
+      <h1 style="color: #008604; line-height: 2; ">You can express this requirement in English as follows:
 
         "Please ensure the uploaded logo is a transparent PNG image with an aspect ratio ideally of 1:1."</h1>
     </div>

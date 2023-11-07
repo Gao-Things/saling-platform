@@ -4,7 +4,7 @@ import adminPage from "../components/adminPage/admin.vue"
 import settingPage from "../components/settingPage/setting.vue"
 import offer from "@/components/Offer/offer.vue";
 import user from "@/components/User/user.vue";
-
+import data from "@/components/DataPage/data.vue";
 
 import Verification from "@/components/EmailVertify/Verification.vue";
 import ForgetPasswordVerification from "@/components/EmailVertify/ForgetPasswordVerification.vue";
@@ -40,6 +40,13 @@ const router = new VueRouter({
             path: '/superadmin/user',
             name: 'user',
             component: user,
+            meta: { requiresAuth: true, allowedRoles: ['SUPERADMIN'] }
+
+        },
+        {
+            path: '/superadmin/data',
+            name: 'data',
+            component: data,
             meta: { requiresAuth: true, allowedRoles: ['SUPERADMIN'] }
 
         },

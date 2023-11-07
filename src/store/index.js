@@ -17,7 +17,7 @@ const store = new Vuex.Store({
             { index: '/customer', icon: 'el-icon-aim', title: 'customer' }
         ],
         superAdminSidebarLinks: [
-            { index: '/Home', icon: 'el-icon-s-home', title: 'Main' },
+            { index: '/superadmin/data', icon: 'el-icon-s-home', title: 'Main' },
             { index: '/admin', icon: 'el-icon-alarm-clock', title: 'Product'  },
             { index: '/superadmin/user', icon: 'el-icon-aim', title: 'User' },
             { index: '/superadmin/setting', icon: 'el-icon-s-tools', title: 'Setting' },
