@@ -42,4 +42,6 @@ public interface ProductService extends IService<Product> {
 
 
     List<StatisticsData> productStatistic(Integer category);
+
+    List<StatisticsData> getHotProductStatistic();
 }

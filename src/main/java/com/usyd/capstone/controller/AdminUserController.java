@@ -296,6 +296,12 @@ public class AdminUserController {
         return Result.suc(statistics);
     }
 
+    @GetMapping("/getHotProductStatistic")
+    public Result getHotProductStatistic() {
+        List<StatisticsData> statistics = productService.getHotProductStatistic();
+        return Result.suc(statistics);
+    }
+
 
 
 }

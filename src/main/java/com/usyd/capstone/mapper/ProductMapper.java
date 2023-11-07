@@ -28,7 +28,10 @@ public interface ProductMapper extends BaseMapper<Product> {
 
     List<Product> getProductListByUserID(Integer userId, boolean isSelling);
 
-    @Select("SELECT purity AS name, COUNT(*) AS value FROM product WHERE category = {category} GROUP BY purity")
+    @Select("SELECT purity AS name, COUNT(*) AS value FROM product WHERE category = #{category} GROUP BY purity")
     List<StatisticsData>  productStatistic(Integer category);
+
+    @Select("SELECT product_name AS name, search_count AS value FROM product ORDER BY search_count DESC LIMIT 5")
+    List<StatisticsData> getHotProductStatistic();
 
 }

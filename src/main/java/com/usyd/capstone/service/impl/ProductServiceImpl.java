@@ -229,5 +229,10 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         return productMapper.productStatistic(category);
     }
 
+    @Override
+    public List<StatisticsData> getHotProductStatistic() {
+        return productMapper.getHotProductStatistic();
+    }
+
 
 }
