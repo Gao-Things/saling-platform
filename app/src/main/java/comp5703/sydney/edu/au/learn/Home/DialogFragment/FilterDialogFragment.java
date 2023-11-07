@@ -112,8 +112,8 @@ public class FilterDialogFragment extends DialogFragment {
 //                    category = 1;
 //                    break;
 //                case 2:
-//                    // 选项 2 被选中
-//                    categoryGroup.check(R.id.radio_button_2);
+//                    // 选项 2 被选中撒旦撒大苏打萨达萨达萨达萨达萨达萨达是
+//                    categoryGroup.check(R.id.radio_button_2); 
 //
 //                    goldTypeGroup.setVisibility(View.GONE);
 //                    sliverTypeGroup.setVisibility(View.VISIBLE);
