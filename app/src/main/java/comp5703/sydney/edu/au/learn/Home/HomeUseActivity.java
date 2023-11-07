@@ -2,6 +2,8 @@ package comp5703.sydney.edu.au.learn.Home;
 
 import static android.content.ContentValues.TAG;
 
+import static comp5703.sydney.edu.au.learn.util.NetworkUtils.imageURL;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -25,6 +27,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import comp5703.sydney.edu.au.learn.DTO.UserSetting;
@@ -51,6 +54,8 @@ public class HomeUseActivity extends AppCompatActivity  implements ItemDetailFra
     Toolbar toolbar;
     TextView toolbar_title;
 
+    private ImageView header_logo;
+
     private BottomNavigationView bottomNavigationView;
 
     @SuppressLint("NonConstantResourceId")
@@ -72,6 +77,19 @@ public class HomeUseActivity extends AppCompatActivity  implements ItemDetailFra
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);  // 禁用默认的标题
         toolbar_title = findViewById(R.id.toolbar_title);
+
+        header_logo = findViewById(R.id.header_logo);
+
+        /**
+         * 设置header logo
+         *
+         */
+
+        Picasso.get()
+                .load(imageURL + "logo2.png")
+                .error(R.drawable.ic_baseline_settings_suggest_24)  // error_image为加载失败时显示的图片
+                .into(header_logo);
+
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {

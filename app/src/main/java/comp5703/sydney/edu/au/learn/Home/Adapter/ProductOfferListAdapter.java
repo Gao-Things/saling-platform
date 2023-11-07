@@ -65,6 +65,8 @@ public class ProductOfferListAdapter extends RecyclerView.Adapter<ProductOfferLi
 
             holder.offerTime.setText(formattedDate);
 
+            holder.buyerName.setText(recordList.get(position).getBuyer().getName());
+
             // 绑定点击事件
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -120,6 +122,7 @@ public class ProductOfferListAdapter extends RecyclerView.Adapter<ProductOfferLi
 
         private MaterialCardView sellerOfferCard;
 
+        private TextView buyerName;
 
 
         public LinearViewHolder(View itemView){
@@ -128,6 +131,7 @@ public class ProductOfferListAdapter extends RecyclerView.Adapter<ProductOfferLi
             offerStatus = itemView.findViewById(R.id.offerStatus);
             offerTime = itemView.findViewById(R.id.offerTime);
             sellerOfferCard = itemView.findViewById(R.id.sellerOfferCard);
+            buyerName = itemView.findViewById(R.id.buyerName);
         }
     }
 

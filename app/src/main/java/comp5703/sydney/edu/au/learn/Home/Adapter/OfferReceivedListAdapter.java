@@ -83,7 +83,7 @@ public class OfferReceivedListAdapter extends RecyclerView.Adapter<OfferReceived
             holder.AcceptButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mlistener.onClick(position, productOffer.getOfferId(), productOffer.getProductPrice());
+                    mlistener.onClick(position, productOffer.getOfferId(), productOffer.getOfferPrice());
                 }
             });
             // 绑定拒绝事件

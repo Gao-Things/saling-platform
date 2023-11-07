@@ -26,9 +26,16 @@ public class FormValidator {
             return false;
         } else {
             try {
-                Float.parseFloat(value);
-                inputLayout.setError(null);
-                return true;
+                float parsedValue = Float.parseFloat(value);
+                if (parsedValue <= 0) {
+                    // 如果解析的值不是正数，则设置错误消息
+                    inputLayout.setError(errorMessageInvalid);
+                    return false;
+                } else {
+                    // 输入是非零的正浮点数
+                    inputLayout.setError(null);
+                    return true;
+                }
             } catch (NumberFormatException e) {
                 inputLayout.setError(errorMessageInvalid);
                 return false;

@@ -5,10 +5,20 @@ public class Offer {
     private Integer productId;
     private Product product;
     private Integer buyerId;
+    private User buyer;
+
     private double price;
     private String note;
     private Integer offerStatus;
     private Long timestamp;
+
+    public User getBuyer() {
+        return buyer;
+    }
+
+    public void setBuyer(User buyer) {
+        this.buyer = buyer;
+    }
 
     public Integer getId() {
         return id;

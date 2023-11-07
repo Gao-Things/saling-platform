@@ -15,6 +15,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -69,6 +72,7 @@ public class MyService extends Service {
 
     private Integer userId;
 
+    private SharedPreferences sharedPreferences;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -93,6 +97,11 @@ public class MyService extends Service {
     public void onCreate() {
         super.onCreate();
 //        initializeBubbleView("your offter has been accept", " message, ggbao is so good !!!!");
+
+        // 获取SharedPreferences实例
+        sharedPreferences = getSharedPreferences("comp5703", MODE_PRIVATE);
+
+
     }
 
     @Override
@@ -333,7 +342,7 @@ public class MyService extends Service {
        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
            CharSequence channelName = "Your Channel Name";
            String channelDescription = "Your Channel Description";
-           int importance = NotificationManager.IMPORTANCE_DEFAULT;
+           int importance = NotificationManager.IMPORTANCE_HIGH;
 
            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, channelName, importance);
            channel.setDescription(channelDescription);
@@ -350,12 +359,16 @@ public class MyService extends Service {
 
        // 创建通知
        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-               .setSmallIcon(R.drawable.img_5)
-               .setColor(ContextCompat.getColor(this, R.color.red))
+               .setSmallIcon(R.drawable.logo2)
+               .setColor(ContextCompat.getColor(this, R.color.darkGreen))
                .setContentTitle(title)
                .setContentText(content)
                .setPriority(NotificationCompat.PRIORITY_HIGH)
                .setFullScreenIntent(fullScreenPendingIntent, true);
+
+
+       // 自定义的提示音资源文件
+       builder.setSound(getUserSettingTone());
 
        // 构建通知
        Notification notification = builder.build();
@@ -394,6 +407,42 @@ public class MyService extends Service {
 
             webSocket.send(responseMessage);
         }
+    }
+
+
+
+
+    private Uri getUserSettingTone() {
+
+        String toneChoice = sharedPreferences.getString("chooseTone", null);
+
+        Uri customSound;
+
+        switch (toneChoice) {
+            // 获取系统默认的通知音频的 URI
+            case "playful":
+                customSound = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.y831);
+                break;
+
+            case "crisp":
+                customSound = Uri.parse("android.resource://" + getPackageName() + "/"  + R.raw.y1878);
+                break;
+
+            case "electronic":
+                customSound =  Uri.parse("android.resource://" + getPackageName() + "/" +R.raw.y2170);
+                break;
+
+            case "rock":
+                customSound = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.y2225);
+                break;
+
+            default:
+                customSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                break;
+        }
+
+
+        return customSound;
     }
 
 }

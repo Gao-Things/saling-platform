@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -20,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.kyleduo.switchbutton.SwitchButton;
@@ -60,6 +62,8 @@ public class SettingFragment extends Fragment {
 
     private SharedPreferences sharedPreferences;
 
+    private ImageView backClick;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -92,6 +96,17 @@ public class SettingFragment extends Fragment {
         switchMessageToneOpen = view.findViewById(R.id.switchMessageToneOpen);
         userSelectedTone = view.findViewById(R.id.userSelectedTone);
         aboutUs = view.findViewById(R.id.aboutUs);
+
+        backClick = view.findViewById(R.id.backClick);
+
+        backClick.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                fragmentManager.popBackStack(); // 返回上一级
+            }
+        });
+
         // 获取用户设置状态
         setUserSetting(switchMessage, switchPopup, switchMessageToneOpen);
 

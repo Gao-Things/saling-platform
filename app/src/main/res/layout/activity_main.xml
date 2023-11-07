@@ -23,7 +23,7 @@
         android:layout_marginTop="50dp"
 
         android:gravity="center"
-        android:text="Company name"
+        android:text="Metal Trading"
         android:textColor="@color/darkGreen"
         android:textSize="30dp" />
 
