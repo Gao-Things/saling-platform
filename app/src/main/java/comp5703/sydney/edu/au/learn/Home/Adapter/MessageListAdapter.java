@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import comp5703.sydney.edu.au.learn.Common.CircleTransform;
+import comp5703.sydney.edu.au.learn.Common.RoundedCornersTransformation;
 import comp5703.sydney.edu.au.learn.DTO.MessageFormat;
 import comp5703.sydney.edu.au.learn.DTO.UserMessage;
 import comp5703.sydney.edu.au.learn.R;
@@ -82,6 +84,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
 
             Picasso.get()
                     .load(imageURL + userMessage.getAvatarUrl())
+                    .transform(new CircleTransform())
                     .error(R.drawable.img_5)  // error_image为加载失败时显示的图片
                     .into(holder.userAvatar);
 
