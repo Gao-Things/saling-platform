@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -150,7 +151,7 @@ public class MyService extends Service {
 
                         Log.d("系统消息通知", webSocketMessage.getNotificationContent());
                         // 将操作发送到主线程，前台弹窗
-                        new Handler(Looper.getMainLooper()).post(() -> initializeBubbleView(webSocketMessage.getNotificationContent(), product.getProductName(), null));
+//                        new Handler(Looper.getMainLooper()).post(() -> initializeBubbleView(webSocketMessage.getNotificationContent(), product.getProductName(), null));
 
                         // Send a message back to the server
                         // 构建响应消息对象
