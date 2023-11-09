@@ -68,7 +68,7 @@ public class AdminUserController {
 
 
     @PostMapping("/adminUploadProduct")
-    public Result adminUploadProduct(@RequestBody ProductVO productVO){
+    public Result adminUploadProduct(@RequestBody ProductVO2 productVO){
 
         Product product;
 
@@ -85,6 +85,8 @@ public class AdminUserController {
             return Result.fail("invalid category");
         }
         product.setInResettingProcess(false);
+
+        product.setProductStatus(productVO.getProductStatus());
 
         product.setPriceStatus(productVO.getHiddenPrice());
         product.setCategory(productVO.getCategory());
