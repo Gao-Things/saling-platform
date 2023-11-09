@@ -108,10 +108,11 @@ export default {
             // 创建一个新的对象来匹配后端期望的参数格式
             const backendData = {
                 productId: frontendData.id,
-                category: frontendData.categoryValue, // 或者 frontendData.category，根据后端的实际要求
+                category: frontendData.category, // 或者 frontendData.category，根据后端的实际要求
                 itemTitle: frontendData.productName,
                 itemDescription: frontendData.productDescription,
                 itemWeight: frontendData.productWeight,
+                productStatus: frontendData.productStatus,
                 // 假设后端需要单个图片URL作为字符串，而不是数组
                 imageUrl: frontendData.productImage,
                 userId: frontendData.ownerId,

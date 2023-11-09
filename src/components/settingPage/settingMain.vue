@@ -1,9 +1,7 @@
 <template>
   <div>
     <div class="h1-container">
-      <h1 style="color: #008604; line-height: 2; ">You can express this requirement in English as follows:
-
-        "Please ensure the uploaded logo is a transparent PNG image with an aspect ratio ideally of 1:1."</h1>
+      <h1 style="color: #008604; line-height: 2; ">"Please ensure the uploaded logo is a transparent PNG image with an aspect ratio ideally of 1:1."</h1>
     </div>
 
     <el-row type="flex" direction="column" class="logo-upload-container">
@@ -166,7 +164,7 @@ export default {
   display: block; /* 确保 h1 是块级元素 */
   margin-top: 20px;
   margin-left: 20px;
-  width: 70%; /* 确保 h1 不会影响其他元素的布局 */
+  width: 60%; /* 确保 h1 不会影响其他元素的布局 */
 }
 
 .h1-container h1 {

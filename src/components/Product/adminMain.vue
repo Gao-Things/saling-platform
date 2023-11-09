@@ -102,7 +102,8 @@
           <el-select v-model="editingProduct.productStatus">
             <el-option label="Open" :value="0"></el-option>
             <el-option label="Closed" :value="1"></el-option>
-            <el-option label="Deleted" :value="2"></el-option>
+            <el-option label="Sold" :value="2"></el-option>
+            <el-option label="Cancelled" :value="3"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="Images">
