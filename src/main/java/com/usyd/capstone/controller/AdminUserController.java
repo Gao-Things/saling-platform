@@ -45,7 +45,7 @@ public class AdminUserController {
     @Autowired
     private S3Client s3Client;
 
-    @Value("${aws.s3.bucket}")
+    @Value("#{s3Bucket}")
     private String s3Bucket;
 
     @PostMapping("/resettingSingleProductPrice")

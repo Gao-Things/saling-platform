@@ -9,6 +9,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
@@ -38,10 +39,21 @@ public class SendEmail {
         }
     }
 
-    @Value("${base.weburl}")
-    private static String webUrl;
+    @Value("#{adminWebUrl}")
+    private String adminWebUrl;
+
+    // 静态字段，用于在静态方法中使用
+    private static String staticAdminWebUrl;
+
+    // 使用@PostConstruct注解的方法在所有属性设置之后执行初始化任务
+    @PostConstruct
+    public void init() {
+        // 将注入的值赋给静态变量
+        SendEmail.staticAdminWebUrl = adminWebUrl;
+    }
+
     private static String getRegistEmailContent(String email, long registrationTimestamp, String passwordToken, int userRole) {
-        String url = "http://comp5703-capstone-web.s3-website-us-east-1.amazonaws.com/verification?email=" + email + "&registrationTimestamp=" +
+        String url = staticAdminWebUrl+ "verification?email=" + email + "&registrationTimestamp=" +
                 registrationTimestamp + "&passwordToken=" + passwordToken + "&userRole=" + userRole;
         String emailContent = "<p>Dear user,</p>" +
                 "<p>Thank you for registering with us! To complete your registration, please click the link below to verify your email:</p>" +

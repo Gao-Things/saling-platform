@@ -44,7 +44,7 @@ public class ProductController {
     @Autowired
     private S3Client s3Client;
 
-    @Value("${aws.s3.bucket}")
+    @Value("#{s3Bucket}")
     private String s3Bucket;
 
     @GetMapping("/currencyList")
