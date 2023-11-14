@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.usyd.capstone.controller.SearchControllerTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.089 s - in com.usyd.capstone.controller.SearchControllerTest

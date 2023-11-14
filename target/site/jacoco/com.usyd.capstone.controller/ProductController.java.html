@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">capstone</a> &gt; <a href="index.source.html" class="el_package">com.usyd.capstone.controller</a> &gt; <span class="el_source">ProductController.java</span></div><h1>ProductController.java</h1><pre class="source lang-java linenums">package com.usyd.capstone.controller;
+
+
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.usyd.capstone.common.DTO.ProductUserDTO;
+import com.usyd.capstone.common.DTO.Result;
+import com.usyd.capstone.common.VO.ProductVO;
+import com.usyd.capstone.common.VO.ProductFilter;
+import com.usyd.capstone.entity.Product;
+import com.usyd.capstone.service.ExchangeRateUsdService;
+import com.usyd.capstone.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * &lt;p&gt;
+ * 前端控制器
+ * &lt;/p &gt;
+ *
+ * @author yyf
+ * @since 2023年08月26日
+ */
+@RestController
+@RequestMapping(&quot;/public/product&quot;)
+<span class="fc" id="L36">public class ProductController {</span>
+
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private ExchangeRateUsdService exchangeRateUsdService;
+
+    @Autowired
+    private S3Client s3Client;
+
+    @Value(&quot;${aws.s3.bucket}&quot;)
+    private String s3Bucket;
+
+    @GetMapping(&quot;/currencyList&quot;)
+    public Result getCurrencyList(){
+<span class="nc" id="L52">        return exchangeRateUsdService.getNewestCurrency();</span>
+    }
+
+    @GetMapping(&quot;/productList&quot;)
+    public Result getProductsWithPrices(@ModelAttribute ProductFilter productFilter) {
+<span class="nc" id="L57">        List&lt;ProductUserDTO&gt; productList = productService.listProduct(productFilter);</span>
+<span class="nc" id="L58">        return Result.suc(productList);</span>
+    }
+
+
+
+    @GetMapping(&quot;/getMinMaxWeight&quot;)
+    public Result getMinMaxWeight() {
+<span class="nc" id="L65">        Map&lt;String, Double&gt; resultMap = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L66">        double minWeight = productService.getMinWeight();</span>
+<span class="nc" id="L67">        double maxWeight = productService.getMaxWeight();</span>
+
+<span class="nc" id="L69">        resultMap.put(&quot;minWeight&quot;, minWeight);</span>
+<span class="nc" id="L70">            resultMap.put(&quot;maxWeight&quot;, maxWeight);</span>
+<span class="nc" id="L71">        return Result.suc(resultMap);</span>
+    }
+
+
+    @PostMapping(&quot;/uploadImage&quot;)
+    public Result uploadImage(@RequestParam(&quot;file&quot;) MultipartFile file) {
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        if (file.isEmpty()) {</span>
+<span class="nc" id="L78">            return Result.fail(&quot;Please select a file to upload.&quot;);</span>
+        }
+
+        try {
+            // 获取文件的原始名字
+<span class="nc" id="L83">            String originalFilename = file.getOriginalFilename();</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">            String fileExtension = originalFilename.contains(&quot;.&quot;) ? originalFilename.substring(originalFilename.lastIndexOf(&quot;.&quot;)) : &quot;&quot;;</span>
+
+            // 1. 使用LocalDateTime获取当前时间戳
+<span class="nc" id="L87">            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern(&quot;yyyyMMddHHmmss&quot;));</span>
+
+            // 2. 将时间戳添加到文件名中
+<span class="nc" id="L90">            String key = timestamp + &quot;_&quot; + originalFilename;</span>
+
+            // 3. 获取文件的MIME类型
+<span class="nc" id="L93">            String contentType = file.getContentType();</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">            if (contentType == null) {</span>
+<span class="nc" id="L95">                contentType = &quot;application/octet-stream&quot;; // default</span>
+            }
+
+<span class="nc" id="L98">            PutObjectRequest objectRequest = PutObjectRequest.builder()</span>
+<span class="nc" id="L99">                    .bucket(s3Bucket)</span>
+<span class="nc" id="L100">                    .key(key)</span>
+<span class="nc" id="L101">                    .contentType(contentType)</span>
+<span class="nc" id="L102">                    .build();</span>
+
+<span class="nc" id="L104">            software.amazon.awssdk.core.sync.RequestBody requestBody = software.amazon.awssdk.core.sync.RequestBody.fromBytes(file.getBytes());</span>
+<span class="nc" id="L105">            s3Client.putObject(objectRequest, requestBody);</span>
+
+<span class="nc" id="L107">            return Result.suc(key);</span>
+
+<span class="nc" id="L109">        } catch (IOException e) {</span>
+<span class="nc" id="L110">            throw new RuntimeException(&quot;Failed to upload file to S3&quot;, e);</span>
+        }
+    }
+
+
+    @PostMapping(&quot;/uploadProduct&quot;)
+    public Result uploadProduct(@RequestBody ProductVO productVO){
+        Product product;
+
+<span class="nc bnc" id="L119" title="All 2 branches missed.">        if (productVO.getProductId()!=null){</span>
+<span class="nc" id="L120">            product = productService.getById(productVO.getProductId());</span>
+        }
+        else
+        {
+<span class="nc" id="L124">            product = new Product();</span>
+<span class="nc" id="L125">            product.setCurrentTurnOfRecord(0);</span>
+        }
+<span class="nc" id="L127">        product.setCategory(productVO.getCategory());</span>
+
+<span class="nc bnc" id="L129" title="All 2 branches missed.">        if(product.getCategoryEnum() == null)</span>
+        {
+<span class="nc" id="L131">            return Result.fail(&quot;invalid category&quot;);</span>
+        }
+<span class="nc" id="L133">        product.setInResettingProcess(false);</span>
+
+<span class="nc" id="L135">        product.setPriceStatus(productVO.getHiddenPrice());</span>
+<span class="nc" id="L136">        product.setCategory(productVO.getCategory());</span>
+<span class="nc" id="L137">        product.setProductCreateTime(System.currentTimeMillis());</span>
+<span class="nc" id="L138">        product.setProductDescription(productVO.getItemDescription());</span>
+<span class="nc" id="L139">        product.setProductImage(productVO.getImageUrl());</span>
+<span class="nc" id="L140">        product.setProductName(productVO.getItemTitle());</span>
+<span class="nc" id="L141">        product.setProductPrice(productVO.getItemPrice());</span>
+<span class="nc" id="L142">        product.setProductUpdateTime(System.currentTimeMillis());</span>
+<span class="nc" id="L143">        product.setProductWeight(productVO.getItemWeight());</span>
+<span class="nc" id="L144">        product.setPurity(productVO.getItemPurity());</span>
+<span class="nc bnc" id="L145" title="All 2 branches missed.">        if(product.getCategoryEnum() == null)</span>
+        {
+<span class="nc" id="L147">            return Result.fail(&quot;invalid purity&quot;);</span>
+        }
+<span class="nc" id="L149">        product.setOwnerId(Long.valueOf(productVO.getUserId()));</span>
+<span class="nc" id="L150">        product.setSearchCount(0);</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">        if (productService.saveOrUpdate(product)){</span>
+<span class="nc" id="L152">            return Result.suc(product.getId());</span>
+        }else {
+<span class="nc" id="L154">            return Result.fail();</span>
+        }
+
+    }
+
+    @GetMapping(&quot;/getProductDetail&quot;)
+    public Result getProductDetail(@RequestParam(&quot;productID&quot;) Integer productID ){
+
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">        if (productService.getById(productID) !=null){</span>
+<span class="nc" id="L163">            return Result.suc(productService.getById(productID));</span>
+        }
+<span class="fc" id="L165">        return Result.fail();</span>
+    }
+
+    @GetMapping(&quot;/getProductList/BySingleFilter&quot;)
+    public Result getProductListAfterFiltered(@RequestParam(&quot;filter&quot;) String filter, @RequestParam(&quot;value&quot;) Integer value){
+
+
+<span class="nc" id="L172">        return productService.getProductListAfterFiltered(filter, value,null,null);</span>
+    }
+
+    @GetMapping(&quot;/getProductList/ByDoubleFilter&quot;)
+    public Result getProductListAfterFiltered(@RequestParam(&quot;filter1&quot;) String filter1, @RequestParam(&quot;value1&quot;) Integer value1,
+                                              @RequestParam(&quot;filter2&quot;) String filter2, @RequestParam(&quot;value2&quot;) String value2){
+
+<span class="nc" id="L179">        return productService.getProductListAfterFiltered(filter1, value1, filter2, value2);</span>
+    }
+
+    @GetMapping(&quot;/getProductList/top10Products&quot;)
+    public Result getTop10Products(){
+
+<span class="nc" id="L185">        Result result =  productService.getTop10Products();</span>
+<span class="nc" id="L186">        return result;</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

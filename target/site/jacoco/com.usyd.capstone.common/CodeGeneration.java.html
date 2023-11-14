@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CodeGeneration.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">capstone</a> &gt; <a href="index.source.html" class="el_package">com.usyd.capstone.common</a> &gt; <span class="el_source">CodeGeneration.java</span></div><h1>CodeGeneration.java</h1><pre class="source lang-java linenums">package com.usyd.capstone.common;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.generator.AutoGenerator;
+import com.baomidou.mybatisplus.generator.config.*;
+import com.baomidou.mybatisplus.generator.config.querys.MySqlQuery;
+import com.baomidou.mybatisplus.generator.config.rules.DateType;
+import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
+
+import java.util.Collections;
+import java.util.Scanner;
+
+/**
+ * @author Yu Yifan
+ * Date 2023/2/16 17:56
+ * Description: store-cloud
+ */
+<span class="nc" id="L20">public class CodeGeneration {</span>
+
+    /**
+     * &lt;p&gt;
+     * 读取控制台内容
+     * &lt;/p&gt;
+     */
+    public static String scanner(String tip) {
+<span class="nc" id="L28">        Scanner scanner = new Scanner(System.in);</span>
+<span class="nc" id="L29">        StringBuilder help = new StringBuilder();</span>
+<span class="nc" id="L30">        help.append(&quot;请输入&quot; + tip + &quot;：&quot;);</span>
+<span class="nc" id="L31">        System.out.println(help.toString());</span>
+<span class="nc bnc" id="L32" title="All 2 branches missed.">        if (scanner.hasNext()) {</span>
+<span class="nc" id="L33">            String ipt = scanner.next();</span>
+<span class="nc bnc" id="L34" title="All 2 branches missed.">            if (StringUtils.isNotBlank(ipt)) {</span>
+<span class="nc" id="L35">                return ipt;</span>
+            }
+        }
+<span class="nc" id="L38">        throw new MybatisPlusException(&quot;请输入正确的&quot; + tip + &quot;！&quot;);</span>
+    }
+    public static void main(String[] args) {
+        /**
+         * 先配置数据源
+         */
+<span class="nc" id="L44">        MySqlQuery mySqlQuery = new MySqlQuery() {</span>
+            @Override
+            public String[] fieldCustom() {
+<span class="nc" id="L47">                return new String[]{&quot;Default&quot;};</span>
+            }
+        };
+
+
+
+<span class="nc" id="L53">        DataSourceConfig dsc = new DataSourceConfig.Builder(&quot;jdbc:mysql://capstone-database.cehfy4r9svlw.us-east-1.rds.amazonaws.com/capstone?useUnicode=true&amp;characterEncoding=UTF-8&amp;serverTimezone=UTC&quot;,&quot;admin&quot;,&quot;yyf991210&quot;)</span>
+<span class="nc" id="L54">                .dbQuery(mySqlQuery).build();</span>
+        //通过datasourceConfig创建AutoGenerator
+<span class="nc" id="L56">        AutoGenerator generator = new AutoGenerator(dsc);</span>
+
+        /**
+         * 全局配置
+         */
+<span class="nc" id="L61">        String projectPath = System.getProperty(&quot;user.dir&quot;); //获取项目路径</span>
+<span class="nc" id="L62">        String filePath = projectPath + &quot;/src/main/java&quot;;  //java下的文件路径</span>
+<span class="nc" id="L63">        GlobalConfig global = new GlobalConfig.Builder()</span>
+<span class="nc" id="L64">                .outputDir(filePath)//生成的输出路径</span>
+<span class="nc" id="L65">                .author(scanner(&quot;请输入作者名&quot;))//生成的作者名字</span>
+                //.enableSwagger()开启swagger，需要添加swagger依赖并配置
+<span class="nc" id="L67">                .dateType(DateType.TIME_PACK)//时间策略</span>
+<span class="nc" id="L68">                .commentDate(&quot;yyyy年MM月dd日&quot;)//格式化时间格式</span>
+<span class="nc" id="L69">                .disableOpenDir()//禁止打开输出目录，默认false</span>
+<span class="nc" id="L70">                .fileOverride()//覆盖生成文件</span>
+<span class="nc" id="L71">                .build();</span>
+
+        /**
+         * 包配置
+         */
+<span class="nc" id="L76">        PackageConfig packages = new PackageConfig.Builder()</span>
+<span class="nc" id="L77">                .entity(&quot;entity&quot;)//实体类包名</span>
+<span class="nc" id="L78">                .parent(&quot;com.usyd.capstone&quot;)//父包名。如果为空，将下面子包名必须写全部， 否则就只需写子包名</span>
+<span class="nc" id="L79">                .controller(&quot;controller&quot;)//控制层包名</span>
+<span class="nc" id="L80">                .mapper(&quot;mapper&quot;)//mapper层包名</span>
+<span class="nc" id="L81">                .xml(&quot;mapper.xml&quot;)//数据访问层xml包名</span>
+<span class="nc" id="L82">                .service(&quot;service&quot;)//service层包名</span>
+<span class="nc" id="L83">                .serviceImpl(&quot;service.impl&quot;)//service实现类包名</span>
+<span class="nc" id="L84">                .other(&quot;output&quot;)//输出自定义文件时的包名</span>
+<span class="nc" id="L85">                .pathInfo(Collections.singletonMap(OutputFile.mapperXml, projectPath + &quot;/src/main/resources/mapper&quot;)) //路径配置信息,就是配置各个文件模板的路径信息,这里以mapper.xml为例</span>
+<span class="nc" id="L86">                .build();</span>
+        /**
+         * 模板配置
+         */
+
+        // 如果模板引擎是 freemarker
+//        String templatePath = &quot;/templates/mapper.xml.ftl&quot;;
+//         如果模板引擎是 velocity
+        // String templatePath = &quot;/templates/mapper.xml.vm&quot;;
+
+
+
+<span class="nc" id="L98">        TemplateConfig template = new TemplateConfig.Builder()</span>
+//            .disable()//禁用所有模板
+                //.disable(TemplateType.ENTITY)禁用指定模板
+//                .service(filePath + &quot;/service.java&quot;)//service模板路径
+//                .serviceImpl(filePath + &quot;/service/impl/serviceImpl.java&quot;)//实现类模板路径
+//                .mapper(filePath + &quot;/mapper.java&quot;)//mapper模板路径
+//                .mapperXml(&quot;/templates/mapper.xml&quot;)//xml文件模板路路径
+//                .controller(filePath + &quot;/controller&quot;)//controller层模板路径
+<span class="nc" id="L106">                .build();</span>
+
+        /**
+         * 注入配置,自定义配置一个Map对象
+         */
+//    Map&lt;String,Object&gt; map = new HashMap&lt;&gt;();
+//        map.put(&quot;name&quot;,&quot;young&quot;);
+//        map.put(&quot;age&quot;,&quot;22&quot;);
+//        map.put(&quot;sex&quot;,&quot;男&quot;);
+//        map.put(&quot;description&quot;,&quot;深情不及黎治跃&quot;);
+//
+//    InjectionConfig injectionConfig = new InjectionConfig.Builder()
+//            .customMap(map)
+//            .build();
+
+        /**
+         * 策略配置开始
+         */
+<span class="nc" id="L124">        StrategyConfig strategyConfig = new StrategyConfig.Builder()</span>
+<span class="nc" id="L125">                .enableCapitalMode()//开启全局大写命名</span>
+                //.likeTable()模糊表匹配
+<span class="nc" id="L127">                .addInclude(scanner(&quot;表名&quot;))//添加表匹配，指定要生成的数据表名，不写默认选定数据库所有表</span>
+                //.disableSqlFilter()禁用sql过滤:默认(不使用该方法）true
+                //.enableSchema()启用schema:默认false
+
+<span class="nc" id="L131">                .entityBuilder() //实体策略配置</span>
+                //.disableSerialVersionUID()禁用生成SerialVersionUID：默认true
+<span class="nc" id="L133">                .enableChainModel()//开启链式模型</span>
+<span class="nc" id="L134">                .enableLombok()//开启lombok</span>
+<span class="nc" id="L135">                .enableRemoveIsPrefix()//开启 Boolean 类型字段移除 is 前缀</span>
+<span class="nc" id="L136">                .enableTableFieldAnnotation()//开启生成实体时生成字段注解</span>
+                //.addTableFills()添加表字段填充
+<span class="nc" id="L138">                .naming(NamingStrategy.underline_to_camel)//数据表映射实体命名策略：默认下划线转驼峰underline_to_camel</span>
+<span class="nc" id="L139">                .columnNaming(NamingStrategy.underline_to_camel)//表字段映射实体属性命名规则：默认null，不指定按照naming执行</span>
+<span class="nc" id="L140">                .idType(IdType.AUTO)//添加全局主键类型</span>
+<span class="nc" id="L141">                .formatFileName(&quot;%s&quot;)//格式化实体名称，%s取消首字母I</span>
+<span class="nc" id="L142">                .build()</span>
+
+<span class="nc" id="L144">                .mapperBuilder()//mapper文件策略</span>
+<span class="nc" id="L145">                .enableMapperAnnotation()//开启mapper注解</span>
+<span class="nc" id="L146">                .enableBaseResultMap()//启用xml文件中的BaseResultMap 生成</span>
+<span class="nc" id="L147">                .enableBaseColumnList()//启用xml文件中的BaseColumnList</span>
+                //.cache(缓存类.class)设置缓存实现类
+<span class="nc" id="L149">                .formatMapperFileName(&quot;%sMapper&quot;)//格式化Dao类名称</span>
+<span class="nc" id="L150">                .formatXmlFileName(&quot;%sMapper&quot;)//格式化xml文件名称</span>
+<span class="nc" id="L151">                .build()</span>
+
+<span class="nc" id="L153">                .serviceBuilder()//service文件策略</span>
+<span class="nc" id="L154">                .formatServiceFileName(&quot;%sService&quot;)//格式化 service 接口文件名称</span>
+<span class="nc" id="L155">                .formatServiceImplFileName(&quot;%sServiceImpl&quot;)//格式化 service 接口文件名称</span>
+<span class="nc" id="L156">                .build()</span>
+
+<span class="nc" id="L158">                .controllerBuilder()//控制层策略</span>
+                //.enableHyphenStyle()开启驼峰转连字符，默认：false
+<span class="nc" id="L160">                .enableRestStyle()//开启生成@RestController</span>
+<span class="nc" id="L161">                .formatFileName(&quot;%sController&quot;)//格式化文件名称</span>
+<span class="nc" id="L162">                .build();</span>
+        /*至此，策略配置才算基本完成！*/
+
+        /**
+         * 将所有配置项整合到AutoGenerator中进行执行
+         */
+
+
+<span class="nc" id="L170">        generator.global(global)</span>
+<span class="nc" id="L171">                .template(template)</span>
+//                .injection(injectionConfig)
+<span class="nc" id="L173">                .packageInfo(packages)</span>
+<span class="nc" id="L174">                .strategy(strategyConfig)</span>
+<span class="nc" id="L175">                .execute();</span>
+<span class="nc" id="L176">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

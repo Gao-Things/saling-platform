@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NotificationServer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">capstone</a> &gt; <a href="index.source.html" class="el_package">com.usyd.capstone.common.compents</a> &gt; <span class="el_source">NotificationServer.java</span></div><h1>NotificationServer.java</h1><pre class="source lang-java linenums">package com.usyd.capstone.common.compents;
+
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import com.usyd.capstone.common.DTO.MessageNotificationDTO;
+import com.usyd.capstone.entity.Notification;
+import com.usyd.capstone.mapper.NotificationMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
+
+import javax.websocket.*;
+import javax.websocket.server.PathParam;
+import javax.websocket.server.ServerEndpoint;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
+ * @author websocket服务
+ */
+
+
+@ServerEndpoint(value = &quot;/notification/{userId}&quot;)
+@Component
+<span class="fc" id="L26">public class NotificationServer {</span>
+
+    /**
+     * 用来解决webSocket中无法注入mapper
+     */
+    private static ApplicationContext applicationContext;
+<span class="fc" id="L32">    private static final Logger log = LoggerFactory.getLogger(NotificationServer.class);</span>
+    /**
+     * 记录当前在线连接数
+     */
+<span class="fc" id="L36">    public static final Map&lt;Integer, Session&gt; sessionMap = new ConcurrentHashMap&lt;&gt;();</span>
+
+    public static void setApplicationContext(ApplicationContext applicationContext) {
+<span class="nc" id="L39">        NotificationServer.applicationContext = applicationContext;</span>
+<span class="nc" id="L40">    }</span>
+
+    /**
+     * 连接建立成功调用的方法
+     */
+    @OnOpen
+    public void onOpen(Session session, @PathParam(&quot;userId&quot;) Integer userId) {
+<span class="nc" id="L47">        sessionMap.put(userId, session);</span>
+<span class="nc" id="L48">        log.info(&quot;有新用户加入，userEmail={}, 当前在线人数为：{}&quot;, userId, sessionMap.size());</span>
+<span class="nc" id="L49">    }</span>
+    /**
+     * 连接关闭调用的方法
+     */
+    @OnClose
+    public void onClose(Session session, @PathParam(&quot;userId&quot;) Integer userId) {
+<span class="nc" id="L55">        sessionMap.remove(userId);</span>
+<span class="nc" id="L56">    }</span>
+
+    @OnMessage
+    public void onMessage(String message, Session session, @PathParam(&quot;userId&quot;) Integer userId) {
+
+<span class="nc" id="L61">        log.info(&quot;服务端收到客户端确认={}的消息:{}&quot;, userId, message);</span>
+<span class="nc" id="L62">        JSONObject obj = JSONUtil.parseObj(message);</span>
+<span class="nc" id="L63">        int status = obj.getInt(&quot;ok&quot;);</span>
+<span class="nc" id="L64">        Long notificationId = obj.getInt(&quot;notificationId&quot;).longValue();</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">        if (status == 1){</span>
+            // 更新数据库消息列表的状态为已读
+<span class="nc" id="L67">            NotificationMapper notificationMapper = applicationContext.getBean(NotificationMapper.class);</span>
+
+<span class="nc" id="L69">            Notification notificationOld =  notificationMapper.selectById(notificationId);</span>
+
+<span class="nc" id="L71">            notificationOld.setUserIsRead(1);</span>
+
+<span class="nc" id="L73">            notificationMapper.updateById(notificationOld);</span>
+        }
+
+<span class="nc bnc" id="L76" title="All 2 branches missed.">        if(status == 2){</span>
+            // 接收到移动端心跳包消息，发送心跳回复
+<span class="nc" id="L78">            MessageNotificationDTO messageNotificationDTO = new MessageNotificationDTO();</span>
+
+            // 消息类型， 998为心跳续约类型
+<span class="nc" id="L81">            messageNotificationDTO.setMessageType(998);</span>
+
+<span class="nc" id="L83">            messageNotificationDTO.setNotificationContent(&quot;pong&quot;);</span>
+
+<span class="nc" id="L85">            String result = com.alibaba.fastjson.JSONObject.toJSONString(messageNotificationDTO);</span>
+
+            // 发送给移动端心跳消息
+<span class="nc" id="L88">            sendMessage(result, userId);</span>
+
+        }
+
+<span class="nc" id="L92">    }</span>
+
+    @OnError
+    public void onError(Session session, Throwable error) {
+<span class="nc" id="L96">        log.error(&quot;发生错误&quot;);</span>
+<span class="nc" id="L97">        error.printStackTrace();</span>
+<span class="nc" id="L98">    }</span>
+    /**
+     * 服务端发送消息给客户端
+     */
+    public static void sendMessage(String message, Integer userId) {
+
+        try {
+            // 如果用户处于在线状态就进行推送
+<span class="nc bnc" id="L106" title="All 2 branches missed.">            if (sessionMap.get(userId)!=null){</span>
+<span class="nc" id="L107">                log.info(&quot;服务器发送消息给客户端&quot;, message);</span>
+<span class="nc" id="L108">                sessionMap.get(userId).getBasicRemote().sendText(message);</span>
+            }
+<span class="nc" id="L110">        } catch (Exception e) {</span>
+<span class="nc" id="L111">            log.error(&quot;服务端发送消息给客户端失败&quot;, e);</span>
+<span class="nc" id="L112">        }</span>
+<span class="nc" id="L113">    }</span>
+
+
+
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,7 @@
+com\usyd\capstone\service\NormalUserServiceTest.class
+com\usyd\capstone\service\OfferServiceTest.class
+com\usyd\capstone\controller\SearchControllerTest.class
+com\usyd\capstone\service\NormalUserServiceTest2.class
+com\usyd\capstone\controller\ProductControllerTest.class
+com\usyd\capstone\CapstoneApplicationTests.class
+com\usyd\capstone\PublicServiceTest.class

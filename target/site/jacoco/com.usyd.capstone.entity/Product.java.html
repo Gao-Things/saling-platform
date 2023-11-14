@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Product.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">capstone</a> &gt; <a href="index.source.html" class="el_package">com.usyd.capstone.entity</a> &gt; <span class="el_source">Product.java</span></div><h1>Product.java</h1><pre class="source lang-java linenums">package com.usyd.capstone.entity;
+
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import java.io.Serializable;
+import java.util.Set;
+
+import com.github.dreamyoung.mprelation.EntityMapper;
+import com.usyd.capstone.common.Enums.CATEGORY;
+import com.usyd.capstone.common.Enums.PURITY;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.security.core.parameters.P;
+
+import javax.persistence.*;
+
+/**
+ * &lt;p&gt;
+ * 
+ * &lt;/p&gt;
+ *
+ * @author yyf
+ * @since 2023年08月26日
+ */
+<span class="pc bnc" id="L27" title="All 134 branches missed.">@Data</span>
+@Entity
+@TableName(&quot;product&quot;)
+public class Product implements Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = &quot;id&quot;, nullable = false)
+    @TableId(value = &quot;id&quot;)
+<span class="nc" id="L36">    private Long id;</span>
+
+    @TableField(&quot;product_name&quot;)
+<span class="nc" id="L39">    private String productName;</span>
+
+    @TableField(&quot;product_price&quot;)
+<span class="nc" id="L42">    private double productPrice;</span>
+
+    @TableField(&quot;product_Image&quot;)
+<span class="nc" id="L45">    private String productImage;</span>
+
+    @TableField(&quot;product_create_time&quot;)
+<span class="nc" id="L48">    private long productCreateTime;</span>
+
+    @TableField(&quot;product_update_time&quot;)
+<span class="nc" id="L51">    private long productUpdateTime;</span>
+
+    @TableField(&quot;product_description&quot;)
+<span class="nc" id="L54">    private String productDescription;</span>
+
+    @TableField(&quot;product_weight&quot;)
+<span class="nc" id="L57">    private Double productWeight;</span>
+
+    @TableField(exist = false)
+    @Transient
+<span class="nc" id="L61">    private double productExchangePrice;</span>
+
+    @TableField(&quot;is_in_resetting_process&quot;)
+<span class="nc" id="L64">    private boolean isInResettingProcess;</span>
+
+    //初始化为0，super修改后+1，admin一致后+1
+    //  这是定价的轮次
+    //  报价的轮次=定价的轮次+1
+    @TableField(&quot;current_turn_of_record&quot;)
+<span class="nc" id="L70">    private int currentTurnOfRecord;</span>
+
+    @TableField(&quot;price_status&quot;)
+<span class="nc" id="L73">    private int priceStatus; //0:涨 1：跌 2：平</span>
+//    如果之后有修改/插入/删除记录的功能 本条记录的后一条要视情况修改这个字段的数值
+
+    @Column(name = &quot;category&quot;)
+    @TableField(exist = false)
+<span class="nc" id="L78">    private int categoryValue;</span>
+
+    @TableField(&quot;category&quot;)
+    @Transient
+    private CATEGORY category;
+
+    public void setCategory(int categoryValue) {
+<span class="fc" id="L85">        this.category = CATEGORY.findByValue(categoryValue);</span>
+<span class="fc" id="L86">        this.categoryValue = categoryValue;</span>
+<span class="fc" id="L87">    }</span>
+
+    public int getCategory() {
+<span class="nc" id="L90">        return category.getValue();</span>
+    }
+
+    public CATEGORY getCategoryEnum() {
+<span class="nc" id="L94">        return category;</span>
+    }
+
+    public String getCategoryName() {
+<span class="nc" id="L98">        return category.getName();</span>
+    }
+
+    @TableField(&quot;name_for_update_API&quot;)
+    @Column(name = &quot;name_for_update_API&quot;)
+<span class="fc" id="L103">    private String nameForUpdateAPI;</span>
+
+
+    @OneToMany(mappedBy = &quot;product&quot;)
+    @TableField(exist = false)
+    @com.github.dreamyoung.mprelation.OneToMany
+    @com.github.dreamyoung.mprelation.JoinColumn(name = &quot;id&quot;, referencedColumnName = &quot;product_id&quot;)
+//    @Lazy(false) //false向下查找一层，@OneToMany默认是true
+<span class="nc" id="L111">    private Set&lt;AdminUserProduct&gt; adminUserProducts;</span>
+
+    @OneToMany(mappedBy = &quot;product&quot;)
+    @TableField(exist = false)
+    @com.github.dreamyoung.mprelation.OneToMany
+    @com.github.dreamyoung.mprelation.JoinColumn(name = &quot;id&quot;, referencedColumnName = &quot;product_id&quot;)
+<span class="nc" id="L117">    private Set&lt;ProductPriceRecord&gt; ProductPriceRecords;</span>
+
+    @TableField(&quot;product_status&quot;)
+<span class="nc" id="L120">    private int productStatus; //0: open 1:close 2: sold 3:cancelled</span>
+
+    @TableField(&quot;owner_id&quot;)
+    @Transient
+<span class="nc" id="L124">    private Long ownerId;</span>
+
+    @ManyToOne
+    @JoinColumn(name = &quot;owner_id&quot;, nullable = false)
+    @TableField(exist = false)
+    @com.github.dreamyoung.mprelation.ManyToOne
+    @com.github.dreamyoung.mprelation.JoinColumn(name = &quot;owner_id&quot;, referencedColumnName = &quot;id&quot;)
+    @EntityMapper
+<span class="nc" id="L132">    private NormalUser owner;</span>
+
+    @OneToMany(mappedBy = &quot;product&quot;)
+    @TableField(exist = false)
+    @com.github.dreamyoung.mprelation.OneToMany
+    @com.github.dreamyoung.mprelation.JoinColumn(name = &quot;id&quot;, referencedColumnName = &quot;product_id&quot;)
+<span class="nc" id="L138">    private Set&lt;Offer&gt; offers;</span>
+
+    @Column(name = &quot;purity&quot;)
+    @TableField(exist = false)
+<span class="nc" id="L142">    private String purityName;</span>
+
+    @TableField(&quot;purity&quot;)
+    @Transient
+    private PURITY purity;
+    public void setPurity(int purityValue) {
+<span class="nc" id="L148">        this.purity = PURITY.findByValue(purityValue);</span>
+<span class="nc" id="L149">    }</span>
+
+    public void setPurity(String purityName) {
+<span class="fc" id="L152">        this.purity = PURITY.findByName(purityName);</span>
+<span class="fc" id="L153">        this.purityName = purityName;</span>
+<span class="fc" id="L154">    }</span>
+
+    public String getPurity() {
+<span class="nc" id="L157">        return purity.getName();</span>
+    }
+
+    public PURITY getPurityEnum() {
+<span class="nc" id="L161">        return purity;</span>
+    }
+
+    public int getPurityValue() {
+<span class="nc" id="L165">        return purity.getValue();</span>
+    }
+    @TableField(&quot;search_count&quot;)
+<span class="nc" id="L168">    private int searchCount;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

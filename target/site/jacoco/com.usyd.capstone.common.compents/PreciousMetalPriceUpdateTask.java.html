@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PreciousMetalPriceUpdateTask.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">capstone</a> &gt; <a href="index.source.html" class="el_package">com.usyd.capstone.common.compents</a> &gt; <span class="el_source">PreciousMetalPriceUpdateTask.java</span></div><h1>PreciousMetalPriceUpdateTask.java</h1><pre class="source lang-java linenums">package com.usyd.capstone.common.compents;
+
+import com.alibaba.fastjson.JSONObject;
+import com.usyd.capstone.common.DTO.MetalApiResponse;
+import com.usyd.capstone.common.Enums.CATEGORY;
+import com.usyd.capstone.common.Enums.PreciousMetalType;
+import com.usyd.capstone.common.Enums.SYSTEM_SECURITY_KEY;
+import com.usyd.capstone.entity.Product;
+import com.usyd.capstone.mapper.ProductPriceRecordMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+import javax.annotation.PostConstruct;
+import java.util.Map;
+
+
+@Component
+<span class="fc" id="L20">public class PreciousMetalPriceUpdateTask extends BaseTask {</span>
+
+    @Autowired
+    private ProductPriceRecordMapper productPriceRecordMapper;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+<span class="fc" id="L28">    private String apiUrl = &quot;https://metals-api.com/api/latest&quot;;</span>
+
+    @PostConstruct
+    public void CryptoCurrencyPriceUpdateTask()
+    {
+<span class="fc" id="L33">        category = CATEGORY.PRECIOUS_METAL;</span>
+<span class="fc" id="L34">        initProductMap();</span>
+<span class="fc" id="L35">    }</span>
+
+    @Async
+    @Scheduled(fixedRate = 1800000) // 每半小时执行一次，单位为毫秒
+    public void updateCurrencyRates() throws IllegalAccessException {
+
+<span class="nc" id="L41">        StringBuilder preciousMetalNames = new StringBuilder();</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">        if (!productMap.isEmpty()) {</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">            for(Map.Entry&lt;String, Product&gt; entry : productMap.entrySet())</span>
+            {
+<span class="nc" id="L45">                preciousMetalNames.append(entry.getKey()).append(&quot;,&quot;);</span>
+<span class="nc" id="L46">            }</span>
+        }
+        else
+        {
+            // 枚举获得需要拉取的值
+<span class="nc" id="L51">            PreciousMetalType[] preciousMetalTypesUse = PreciousMetalType.values();</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">            for (PreciousMetalType metal : preciousMetalTypesUse) {</span>
+<span class="nc" id="L53">                preciousMetalNames.append(metal).append(&quot;,&quot;);</span>
+            }
+        }
+
+<span class="nc" id="L57">        preciousMetalNames.deleteCharAt(preciousMetalNames.length() - 1);</span>
+<span class="nc" id="L58">        String preciousMetalPriceUrl =</span>
+<span class="nc" id="L59">                apiUrl + &quot;?access_key=&quot; + SYSTEM_SECURITY_KEY.METALS_API_KEY.getValue();</span>
+
+<span class="nc" id="L61">        preciousMetalPriceUrl += &quot;&amp;base=USD&quot;;</span>
+<span class="nc" id="L62">        preciousMetalPriceUrl += &quot;&amp;symbols=&quot; + preciousMetalNames;</span>
+
+<span class="nc" id="L64">        MetalApiResponse response = restTemplate.getForObject(preciousMetalPriceUrl, MetalApiResponse.class);</span>
+        // 将MetalApiResponse对象的rates字段转换为JSONObject
+<span class="nc" id="L66">        JSONObject ratesObject = response.getRates();</span>
+
+
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        if(!productMap.isEmpty()) {</span>
+<span class="nc" id="L70">            ratesObject.keySet().forEach(key -&gt; {</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">                if(key.length() &gt;= 4) {</span>
+<span class="nc" id="L72">                    Product product = productMap.get(key.replace(&quot;USD&quot;, &quot;&quot;));</span>
+
+<span class="nc bnc" id="L74" title="All 2 branches missed.">                    if (product.getProductUpdateTime() != response.getTimestamp() * 1000) {</span>
+<span class="nc" id="L75">                        insertARecord(product);</span>
+<span class="nc" id="L76">                        double priceNew = (Double) ratesObject.get(key);</span>
+<span class="nc" id="L77">                        updateProductInfo(priceNew, product, response.getTimestamp() * 1000);</span>
+<span class="nc" id="L78">                        productMapper.updateById(product);</span>
+                    }
+                }
+<span class="nc" id="L81">            });</span>
+        }
+        else
+        {
+            // 枚举获得需要筛选存入数据库的值
+<span class="nc" id="L86">            PreciousMetalType[] preciousMetalTypes = PreciousMetalType.values();</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">            for (PreciousMetalType metal : preciousMetalTypes) {</span>
+                // 从ratesObject中提取所需字段
+<span class="nc bnc" id="L89" title="All 2 branches missed.">                if (ratesObject.containsKey(metal.getTranerName())) {</span>
+<span class="nc" id="L90">                    Product product = new Product();</span>
+<span class="nc" id="L91">                    product.setCategory(2);</span>
+<span class="nc" id="L92">                    product.setCurrentTurnOfRecord(0);</span>
+<span class="nc" id="L93">                    product.setInResettingProcess(false);</span>
+<span class="nc" id="L94">                    product.setPriceStatus(2);</span>
+<span class="nc" id="L95">                    product.setProductCreateTime(response.getTimestamp() * 1000);</span>
+<span class="nc" id="L96">                    product.setProductDescription(&quot;This is &quot; + metal.getExplain());</span>
+<span class="nc" id="L97">                    product.setProductName(metal.getExplain());</span>
+<span class="nc" id="L98">                    product.setProductPrice((Double) ratesObject.get(metal.getTranerName()));</span>
+<span class="nc" id="L99">                    product.setProductUpdateTime(response.getTimestamp() * 1000);</span>
+<span class="nc" id="L100">                    product.setNameForUpdateAPI(metal.name());</span>
+
+<span class="nc" id="L102">                    productMap.put(product.getNameForUpdateAPI(),product);</span>
+<span class="nc" id="L103">                    productMapper.insert(product);</span>
+                }
+            }
+        }
+<span class="nc" id="L107">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

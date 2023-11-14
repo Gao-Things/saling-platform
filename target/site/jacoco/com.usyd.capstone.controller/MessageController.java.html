@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MessageController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">capstone</a> &gt; <a href="index.source.html" class="el_package">com.usyd.capstone.controller</a> &gt; <span class="el_source">MessageController.java</span></div><h1>MessageController.java</h1><pre class="source lang-java linenums">package com.usyd.capstone.controller;
+
+import cn.hutool.json.JSONObject;
+import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.usyd.capstone.common.DTO.MessageFormat;
+import com.usyd.capstone.common.DTO.Result;
+import com.usyd.capstone.common.VO.RejectMessage;
+import com.usyd.capstone.entity.Message;
+import com.usyd.capstone.entity.NormalUser;
+import com.usyd.capstone.entity.Offer;
+import com.usyd.capstone.entity.Product;
+import com.usyd.capstone.rabbitMq.FanoutSender;
+import com.usyd.capstone.service.MessageService;
+import com.usyd.capstone.service.NormalUserService;
+import com.usyd.capstone.service.OfferService;
+import com.usyd.capstone.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping(&quot;/normal/message&quot;)
+<span class="fc" id="L28">public class MessageController {</span>
+    @Autowired
+    private MessageService messageService;
+
+    @Autowired
+    private NormalUserService normalUserService;
+
+    @Autowired
+    private OfferService offerService;
+
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private FanoutSender fanoutSender;
+
+
+    // 获取所有的聊天者信息
+    @GetMapping(&quot;/getMessageListByUserId&quot;)
+    public Result getMessageListByUserId(@RequestParam(&quot;userId&quot;) Integer userId){
+
+<span class="nc" id="L49">        return messageService.getMessageListByUserId(userId);</span>
+    }
+
+    // 根据用户id删除所有相关聊天记录
+    @GetMapping(&quot;/deleteMessageHistoryByUserIdAndRemoteUserId&quot;)
+    public Result deleteMessageHistoryByUserIdAndRemoteUserId(
+            @RequestParam(&quot;userId&quot;) Integer userId,
+            @RequestParam(&quot;remoteUserId&quot;) Integer remoteUserId){
+
+<span class="nc" id="L58">        return messageService.deleteMessageHistoryByUserIdAndRemoteUserId(userId, remoteUserId);</span>
+    }
+
+    @GetMapping(&quot;/getMessageListByUserIdAndRemoteUserId&quot;)
+    public Result getMessageListByUserIdAndRemoteUserId(
+            @RequestParam(&quot;userId&quot;) Integer userId,
+            @RequestParam(&quot;remoteUserId&quot;) Integer remoteUserId){
+
+<span class="nc" id="L66">        return messageService.getMessageListByUserIdAndRemoteUserId(userId, remoteUserId);</span>
+    }
+
+
+    @GetMapping(&quot;/getUserInfoById&quot;)
+    public Result getUserInfoById(
+            @RequestParam(&quot;userId&quot;) Integer userId){
+
+<span class="nc" id="L74">        NormalUser normalUser = normalUserService.findUserInfoById(userId);</span>
+<span class="nc" id="L75">        return Result.suc(normalUser);</span>
+    }
+
+
+    /**
+     * 保存拒绝offer消息卡片，发送删除消息卡片
+     */
+
+    @PostMapping(&quot;/postRejectMessage&quot;)
+    public Result postRejectMessage(
+            @RequestBody RejectMessage rejectMessage){
+<span class="nc" id="L86">        Offer offer = offerService.getById(rejectMessage.getOfferId());</span>
+
+        // 查出offer的提出者
+<span class="nc" id="L89">        Integer toUserId = Math.toIntExact(offer.getBuyerId());</span>
+
+        // 查出product 的imageUrl
+<span class="nc" id="L92">        Product product = productService.getById(offer.getProductId());</span>
+        // 把图片链接字符串转回list
+<span class="nc" id="L94">        String[] items = product.getProductImage().substring(1, product.getProductImage().length() - 1).split(&quot;, &quot;);</span>
+
+
+        // 组合卡片类型的message
+<span class="nc" id="L98">        MessageFormat messageFormat = new MessageFormat();</span>
+
+<span class="nc" id="L100">        messageFormat.setMessageType(2);</span>
+<span class="nc" id="L101">        messageFormat.setCardImageUrl(items[0]);</span>
+
+<span class="nc bnc" id="L103" title="All 2 branches missed.">        if (rejectMessage.getCardTitle()!=null){</span>
+<span class="nc" id="L104">            messageFormat.setCardTitle(rejectMessage.getCardTitle());</span>
+        }
+<span class="nc bnc" id="L106" title="All 2 branches missed.">        if (rejectMessage.getCardDescription() !=null){</span>
+<span class="nc" id="L107">            messageFormat.setCardDescription(rejectMessage.getCardDescription());</span>
+        }
+
+<span class="nc" id="L110">        messageFormat.setProductId(Math.toIntExact(product.getId()));</span>
+
+        // 封装成JSON类型字符串存入数据库
+<span class="nc" id="L113">        String rejectCardMessage =  JSON.toJSONString(messageFormat);</span>
+
+
+<span class="nc" id="L116">        Message message = new Message();</span>
+<span class="nc" id="L117">        message.setPostMessageContent(rejectCardMessage);</span>
+<span class="nc" id="L118">        message.setFromUserId(rejectMessage.getUserId());</span>
+<span class="nc" id="L119">        message.setToUserId(toUserId);</span>
+<span class="nc" id="L120">        message.setPostTime(System.currentTimeMillis());</span>
+<span class="nc" id="L121">        boolean result = messageService.save(message);</span>
+
+
+
+        /**
+         * 发送消息到rabbitMQ聊天交换机， 发送消息通知买家
+         */
+
+<span class="nc" id="L129">        JSONObject jsonObject = new JSONObject();</span>
+<span class="nc" id="L130">        jsonObject.put(&quot;from&quot;, rejectMessage.getUserId());</span>
+<span class="nc" id="L131">        jsonObject.put(&quot;text&quot;, rejectCardMessage);</span>
+
+<span class="nc" id="L133">        Map&lt;Integer, String&gt; rabbitMessageList = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L134">        rabbitMessageList.put(toUserId, jsonObject.toString());</span>
+<span class="nc" id="L135">        fanoutSender.sendChatMessage(rabbitMessageList);</span>
+
+
+<span class="nc bnc" id="L138" title="All 2 branches missed.">        if (result){</span>
+<span class="nc" id="L139">            return Result.suc();</span>
+        }else {
+<span class="nc" id="L141">            return Result.fail();</span>
+        }
+
+
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

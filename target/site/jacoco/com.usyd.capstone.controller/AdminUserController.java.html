@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AdminUserController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">capstone</a> &gt; <a href="index.source.html" class="el_package">com.usyd.capstone.controller</a> &gt; <span class="el_source">AdminUserController.java</span></div><h1>AdminUserController.java</h1><pre class="source lang-java linenums">package com.usyd.capstone.controller;
+
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.usyd.capstone.common.DTO.StatisticsData;
+import com.usyd.capstone.common.DTO.Result;
+import com.usyd.capstone.common.VO.*;
+import com.usyd.capstone.entity.NormalUser;
+import com.usyd.capstone.entity.Notification;
+import com.usyd.capstone.entity.Offer;
+import com.usyd.capstone.entity.Product;
+import com.usyd.capstone.service.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+
+import java.io.IOException;
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/public/admin&quot;)
+<span class="fc" id="L24">public class AdminUserController {</span>
+    @GetMapping(&quot;/hello&quot;)
+    public String hello(){
+<span class="nc" id="L27">        return &quot;hello, admin user&quot;;</span>
+    }
+
+    @Autowired
+    private AdminUserService adminUserService;
+
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private OfferService offerService;
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private NormalUserService normalUserService;
+
+    @Autowired
+    private S3Client s3Client;
+
+    @Value(&quot;${aws.s3.bucket}&quot;)
+    private String s3Bucket;
+
+    @PostMapping(&quot;/resettingSingleProductPrice&quot;)
+    public Result test(@RequestBody AdminResetingPrice adminResetingPrice)
+    {
+<span class="nc" id="L54">        return adminUserService.updateProductPrice(adminResetingPrice.getToken(),</span>
+<span class="nc" id="L55">                adminResetingPrice.getProductId(), adminResetingPrice.getProductPrice(), adminResetingPrice.getTurnOfRecord());</span>
+    }
+
+
+    @GetMapping(&quot;/productListAdmin&quot;)
+    public Result productListAdmin(
+            @RequestParam Integer pageNum,
+            @RequestParam Integer pageSize,
+            @RequestParam String searchValue) {
+
+<span class="nc" id="L65">        Page&lt;Product&gt; productPage = productService.getProductListAndOffer(pageNum, pageSize, searchValue);</span>
+<span class="nc" id="L66">        return Result.suc(productPage);</span>
+    }
+
+
+    @PostMapping(&quot;/adminUploadProduct&quot;)
+    public Result adminUploadProduct(@RequestBody ProductVO2 productVO){
+
+        Product product;
+
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        if (productVO.getProductId()!=null){</span>
+<span class="nc" id="L76">            product = productService.getById(productVO.getProductId());</span>
+        }else {
+<span class="nc" id="L78">            return Result.fail();</span>
+        }
+
+<span class="nc" id="L81">        product.setCategory(productVO.getCategory());</span>
+
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        if(product.getCategoryEnum() == null)</span>
+        {
+<span class="nc" id="L85">            return Result.fail(&quot;invalid category&quot;);</span>
+        }
+<span class="nc" id="L87">        product.setInResettingProcess(false);</span>
+
+<span class="nc" id="L89">        product.setProductStatus(productVO.getProductStatus());</span>
+
+<span class="nc" id="L91">        product.setPriceStatus(productVO.getHiddenPrice());</span>
+<span class="nc" id="L92">        product.setCategory(productVO.getCategory());</span>
+<span class="nc" id="L93">        product.setProductCreateTime(System.currentTimeMillis());</span>
+<span class="nc" id="L94">        product.setProductDescription(productVO.getItemDescription());</span>
+<span class="nc" id="L95">        product.setProductImage(productVO.getImageUrl());</span>
+<span class="nc" id="L96">        product.setProductName(productVO.getItemTitle());</span>
+<span class="nc" id="L97">        product.setProductPrice(productVO.getItemPrice());</span>
+<span class="nc" id="L98">        product.setProductUpdateTime(System.currentTimeMillis());</span>
+<span class="nc" id="L99">        product.setProductWeight(productVO.getItemWeight());</span>
+<span class="nc" id="L100">        product.setPurity(productVO.getItemPurity());</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">        if(product.getCategoryEnum() == null)</span>
+        {
+<span class="nc" id="L103">            return Result.fail(&quot;invalid purity&quot;);</span>
+        }
+<span class="nc" id="L105">        product.setOwnerId(Long.valueOf(productVO.getUserId()));</span>
+<span class="nc" id="L106">        product.setSearchCount(0);</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">        if (productService.saveOrUpdate(product)){</span>
+
+            // save the system notification to datbabase
+<span class="nc" id="L110">            Notification notification = new Notification();</span>
+
+<span class="nc" id="L112">            notification.setNotificationType(9);</span>
+<span class="nc" id="L113">            notification.setSendUserType(1);</span>
+<span class="nc" id="L114">            notification.setSendUserId(0);</span>
+<span class="nc" id="L115">            notification.setUserIsRead(0);</span>
+<span class="nc" id="L116">            notification.setNotificationTimestamp(System.currentTimeMillis());</span>
+<span class="nc" id="L117">            notification.setNotificationContent(&quot;Your product information has been modified by the system&quot;);</span>
+
+<span class="nc" id="L119">            notificationService.save(notification);</span>
+
+<span class="nc" id="L121">            return Result.suc(product.getId());</span>
+        }else {
+<span class="nc" id="L123">            return Result.fail();</span>
+        }
+
+    }
+
+
+    @PostMapping(&quot;/adminUploadOffer&quot;)
+    public Result adminUploadOffer(@RequestBody OfferVO offerVO){
+
+        Offer offer;
+
+<span class="nc bnc" id="L134" title="All 2 branches missed.">        if (offerVO.getId()!=null){</span>
+<span class="nc" id="L135">            offer = offerService.getById(offerVO.getId());</span>
+        }else {
+<span class="nc" id="L137">            return Result.fail();</span>
+        }
+
+<span class="nc" id="L140">        offer.setPrice(offerVO.getPrice());</span>
+<span class="nc" id="L141">        offer.setOfferStatus(offerVO.getOfferStatus());</span>
+<span class="nc" id="L142">        offer.setNote(offerVO.getNote());</span>
+
+<span class="nc bnc" id="L144" title="All 2 branches missed.">        if (offerService.saveOrUpdate(offer)){</span>
+
+<span class="nc" id="L146">            return Result.suc();</span>
+        }else {
+<span class="nc" id="L148">            return Result.fail();</span>
+        }
+
+    }
+
+    @GetMapping(&quot;/adminDeleteOffer&quot;)
+    public Result adminDeleteOffer(@RequestParam Integer offerId) {
+
+<span class="nc" id="L156">        return Result.suc(offerService.removeById(offerId));</span>
+
+    }
+
+
+    @GetMapping(&quot;/adminDeleteProduct&quot;)
+    public Result adminDeleteProduct(@RequestParam Integer productID) {
+
+<span class="nc" id="L164">        Product product = productService.getById(productID);</span>
+<span class="nc" id="L165">        product.setProductStatus(3);</span>
+
+<span class="nc bnc" id="L167" title="All 2 branches missed.">        if (productService.updateById(product)){</span>
+
+
+            // save the system notification to datbabase
+<span class="nc" id="L171">            Notification notification = new Notification();</span>
+
+<span class="nc" id="L173">            notification.setNotificationType(9);</span>
+<span class="nc" id="L174">            notification.setSendUserType(1);</span>
+<span class="nc" id="L175">            notification.setSendUserId(0);</span>
+<span class="nc" id="L176">            notification.setUserIsRead(0);</span>
+<span class="nc" id="L177">            notification.setNotificationTimestamp(System.currentTimeMillis());</span>
+<span class="nc" id="L178">            notification.setNotificationContent(&quot;Your product has been canceled by the system&quot;);</span>
+
+<span class="nc" id="L180">            notificationService.save(notification);</span>
+
+<span class="nc" id="L182">            return Result.suc();</span>
+        }else {
+<span class="nc" id="L184">            return Result.fail();</span>
+        }
+
+    }
+
+
+    @GetMapping(&quot;/getOfferListAdmin&quot;)
+    public Result getOfferListAdmin(
+            @RequestParam Integer pageNum,
+            @RequestParam Integer pageSize,
+            @RequestParam Integer productId,
+            @RequestParam String searchValue) {
+
+<span class="nc" id="L197">        Page&lt;Offer&gt; productPage = productService.getOfferListAdmin(pageNum, pageSize,productId, searchValue);</span>
+<span class="nc" id="L198">        return Result.suc(productPage);</span>
+    }
+
+
+    @GetMapping(&quot;/getProductDetailById&quot;)
+    public Result getProductDetailById( @RequestParam Integer productId ) {
+
+
+<span class="nc" id="L206">        return Result.suc(productService.getById(productId));</span>
+    }
+
+    @GetMapping(&quot;/getUserListAdmin&quot;)
+    public Result getUserListAdmin(
+            @RequestParam Integer pageNum,
+            @RequestParam Integer pageSize,
+            @RequestParam String searchValue) {
+
+<span class="nc" id="L215">        Page&lt;NormalUser&gt; userPage = normalUserService.getUserListAdmin(pageNum, pageSize, searchValue);</span>
+<span class="nc" id="L216">        return Result.suc(userPage);</span>
+    }
+
+    @PostMapping(&quot;/adminUploadUserInfo&quot;)
+    public Result adminUploadUserInfo(@RequestBody UserVO userVO){
+
+<span class="nc" id="L222">        NormalUser normalUser = normalUserService.findUserInfoById(userVO.getUserId());</span>
+
+<span class="nc" id="L224">        normalUser.setName(userVO.getName());</span>
+<span class="nc" id="L225">        normalUser.setGender(userVO.getGender());</span>
+<span class="nc" id="L226">        normalUser.setEmail(userVO.getEmail());</span>
+<span class="nc" id="L227">        normalUser.setActivationStatus(userVO.isActivationStatus());</span>
+
+<span class="nc bnc" id="L229" title="All 2 branches missed.">        if (normalUserService.updateUserInfo(normalUser)){</span>
+
+<span class="nc" id="L231">            return Result.suc();</span>
+        }else {
+<span class="nc" id="L233">            return Result.fail();</span>
+        }
+
+    }
+
+
+
+    @PostMapping(&quot;/adminUploadLogo&quot;)
+    public Result uploadImage(@RequestParam(&quot;file&quot;) MultipartFile file, @RequestParam(&quot;uploadType&quot;) int uploadType) {
+        // Check if the file is empty
+<span class="nc bnc" id="L243" title="All 2 branches missed.">        if (file.isEmpty()) {</span>
+<span class="nc" id="L244">            return Result.fail(&quot;Please select a file to upload.&quot;);</span>
+        }
+
+        // Get the original file name
+<span class="nc" id="L248">        String originalFilename = file.getOriginalFilename();</span>
+
+        // Check if the file format is .png
+<span class="nc bnc" id="L251" title="All 2 branches missed.">        if (!&quot;image/png&quot;.equals(file.getContentType())) {</span>
+<span class="nc" id="L252">            return Result.fail(&quot;Only PNG files are allowed.&quot;);</span>
+        }
+
+<span class="nc" id="L255">        String newFilename = &quot;&quot;; // Initialize the new file name variable</span>
+
+        // Depending on the uploadType, rename the file to logo1.png or logo2.png
+<span class="nc bnc" id="L258" title="All 2 branches missed.">        if (uploadType == 1) {</span>
+<span class="nc" id="L259">            newFilename = &quot;logo1.png&quot;;</span>
+<span class="nc bnc" id="L260" title="All 2 branches missed.">        } else if (uploadType == 2) {</span>
+<span class="nc" id="L261">            newFilename = &quot;logo2.png&quot;;</span>
+        } else {
+            // Handle the case where uploadType is neither 1 nor 2
+<span class="nc" id="L264">            return Result.fail(&quot;Invalid upload type. Please choose a valid option.&quot;);</span>
+        }
+
+        try {
+            // Create a PutObjectRequest with the new file name instead of the original
+<span class="nc" id="L269">            PutObjectRequest objectRequest = PutObjectRequest.builder()</span>
+<span class="nc" id="L270">                    .bucket(s3Bucket)</span>
+<span class="nc" id="L271">                    .key(newFilename) // Use the new file name here</span>
+<span class="nc" id="L272">                    .contentType(file.getContentType())</span>
+<span class="nc" id="L273">                    .build();</span>
+
+            // Convert the file's bytes to a RequestBody object
+<span class="nc" id="L276">            software.amazon.awssdk.core.sync.RequestBody requestBody = software.amazon.awssdk.core.sync.RequestBody.fromBytes(file.getBytes());</span>
+            // Upload the file to S3 with the new file name
+<span class="nc" id="L278">            s3Client.putObject(objectRequest, requestBody);</span>
+
+            // Return success result and the new file name
+<span class="nc" id="L281">            return Result.suc(newFilename);</span>
+
+<span class="nc" id="L283">        } catch (IOException e) {</span>
+<span class="nc" id="L284">            throw new RuntimeException(&quot;Failed to upload file to S3&quot;, e);</span>
+        }
+    }
+
+
+    @GetMapping(&quot;/genderStatistic&quot;)
+    public Result getGenderStatistics() {
+<span class="nc" id="L291">        List&lt;StatisticsData&gt; statistics = normalUserService.getGenderStatistics();</span>
+<span class="nc" id="L292">        return Result.suc(statistics);</span>
+    }
+
+    @GetMapping(&quot;/productStatistic&quot;)
+    public Result productStatistic(@RequestParam Integer category ) {
+<span class="nc" id="L297">        List&lt;StatisticsData&gt; statistics = productService.productStatistic(category);</span>
+<span class="nc" id="L298">        return Result.suc(statistics);</span>
+    }
+
+    @GetMapping(&quot;/getHotProductStatistic&quot;)
+    public Result getHotProductStatistic() {
+<span class="nc" id="L303">        List&lt;StatisticsData&gt; statistics = productService.getHotProductStatistic();</span>
+<span class="nc" id="L304">        return Result.suc(statistics);</span>
+    }
+
+
+
+}
+
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

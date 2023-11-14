@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.usyd.capstone.mapper.OfferMapper">
+    <resultMap id="OfferProductDTO" type="com.usyd.capstone.common.DTO.OfferProductDTO">
+        <result column="offer_id" property="offerId"/>  <!-- 映射 offer.id 到 offerId -->
+        <result column="product_id" property="productId"/>  <!-- 映射 product.id 到 productId -->
+        <result column="buyer_name" property="buyerName"/>
+        <result column="offer_price" property="offerPrice"/>
+    </resultMap>
+    <select id="getOfferListBySellerId" resultMap="OfferProductDTO">
+        SELECT
+            offer.id as offer_id,
+            offer.price as offer_price,
+            product.id as product_id,
+            normal_user.name as buyer_name,
+            offer.*,
+            product.*
+        FROM offer
+                 LEFT JOIN product
+                           ON offer.product_id = product.id
+                 LEFT JOIN normal_user
+                           ON offer.buyer_id = normal_user.id
+        WHERE product.owner_id = #{ownerId} AND offer.offer_status = 0;
+
+    </select>
+
+
+    <select id="selectOffersByProductId" resultType="com.usyd.capstone.entity.Offer">
+        SELECT * FROM offer WHERE product_id = #{productId}
+    </select>
+
+
+    <resultMap id="OfferResultMap" type="com.usyd.capstone.entity.Offer">
+        <id column="id" property="id" />
+        <result column="buyer_id" property="buyerId" />
+        <association property="buyer" javaType="com.usyd.capstone.entity.NormalUser"
+                     select="com.usyd.capstone.mapper.NormalUserMapper.getUserByUserID"
+                     column="buyer_id" />
+    </resultMap>
+
+    <select id="PageOffersByProductId" resultMap="OfferResultMap">
+        SELECT * FROM offer
+        WHERE product_id = #{productId}
+          AND ('' = #{searchValue} OR note LIKE CONCAT('%', #{searchValue}, '%') )
+    </select>
+
+</mapper>

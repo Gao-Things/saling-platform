@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.usyd.capstone.controller.ProductControllerTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 20.236 s - in com.usyd.capstone.controller.ProductControllerTest

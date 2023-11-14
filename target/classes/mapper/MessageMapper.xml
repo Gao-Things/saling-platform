@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.usyd.capstone.mapper.MessageMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.usyd.capstone.entity.Message">
+        <id column="id" property="id" />
+        <result column="post_message_content" property="postMessageContent" />
+        <result column="from_user_id" property="fromUserId" />
+        <result column="to_user_id" property="toUserId" />
+        <result column="post_time" property="postTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, post_message_content, from_user_id, to_user_id, post_time
+    </sql>
+    <update id="updateDeleteUserIdByCondition">
+        UPDATE message
+        SET deleted_user_id =
+                CASE
+                    WHEN deleted_user_id = #{remoteUserId} THEN 0
+                    ELSE #{userId}
+                    END
+        WHERE
+            (from_user_id = #{userId} AND to_user_id = #{remoteUserId})
+           OR
+            (from_user_id = #{remoteUserId} AND to_user_id = #{userId})
+    </update>
+
+
+    <resultMap id="MessageUserDTO" type="com.usyd.capstone.common.DTO.MessageUserDTO"/>
+    <select id="getMessageListByUserId" resultMap="MessageUserDTO">
+        SELECT
+            CASE
+                WHEN m.from_user_id = #{userId} THEN m.to_user_id
+                ELSE m.from_user_id
+                END AS user_id,
+            m.*,
+            nu.*
+        FROM (
+                 SELECT
+                     LEAST(from_user_id, to_user_id) as user1,
+                     GREATEST(from_user_id, to_user_id) as user2,
+                     MAX(id) as last_message_id
+                 FROM message
+                 WHERE (from_user_id = #{userId} OR to_user_id = #{userId})
+                   AND deleted_user_id != #{userId}
+                   AND deleted_user_id != 0
+                 GROUP BY user1, user2
+             ) as sub
+                 JOIN message m ON m.id = sub.last_message_id
+                 LEFT JOIN normal_user nu ON nu.id = CASE
+                                                         WHEN m.from_user_id = #{userId} THEN m.to_user_id
+                                                         ELSE m.from_user_id
+            END
+        WHERE m.deleted_user_id != #{userId} AND m.deleted_user_id != 0;
+
+
+    </select>
+
+    <resultMap id="MessageHistoryDTO" type="com.usyd.capstone.common.DTO.MessageHistoryDTO">
+        <result column="user_name" property="fromUserName"/>
+        <result column="user_avatar" property="fromUserAvatar"/>
+        <result column="remote_user_name" property="toUserName"/>
+        <result column="remote_user_avatar" property="toUserAvatar"/>
+    </resultMap>
+    <select id="getMessageListByUserIdAndRemoteUserId" resultMap="MessageHistoryDTO">
+        SELECT
+            message.*,
+            from_user.name AS user_name,
+            from_user.avatar_url AS user_avatar,
+            to_user.name AS remote_user_name,
+            to_user.avatar_url AS remote_user_avatar
+        FROM message
+                 LEFT JOIN normal_user AS from_user
+                           ON message.from_user_id = from_user.id
+                 LEFT JOIN normal_user AS to_user
+                           ON message.to_user_id = to_user.id
+        WHERE
+            (
+                    (message.from_user_id = #{userId} AND message.to_user_id = #{remoteUserId})
+                    OR
+                    (message.from_user_id = #{remoteUserId} AND message.to_user_id = #{userId})
+                )
+          AND message.deleted_user_id != #{userId}
+          AND message.deleted_user_id != 0
+        ORDER BY message.id ASC;
+
+    </select>
+
+</mapper>

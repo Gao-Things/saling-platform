@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NormalUserServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">capstone</a> &gt; <a href="index.source.html" class="el_package">com.usyd.capstone.service.impl</a> &gt; <span class="el_source">NormalUserServiceImpl.java</span></div><h1>NormalUserServiceImpl.java</h1><pre class="source lang-java linenums">package com.usyd.capstone.service.impl;
+
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.usyd.capstone.common.DTO.StatisticsData;
+import com.usyd.capstone.common.DTO.NotificationDTO;
+import com.usyd.capstone.common.DTO.Result;
+import com.usyd.capstone.common.compents.JwtToken;
+import com.usyd.capstone.entity.*;
+import com.usyd.capstone.mapper.*;
+import com.usyd.capstone.rabbitMq.FanoutSender;
+import com.usyd.capstone.service.NormalUserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Service
+<span class="fc" id="L22">public class NormalUserServiceImpl implements NormalUserService {</span>
+
+
+    @Autowired
+    private NormalUserMapper normalUserMapper;
+
+    @Autowired
+    private PriceThresholdMapper priceThresholdMapper;
+
+    @Autowired
+    private ProductMapper productMapper;
+
+    @Autowired
+    private OfferMapper offerMapper;
+
+    @Autowired
+    private NotificationMapper notificationMapper;
+
+    @Autowired
+    private FanoutSender fanoutSender;
+
+    @Override
+    public Result setPriceThresholdSingle(String token, Long productId, boolean isMinimum, double threshold) {
+<span class="nc" id="L45">        Long normalUserId = JwtToken.getId(token);</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">        if(normalUserId == -1L) {</span>
+<span class="nc" id="L47">            return Result.fail(&quot;Cannot parse the token!&quot;);</span>
+        }
+
+<span class="nc" id="L50">        NormalUser normalUser = normalUserMapper.selectById(normalUserId);</span>
+<span class="nc" id="L51">        Product product = productMapper.selectById(productId);</span>
+<span class="nc bnc" id="L52" title="All 4 branches missed.">        if(normalUser == null || product == null)</span>
+        {
+<span class="nc" id="L54">            return Result.fail(&quot;Cannot find the user account or product!&quot;);</span>
+        }
+
+<span class="nc bnc" id="L57" title="All 2 branches missed.">        if(!normalUser.isActivationStatus()) {</span>
+<span class="nc" id="L58">            return Result.fail(&quot;The user account isn't active!&quot;);</span>
+        }
+
+<span class="nc" id="L61">        PriceThreshold priceThreshold = priceThresholdMapper.selectOne(new QueryWrapper&lt;PriceThreshold&gt;()</span>
+<span class="nc" id="L62">                .eq(&quot;normal_user_id&quot;, normalUserId)</span>
+<span class="nc" id="L63">                .eq(&quot;product_id&quot;, productId)</span>
+<span class="nc" id="L64">                .eq(&quot;is_minimum&quot;, isMinimum));</span>
+
+<span class="nc" id="L66">        PriceThreshold priceThreshold1 = priceThresholdMapper.selectOne(new QueryWrapper&lt;PriceThreshold&gt;()</span>
+<span class="nc" id="L67">                .eq(&quot;normal_user_id&quot;, normalUserId)</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">                .eq(&quot;product_id&quot;, productId)</span>
+<span class="nc" id="L69">                .eq(&quot;is_minimum&quot;, (isMinimum) ? false : true));</span>
+
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        if(priceThreshold == null)</span>
+        {
+<span class="nc bnc" id="L73" title="All 2 branches missed.">            if(priceThreshold1 == null)</span>
+            {
+<span class="nc" id="L75">                insertANewPriceThreshold(normalUserId, productId, isMinimum, threshold);</span>
+            }
+<span class="nc bnc" id="L77" title="All 6 branches missed.">            else if ((isMinimum &amp;&amp; priceThreshold1.getThreshold() &gt; threshold) ||</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">                    (!isMinimum &amp;&amp; priceThreshold1.getThreshold() &lt; threshold))</span>
+            {
+<span class="nc" id="L80">                insertANewPriceThreshold(normalUserId, productId, isMinimum, threshold);</span>
+            }
+            else
+            {
+<span class="nc" id="L84">                return Result.suc(&quot;Error with the threshold input&quot;);</span>
+            }
+        }
+        else
+        {
+<span class="nc bnc" id="L89" title="All 2 branches missed.">            if(priceThreshold1 == null)</span>
+            {
+<span class="nc" id="L91">                updateAPriceThreshold(priceThreshold, threshold);</span>
+            }
+<span class="nc bnc" id="L93" title="All 6 branches missed.">            else if ((isMinimum &amp;&amp; priceThreshold1.getThreshold() &gt; threshold) ||</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">                    (!isMinimum &amp;&amp; priceThreshold1.getThreshold() &lt; threshold))</span>
+            {
+<span class="nc" id="L96">                updateAPriceThreshold(priceThreshold, threshold);</span>
+            }
+            else
+            {
+<span class="nc" id="L100">                return Result.fail(&quot;Error with the threshold input&quot;);</span>
+            }
+        }
+
+<span class="nc" id="L104">        return Result.suc(&quot;Your price threshold has been set/reset successfully&quot;);</span>
+    }
+
+    private void insertANewPriceThreshold(Long normalUserId, Long productId, boolean isMinimum, double threshold) {
+<span class="nc" id="L108">        PriceThreshold priceThreshold = new PriceThreshold();</span>
+<span class="nc" id="L109">        priceThreshold.setNormalUserId(normalUserId);</span>
+<span class="nc" id="L110">        priceThreshold.setProductId(productId);</span>
+<span class="nc" id="L111">        priceThreshold.setMinimum(isMinimum);</span>
+<span class="nc" id="L112">        priceThreshold.setThreshold(threshold);</span>
+<span class="nc" id="L113">        priceThreshold.setReached(false);</span>
+<span class="nc" id="L114">        priceThresholdMapper.insert(priceThreshold);</span>
+<span class="nc" id="L115">    }</span>
+
+    private void updateAPriceThreshold(PriceThreshold priceThreshold, double threshold) {
+<span class="nc" id="L118">        priceThreshold.setThreshold(threshold);</span>
+<span class="nc" id="L119">        priceThreshold.setReached(false);</span>
+<span class="nc" id="L120">        priceThresholdMapper.updateById(priceThreshold);</span>
+<span class="nc" id="L121">    }</span>
+
+    public Result setPriceThresholdBatch(String token, Long productId, boolean isMinimum, double threshold)
+    {
+<span class="nc" id="L125">        return null;</span>
+    }
+
+    @Override
+    public Result makeOrUpdateAnOffer(String token, Long productId, String note, double price) {
+<span class="fc" id="L130">        Long buyerId = JwtToken.getId(token);</span>
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">        if(buyerId == -1L) {</span>
+<span class="nc" id="L132">            return Result.fail(&quot;Cannot parse the token!&quot;);</span>
+        }
+
+<span class="fc" id="L135">        NormalUser buyer = normalUserMapper.selectById(buyerId);</span>
+<span class="fc" id="L136">        Product product = productMapper.selectById(productId);</span>
+<span class="pc bpc" id="L137" title="2 of 4 branches missed.">        if(buyer == null || product == null)</span>
+        {
+<span class="fc" id="L139">            return Result.fail(&quot;Cannot find the user account or product!&quot;);</span>
+        }
+
+<span class="nc bnc" id="L142" title="All 2 branches missed.">        if(!buyer.isActivationStatus()) {</span>
+<span class="nc" id="L143">            return Result.fail(&quot;The user account isn't active!&quot;);</span>
+        }
+
+<span class="nc bnc" id="L146" title="All 2 branches missed.">        if(product.getOwnerId() == buyerId) {</span>
+<span class="nc" id="L147">            return Result.fail(&quot;You cannot buy your own items!&quot;);</span>
+        }
+
+<span class="nc bnc" id="L150" title="All 2 branches missed.">        if(product.getProductStatus() != 0) {</span>
+<span class="nc" id="L151">            return Result.fail(&quot;The product isn't for sale!&quot;);</span>
+        }
+
+<span class="nc" id="L154">        Offer offer = offerMapper.selectOne(new QueryWrapper&lt;Offer&gt;()</span>
+<span class="nc" id="L155">                .eq(&quot;product_id&quot;, productId)</span>
+<span class="nc" id="L156">                .eq(&quot;buyer_id&quot;, buyerId));</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">        if(offer == null)</span>
+        {
+<span class="nc" id="L159">            offer = new Offer();</span>
+<span class="nc" id="L160">            offer.setBuyerId(buyerId);</span>
+<span class="nc" id="L161">            offer.setProductId(productId);</span>
+<span class="nc" id="L162">            offer.setPrice(price);</span>
+<span class="nc" id="L163">            offer.setNote(note);</span>
+<span class="nc" id="L164">            offer.setOfferStatus(0);</span>
+<span class="nc" id="L165">            offer.setTimestamp(System.currentTimeMillis());</span>
+
+<span class="nc" id="L167">            offerMapper.insert(offer);</span>
+
+<span class="nc" id="L169">            StringBuilder notificationContent = new StringBuilder();</span>
+<span class="nc" id="L170">            notificationContent.append(buyer.getName());</span>
+<span class="nc" id="L171">            notificationContent.append(&quot; has made an new offer to your item: &quot;);</span>
+<span class="nc" id="L172">            notificationContent.append(product.getProductName());</span>
+<span class="nc" id="L173">            notificationContent.append(&quot;.&quot;);</span>
+<span class="nc" id="L174">            sendNotification(3, 1, offer, product, notificationContent.toString());</span>
+
+
+<span class="nc" id="L177">            return Result.suc(&quot;An new offer has been made.&quot;);</span>
+        }
+        else
+        {
+<span class="nc bnc" id="L181" title="All 2 branches missed.">            if(offer.getOfferStatus() == 1) {</span>
+<span class="nc" id="L182">                return Result.fail(&quot;The accepted offer cannot be update!&quot;);</span>
+            }
+
+<span class="nc bnc" id="L185" title="All 2 branches missed.">            if(offer.getOfferStatus() == 4) {</span>
+<span class="nc" id="L186">                return Result.fail(&quot;The offer had been expired!(The product has been sold or cancelled)&quot;);</span>
+            }
+
+<span class="nc" id="L189">            offer.setOfferStatus(0);</span>
+<span class="nc" id="L190">            offer.setPrice(price);</span>
+<span class="nc" id="L191">            offer.setNote(note);</span>
+<span class="nc" id="L192">            offer.setTimestamp(System.currentTimeMillis());</span>
+<span class="nc" id="L193">            offerMapper.updateById(offer);</span>
+
+<span class="nc" id="L195">            StringBuilder notificationContent = new StringBuilder();</span>
+<span class="nc" id="L196">            notificationContent.append(buyer.getName());</span>
+<span class="nc" id="L197">            notificationContent.append(&quot; has update his offer to your item: &quot;);</span>
+<span class="nc" id="L198">            notificationContent.append(product.getProductName());</span>
+<span class="nc" id="L199">            notificationContent.append(&quot;.&quot;);</span>
+<span class="nc" id="L200">            sendNotification(4, 1, offer, product, notificationContent.toString());</span>
+
+
+<span class="nc" id="L203">            return Result.suc(&quot;The offer has been updated.&quot;);</span>
+        }
+
+
+    }
+
+    @Override
+    public Result acceptAnOffer(String token, Long offerId) {
+<span class="fc" id="L211">        Long sellerId = JwtToken.getId(token);</span>
+<span class="pc bpc" id="L212" title="1 of 2 branches missed.">        if(sellerId == -1L) {</span>
+<span class="nc" id="L213">            return Result.fail(&quot;Cannot parse the token!&quot;);</span>
+        }
+
+<span class="fc" id="L216">        NormalUser seller = normalUserMapper.selectById(sellerId);</span>
+<span class="fc" id="L217">        Offer offer = offerMapper.selectById(offerId);</span>
+
+<span class="pc bpc" id="L219" title="2 of 4 branches missed.">        if(seller == null || offer == null)</span>
+        {
+<span class="fc" id="L221">            return Result.fail(&quot;Cannot find the seller account or offer!&quot;);</span>
+        }
+
+<span class="nc bnc" id="L224" title="All 2 branches missed.">        if(!seller.isActivationStatus()) {</span>
+<span class="nc" id="L225">            return Result.fail(&quot;The seller account isn't active!&quot;);</span>
+        }
+
+<span class="nc bnc" id="L228" title="All 2 branches missed.">        if(offer.getOfferStatus() != 0) {</span>
+<span class="nc" id="L229">            return Result.fail(&quot;The offer isn't on pending!&quot;);</span>
+        }
+
+<span class="nc" id="L232">        Product product = productMapper.selectById(offer.getProductId());</span>
+<span class="nc bnc" id="L233" title="All 2 branches missed.">        if(product == null) {</span>
+<span class="nc" id="L234">            return Result.fail(&quot;The product cannot be found!&quot;);</span>
+        }
+<span class="nc bnc" id="L236" title="All 2 branches missed.">        if(product.getProductStatus() &gt; 1) {</span>
+<span class="nc" id="L237">            return Result.fail(&quot;The product has been sold or cancelled!&quot;);</span>
+        }
+<span class="nc bnc" id="L239" title="All 2 branches missed.">        if(product.getOwnerId() != sellerId) {</span>
+<span class="nc" id="L240">            return Result.fail(&quot;Only the product owner can accept the offer!&quot;);</span>
+        }
+
+
+
+<span class="nc" id="L245">        offer.setOfferStatus(1);</span>
+<span class="nc" id="L246">        offerMapper.updateById(offer);</span>
+<span class="nc" id="L247">        product.setProductStatus(2);</span>
+<span class="nc" id="L248">        productMapper.updateById(product);</span>
+
+<span class="nc" id="L250">        List&lt;Offer&gt; offers = offerMapper.selectList(new QueryWrapper&lt;Offer&gt;()</span>
+<span class="nc" id="L251">                .eq(&quot;product_id&quot;, product.getId())</span>
+<span class="nc" id="L252">                .ne(&quot;id&quot;, offerId));</span>
+<span class="nc" id="L253">        offers.forEach(offer1 -&gt; {</span>
+<span class="nc" id="L254">            offer1.setOfferStatus(4);</span>
+<span class="nc" id="L255">            offerMapper.updateById(offer1);</span>
+<span class="nc" id="L256">            StringBuilder notificationContent = new StringBuilder();</span>
+<span class="nc" id="L257">            notificationContent.append(&quot;The seller, &quot;);</span>
+<span class="nc" id="L258">            notificationContent.append(seller.getName());</span>
+<span class="nc" id="L259">            notificationContent.append(&quot;, has accepted another offer about the item: &quot;);</span>
+<span class="nc" id="L260">            notificationContent.append(product.getProductName());</span>
+<span class="nc" id="L261">            notificationContent.append(&quot;. Therefore, your relevant offer is expired.&quot;);</span>
+<span class="nc" id="L262">            sendNotification(6, 2, offer, product, notificationContent.toString());</span>
+<span class="nc" id="L263">        });</span>
+
+<span class="nc" id="L265">        StringBuilder notificationContent = new StringBuilder();</span>
+<span class="nc" id="L266">        notificationContent.append(&quot;The seller, &quot;);</span>
+<span class="nc" id="L267">        notificationContent.append(seller.getName());</span>
+<span class="nc" id="L268">        notificationContent.append(&quot;, has accepted your offer about the item: &quot;);</span>
+<span class="nc" id="L269">        notificationContent.append(product.getProductName());</span>
+<span class="nc" id="L270">        notificationContent.append(&quot;.&quot;);</span>
+<span class="nc" id="L271">        sendNotification(1, 2, offer, product, notificationContent.toString());</span>
+<span class="nc" id="L272">        return Result.suc(&quot;The offer has been accepted.&quot;);</span>
+    }
+
+    @Override
+    public Result cancelAnOffer(String token, Long offerId) {
+<span class="fc" id="L277">        Long buyerId = JwtToken.getId(token);</span>
+<span class="pc bpc" id="L278" title="1 of 2 branches missed.">        if(buyerId == -1L) {</span>
+<span class="nc" id="L279">            return Result.fail(&quot;Cannot parse the token!&quot;);</span>
+        }
+
+<span class="fc" id="L282">        NormalUser buyer = normalUserMapper.selectById(buyerId);</span>
+<span class="fc" id="L283">        Offer offer = offerMapper.selectById(offerId);</span>
+<span class="pc bpc" id="L284" title="2 of 4 branches missed.">        if(buyer == null || offer == null)</span>
+        {
+<span class="fc" id="L286">            return Result.fail(&quot;Cannot find the user account or offer!&quot;);</span>
+        }
+
+<span class="nc bnc" id="L289" title="All 2 branches missed.">        if(!buyer.isActivationStatus()) {</span>
+<span class="nc" id="L290">            return Result.fail(&quot;The user account isn't active!&quot;);</span>
+        }
+
+<span class="nc bnc" id="L293" title="All 2 branches missed.">        if(offer.getBuyerId() != buyerId) {</span>
+<span class="nc" id="L294">            return Result.fail(&quot;The request is invalid!&quot;);</span>
+        }
+
+<span class="nc bnc" id="L297" title="All 2 branches missed.">        if(offer.getOfferStatus() == 1) {</span>
+<span class="nc" id="L298">            return Result.fail(&quot;The accepted offer cannot be cancel!&quot;);</span>
+        }
+
+<span class="nc bnc" id="L301" title="All 2 branches missed.">        if(offer.getOfferStatus() == 3) {</span>
+<span class="nc" id="L302">            return Result.fail(&quot;The offer had been cancelled before!&quot;);</span>
+        }
+
+<span class="nc" id="L305">        offer.setOfferStatus(3);</span>
+<span class="nc" id="L306">        offerMapper.updateById(offer);</span>
+<span class="nc" id="L307">        Product product = productMapper.selectById(offer.getProductId());</span>
+
+<span class="nc" id="L309">        StringBuilder notificationContent = new StringBuilder();</span>
+<span class="nc" id="L310">        notificationContent.append(buyer.getName());</span>
+<span class="nc" id="L311">        notificationContent.append(&quot; has cancelled his offer to your item: &quot;);</span>
+<span class="nc" id="L312">        notificationContent.append(product.getProductName());</span>
+<span class="nc" id="L313">        notificationContent.append(&quot;.&quot;);</span>
+<span class="nc" id="L314">        sendNotification(5, 1, offer, product, notificationContent.toString());</span>
+
+<span class="nc" id="L316">        return Result.suc(&quot;The offer has been cancelled.&quot;);</span>
+    }
+
+    @Override
+    public Result rejectAnOffer(String token, Long offerId) {
+<span class="fc" id="L321">        Long sellerId = JwtToken.getId(token);</span>
+<span class="pc bpc" id="L322" title="1 of 2 branches missed.">        if(sellerId == -1L) {</span>
+<span class="nc" id="L323">            return Result.fail(&quot;Cannot parse the token!&quot;);</span>
+        }
+
+<span class="fc" id="L326">        NormalUser seller = normalUserMapper.selectById(sellerId);</span>
+<span class="fc" id="L327">        Offer offer = offerMapper.selectById(offerId);</span>
+
+<span class="pc bpc" id="L329" title="2 of 4 branches missed.">        if(seller == null || offer == null)</span>
+        {
+<span class="fc" id="L331">            return Result.fail(&quot;Cannot find the seller account or offer!&quot;);</span>
+        }
+
+<span class="nc bnc" id="L334" title="All 2 branches missed.">        if(!seller.isActivationStatus()) {</span>
+<span class="nc" id="L335">            return Result.fail(&quot;The seller account isn't active!&quot;);</span>
+        }
+
+<span class="nc bnc" id="L338" title="All 2 branches missed.">        if(offer.getOfferStatus() != 0) {</span>
+<span class="nc" id="L339">            return Result.fail(&quot;The offer isn't on pending!&quot;);</span>
+        }
+
+<span class="nc" id="L342">        Product product = productMapper.selectById(offer.getProductId());</span>
+<span class="nc bnc" id="L343" title="All 2 branches missed.">        if(product == null) {</span>
+<span class="nc" id="L344">            return Result.fail(&quot;The product cannot be found!&quot;);</span>
+        }
+
+<span class="nc" id="L347">        offer.setOfferStatus(2);</span>
+<span class="nc" id="L348">        offerMapper.updateById(offer);</span>
+
+<span class="nc" id="L350">        StringBuilder notificationContent = new StringBuilder();</span>
+<span class="nc" id="L351">        notificationContent.append(&quot;The seller, &quot;);</span>
+<span class="nc" id="L352">        notificationContent.append(seller.getName());</span>
+<span class="nc" id="L353">        notificationContent.append(&quot;, has rejected your offer about the item: &quot;);</span>
+<span class="nc" id="L354">        notificationContent.append(product.getProductName());</span>
+<span class="nc" id="L355">        notificationContent.append(&quot;.&quot;);</span>
+<span class="nc" id="L356">        sendNotification(2, 2, offer, product, notificationContent.toString());</span>
+
+<span class="nc" id="L358">        return Result.suc(&quot;The offer has been rejected.&quot;);</span>
+    }
+
+    @Override
+    public Result openOrCloseOrCancelSale(String token, Long productId, int productStatusNew) {
+<span class="fc" id="L363">        Long buyerId = JwtToken.getId(token);</span>
+<span class="pc bpc" id="L364" title="1 of 2 branches missed.">        if(buyerId == -1L) {</span>
+<span class="nc" id="L365">            return Result.fail(&quot;Cannot parse the token!&quot;);</span>
+        }
+
+<span class="fc" id="L368">        NormalUser buyer = normalUserMapper.selectById(buyerId);</span>
+<span class="fc" id="L369">        Product product = productMapper.selectById(productId);</span>
+<span class="pc bpc" id="L370" title="2 of 4 branches missed.">        if(buyer == null || product == null)</span>
+        {
+<span class="fc" id="L372">            return Result.fail(&quot;Cannot find the user account or product!&quot;);</span>
+        }
+
+<span class="nc bnc" id="L375" title="All 2 branches missed.">        if(!buyer.isActivationStatus()) {</span>
+<span class="nc" id="L376">            return Result.fail(&quot;The user account isn't active!&quot;);</span>
+        }
+
+<span class="nc bnc" id="L379" title="All 4 branches missed.">        switch (productStatusNew)</span>
+        {
+            case 0:
+<span class="nc bnc" id="L382" title="All 2 branches missed.">                if(product.getProductStatus() == 1)</span>
+                {
+<span class="nc" id="L384">                    product.setProductStatus(productStatusNew);</span>
+<span class="nc" id="L385">                    productMapper.updateById(product);</span>
+<span class="nc" id="L386">                    return Result.suc(&quot;The item, &quot; + product.getProductName() + &quot; is open.&quot;);</span>
+                }
+                else
+                {
+<span class="nc" id="L390">                    return Result.fail(&quot;Invalid action.&quot;);</span>
+                }
+            case 1:
+<span class="nc bnc" id="L393" title="All 2 branches missed.">                if(product.getProductStatus() == 0)</span>
+                {
+<span class="nc" id="L395">                    product.setProductStatus(productStatusNew);</span>
+<span class="nc" id="L396">                    productMapper.updateById(product);</span>
+<span class="nc" id="L397">                    return Result.suc(&quot;The item, &quot; + product.getProductName() + &quot; has close.&quot;);</span>
+                }
+                else
+                {
+<span class="nc" id="L401">                    return Result.fail(&quot;Invalid action.&quot;);</span>
+                }
+            case 3:
+<span class="nc bnc" id="L404" title="All 2 branches missed.">                if(product.getProductStatus() &lt;= 2)</span>
+                {
+<span class="nc" id="L406">                    product.setProductStatus(productStatusNew);</span>
+<span class="nc" id="L407">                    productMapper.updateById(product);</span>
+<span class="nc" id="L408">                    List&lt;Offer&gt; offers = offerMapper.selectList(new QueryWrapper&lt;Offer&gt;()</span>
+<span class="nc" id="L409">                            .eq(&quot;product_id&quot;, productId));</span>
+<span class="nc" id="L410">                    NormalUser seller = normalUserMapper.selectById(product.getId());</span>
+<span class="nc" id="L411">                    offers.forEach(offer -&gt; {</span>
+<span class="nc" id="L412">                        offer.setOfferStatus(4);</span>
+<span class="nc" id="L413">                        offerMapper.updateById(offer);</span>
+<span class="nc" id="L414">                        StringBuilder notificationContent = new StringBuilder();</span>
+<span class="nc" id="L415">                        notificationContent.append(&quot;The seller, &quot;);</span>
+<span class="nc" id="L416">                        notificationContent.append(seller.getName());</span>
+<span class="nc" id="L417">                        notificationContent.append(&quot;, has withdraw the sale about the item: &quot;);</span>
+<span class="nc" id="L418">                        notificationContent.append(product.getProductName());</span>
+<span class="nc" id="L419">                        notificationContent.append(&quot;. Therefore, your relevant offer is expired.&quot;);</span>
+<span class="nc" id="L420">                        sendNotification(6, 2, offer, product, notificationContent.toString());</span>
+<span class="nc" id="L421">                    });</span>
+<span class="nc" id="L422">                    return Result.suc(&quot;The item, &quot; + product.getProductName() + &quot; is cancelled.&quot;);</span>
+                }
+                else
+                {
+<span class="nc" id="L426">                    return Result.fail(&quot;Invalid action.&quot;);</span>
+                }
+            default:
+<span class="nc" id="L429">                return Result.fail(&quot;Invalid status input.&quot;);</span>
+        }
+    }
+
+    @Override
+    public NormalUser findUserInfoById(Integer userId) {
+
+<span class="nc" id="L436">        NormalUser normalUser = normalUserMapper.selectById(userId);</span>
+<span class="nc" id="L437">        return normalUser;</span>
+    }
+
+    @Override
+    public Boolean updateUserInfo(NormalUser normalUser) {
+<span class="nc bnc" id="L442" title="All 2 branches missed.">      return   normalUserMapper.updateById(normalUser) == 1;</span>
+    }
+
+    @Override
+    public Page&lt;NormalUser&gt; getUserListAdmin(Integer pageNum, Integer pageSize, String searchValue) {
+
+<span class="nc" id="L448">        Page&lt;Product&gt; page = new Page&lt;&gt;(pageNum, pageSize);</span>
+<span class="nc" id="L449">        return normalUserMapper.getUserListAdmin(page, searchValue);</span>
+
+    }
+
+
+    private void sendNotification(Integer type,
+                                  Integer userType,
+                                  Offer offer,
+                                  Product product,
+                                  String message){
+<span class="nc" id="L459">        Notification notification = new Notification();</span>
+
+<span class="nc" id="L461">        notification.setNotificationType(type);</span>
+<span class="nc" id="L462">        notification.setSendUserType(userType);</span>
+<span class="nc" id="L463">        notification.setSendUserId(offer.getBuyerId().intValue());</span>
+<span class="nc" id="L464">        notification.setUserIsRead(0);</span>
+<span class="nc" id="L465">        notification.setNotificationTimestamp(System.currentTimeMillis());</span>
+<span class="nc" id="L466">        notification.setNotificationContent(message);</span>
+<span class="nc" id="L467">        notificationMapper.insert(notification);</span>
+
+
+        // push message to buyer
+<span class="nc" id="L471">        NotificationDTO notificationDto = new NotificationDTO();</span>
+<span class="nc" id="L472">        notificationDto.setNotificationId(notification.getNotificationId());</span>
+<span class="nc" id="L473">        notificationDto.setNotificationContent(message);</span>
+
+        // 接受此消息用户的类型
+<span class="nc" id="L476">        notificationDto.setSendUserType(userType);</span>
+
+        // 消息类型
+<span class="nc" id="L479">        notificationDto.setMessageType(type);</span>
+
+<span class="nc" id="L481">        notificationDto.setOffer(offer);</span>
+<span class="nc" id="L482">        notificationDto.setProduct(product);</span>
+
+<span class="nc" id="L484">        String result = JSONObject.toJSONString(notificationDto);</span>
+
+
+        // send message to seller
+<span class="nc bnc" id="L488" title="All 2 branches missed.">        if(userType == 1){</span>
+
+            /**
+             *
+             * 把推送消息发送到rabbitMQ
+             *
+             */
+
+<span class="nc" id="L496">            Map&lt;Integer, String&gt; rabbitMessageList = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L497">            rabbitMessageList.put(product.getOwnerId().intValue(), result);</span>
+
+<span class="nc" id="L499">            fanoutSender.sendMessage(rabbitMessageList);</span>
+
+//            NotificationServer.sendMessage(result, product.getOwnerId().intValue());
+
+<span class="nc" id="L503">        } else{</span>
+
+<span class="nc" id="L505">            Map&lt;Integer, String&gt; rabbitMessageList = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L506">            rabbitMessageList.put(offer.getBuyerId().intValue(), result);</span>
+//            NotificationServer.sendMessage(result, offer.getBuyerId().intValue());
+
+<span class="nc" id="L509">            fanoutSender.sendMessage(rabbitMessageList);</span>
+        }
+
+<span class="nc" id="L512">    }</span>
+
+
+    public List&lt;StatisticsData&gt; getGenderStatistics() {
+<span class="nc" id="L516">        return normalUserMapper.selectGenderStatistics();</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

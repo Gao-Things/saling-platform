@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PublicController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">capstone</a> &gt; <a href="index.source.html" class="el_package">com.usyd.capstone.controller</a> &gt; <span class="el_source">PublicController.java</span></div><h1>PublicController.java</h1><pre class="source lang-java linenums">package com.usyd.capstone.controller;
+
+import com.usyd.capstone.common.DTO.Result;
+import com.usyd.capstone.common.VO.*;
+import com.usyd.capstone.common.utils.ValidateRecaptcha;
+import com.usyd.capstone.service.AdminUserService;
+import com.usyd.capstone.service.PublicService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping(&quot;/public&quot;)
+<span class="fc" id="L13">public class PublicController {</span>
+    @GetMapping(&quot;/hello&quot;)
+    public String hello(){
+<span class="nc" id="L16">        return &quot;hello&quot;;</span>
+    }
+
+    @Autowired
+    private PublicService publicService;
+
+    @Autowired
+    private ValidateRecaptcha validateRecaptcha;
+
+    @PostMapping(&quot;/login&quot;)
+    public Result userLogin(@RequestBody UserLogin userLogin){
+<span class="nc" id="L27">        return publicService.verifyLogin(userLogin);</span>
+
+    }
+    //The token will from the mobile
+    @PostMapping(&quot;/reCAPTCHA&quot;)
+    public Result submitForm(@RequestBody Recaptcha recaptcha) {
+        // Validate reCAPTCHA response in the backend
+<span class="nc" id="L34">        boolean isRecaptchaValid = validateRecaptcha.validate(recaptcha);</span>
+
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        if (isRecaptchaValid) {</span>
+
+            // Perform further processing or save data
+<span class="nc" id="L39">            return Result.suc(&quot;reCAPTCHA verification successes&quot;);</span>
+        } else {
+<span class="nc" id="L41">            return Result.fail(&quot;reCAPTCHA verification failed&quot;);</span>
+        }
+    }
+
+    @PostMapping(&quot;/forgetPassword&quot;)
+    public Result forgetPassword(@RequestBody EmailAddress emailAddress){
+
+<span class="nc" id="L48">        return publicService.forgetPassword(emailAddress);</span>
+
+    }
+
+    @GetMapping(&quot;/forgetPasswordVerification&quot;)
+    public Result forgetPasswordVerification(@RequestParam(&quot;email&quot;) String email, @RequestParam(&quot;resettingPasswordTimestamp&quot;)
+    long resettingPasswordTimestamp){
+<span class="nc" id="L55">        return publicService.forgetPasswordVerification(email, resettingPasswordTimestamp);</span>
+    }
+
+    @GetMapping(&quot;/pollingResult&quot;)
+    public Result pollingResult(@RequestParam(&quot;email&quot;) String email){
+
+<span class="nc" id="L61">        return publicService.pollingResult(email);</span>
+    }
+
+
+    // TODO 需要完善加个token
+    @PostMapping(&quot;/updatePassword&quot;)
+    public Result updatePassword(@RequestBody UpdatePasswordParameter updatePasswordParameter){
+
+<span class="nc" id="L69">        return publicService.updatePassword(updatePasswordParameter);</span>
+
+    }
+
+
+
+
+    @PostMapping(&quot;/registration&quot;)
+    public Result register(@RequestBody UserRegistration userRegistration){
+<span class="nc" id="L78">        return publicService.registration(userRegistration.getEmail(), userRegistration.getPassword(), userRegistration.getFirstname(), userRegistration.getLastname(), 1);</span>
+    }
+
+    @GetMapping(&quot;/registrationVerification&quot;)
+    public Result registrationVerification(@RequestParam(&quot;email&quot;) String email, @RequestParam(&quot;registrationTimestamp&quot;)
+            long registrationTimestamp, @RequestParam(&quot;passwordToken&quot;) String passwordToken, @RequestParam(&quot;userRole&quot;) int userRole){
+<span class="nc" id="L84">        return publicService.registrationVerification(email, registrationTimestamp, passwordToken, userRole);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

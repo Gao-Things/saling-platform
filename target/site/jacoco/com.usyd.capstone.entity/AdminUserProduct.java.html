@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AdminUserProduct.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">capstone</a> &gt; <a href="index.source.html" class="el_package">com.usyd.capstone.entity</a> &gt; <span class="el_source">AdminUserProduct.java</span></div><h1>AdminUserProduct.java</h1><pre class="source lang-java linenums">package com.usyd.capstone.entity;
+
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.github.dreamyoung.mprelation.EntityMapper;
+import lombok.Data;
+
+import javax.persistence.*;
+import java.io.Serializable;
+
+<span class="pc bnc" id="L11" title="All 56 branches missed.">@Data</span>
+@Entity
+@TableName(&quot;admin_user_product&quot;)
+public class AdminUserProduct implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = &quot;id&quot;, nullable = false)
+<span class="nc" id="L18">    private Long id;</span>
+
+    @TableField(&quot;admin_user_id&quot;)
+    @Transient
+<span class="nc" id="L22">    private Long adminUserId;</span>
+
+    @ManyToOne
+    @JoinColumn(name = &quot;admin_user_id&quot;, nullable = false)
+    @TableField(exist = false)
+    @com.github.dreamyoung.mprelation.ManyToOne
+    @com.github.dreamyoung.mprelation.JoinColumn(name = &quot;admin_user_id&quot;, referencedColumnName = &quot;id&quot;)
+    @EntityMapper
+<span class="nc" id="L30">    private AdminUser adminUser;</span>
+
+    @TableField(&quot;product_id&quot;)
+    @Transient
+<span class="nc" id="L34">    private Long productId;</span>
+
+    @ManyToOne
+    @JoinColumn(name = &quot;product_id&quot;, nullable = false)
+    @TableField(exist = false)
+    @com.github.dreamyoung.mprelation.ManyToOne
+    @com.github.dreamyoung.mprelation.JoinColumn(name = &quot;product_id&quot;, referencedColumnName = &quot;id&quot;)
+    @EntityMapper
+<span class="nc" id="L42">    private Product product;</span>
+
+    @TableField(&quot;product_price&quot;)
+<span class="nc" id="L45">    private double productPrice;</span>
+
+    @TableField(&quot;record_timestamp&quot;)
+<span class="nc" id="L48">    private long recordTimestamp;</span>
+
+    @TableField(&quot;turn_of_record&quot;)
+<span class="nc" id="L51">    private int turnOfRecord;</span>
+
+    @TableField(&quot;is_valid&quot;)
+<span class="nc" id="L54">    private boolean isValid;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

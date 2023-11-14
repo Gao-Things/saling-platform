@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AdminUserServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">capstone</a> &gt; <a href="index.source.html" class="el_package">com.usyd.capstone.service.impl</a> &gt; <span class="el_source">AdminUserServiceImpl.java</span></div><h1>AdminUserServiceImpl.java</h1><pre class="source lang-java linenums">package com.usyd.capstone.service.impl;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.usyd.capstone.common.DTO.Result;
+import com.usyd.capstone.common.compents.JwtToken;
+import com.usyd.capstone.common.compents.SendEmail;
+import com.usyd.capstone.entity.AdminUser;
+import com.usyd.capstone.entity.AdminUserProduct;
+import com.usyd.capstone.entity.Product;
+import com.usyd.capstone.entity.ProductPriceRecord;
+import com.usyd.capstone.service.AdminUserService;
+import com.usyd.capstone.service.base.AdminUserBaseService;
+import com.usyd.capstone.service.base.AdminUserProductBaseService;
+import com.usyd.capstone.service.base.ProductBaseService;
+import com.usyd.capstone.service.base.ProductPriceRecordBaseService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+
+@Service
+<span class="fc" id="L22">public class AdminUserServiceImpl implements AdminUserService {</span>
+
+<span class="fc" id="L24">    private final int requiredAdminUserNumForChangeAProductPrice = 3;</span>
+
+<span class="fc" id="L26">    private final Object lock = new Object();</span>
+
+    @Autowired
+    private AdminUserBaseService adminUserBaseService;
+
+    @Autowired
+    private ProductBaseService productBaseService;
+
+    @Autowired
+    private AdminUserProductBaseService adminUserProductBaseService;
+
+    @Autowired
+    private ProductPriceRecordBaseService productPriceRecordBaseService;
+
+    @Autowired
+    private SendEmail mailSender;
+
+    @Override
+    public Result updateProductPrice(String token, Long productId, double productPrice, int turnOfRecord) {
+        //报价可能存在并发导致线程冲突（例如，每轮的报价次数上限是5，但是同时收到了6个请求），
+        // 所以使用 Java 的同步机制，synchronized 关键字，来确保在同一时间只有一个线程可以提出报价
+        // 因为admin操作的并发量不会很高，所以只使用最简单的同步机制
+<span class="nc" id="L48">        synchronized (lock) {</span>
+
+<span class="nc" id="L50">            Long adminId = JwtToken.getId(token);</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">            if (adminId == -1L) {</span>
+<span class="nc" id="L52">                return Result.fail(&quot;Cannot parse token!&quot;);</span>
+            }
+<span class="nc" id="L54">            Product product = productBaseService.getById(productId);</span>
+<span class="nc" id="L55">            AdminUser adminUser = adminUserBaseService.getById(adminId);</span>
+
+<span class="nc bnc" id="L57" title="All 4 branches missed.">            if (adminUser == null || product == null) {</span>
+<span class="nc" id="L58">                return Result.fail(&quot;Cannot find admin or product!&quot;);</span>
+            }
+
+<span class="nc bnc" id="L61" title="All 2 branches missed.">            if(!adminUser.isActivationStatus()) {</span>
+<span class="nc" id="L62">                return Result.fail(&quot;The admin account isn't active!&quot;);</span>
+            }
+            //验证报价轮次是否一致，防止有ADMIN页面没刷新，没看到新价格已经出了，又提交上一轮的报价
+<span class="nc bnc" id="L65" title="All 2 branches missed.">            if(turnOfRecord != product.getCurrentTurnOfRecord() + 1)</span>
+            {
+<span class="nc" id="L67">                return Result.fail(&quot;Wrong turn number for updating price&quot;);</span>
+            }
+
+<span class="nc" id="L70">            AdminUserProduct adminUserProductOld = adminUserProductBaseService</span>
+<span class="nc" id="L71">                    .getOne(new QueryWrapper&lt;AdminUserProduct&gt;()</span>
+<span class="nc" id="L72">                            .eq(&quot;admin_user_id&quot;, adminId)</span>
+<span class="nc" id="L73">                            .eq(&quot;product_id&quot;, productId)</span>
+<span class="nc" id="L74">                            .eq(&quot;turn_of_record&quot;, turnOfRecord)</span>
+<span class="nc" id="L75">                            .eq(&quot;is_valid&quot;, true));</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">            if (adminUserProductOld != null) {</span>
+<span class="nc" id="L77">                adminUserProductOld.setValid(false);</span>
+<span class="nc" id="L78">                adminUserProductBaseService.updateById(adminUserProductOld);</span>
+            }
+
+<span class="nc" id="L81">            AdminUserProduct adminUserProduct = createANewChangingPriceRecord(adminUser, product,</span>
+                    productPrice, turnOfRecord);
+<span class="nc" id="L83">            adminUserProductBaseService.save(adminUserProduct);</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">            if (product.isInResettingProcess() == false)</span>
+            {
+<span class="nc" id="L86">                product.setInResettingProcess(true);</span>
+<span class="nc" id="L87">                productBaseService.updateById(product);</span>
+            }
+
+<span class="nc" id="L90">            checkIfProductPriceShouldBeUpdate(product, turnOfRecord);</span>
+<span class="nc" id="L91">            return Result.suc(&quot;Your quotation has been record successfully&quot;);</span>
+        }
+    }
+
+    private AdminUserProduct createANewChangingPriceRecord(AdminUser adminUser, Product product,
+                                                           double productPrice, int turnOfRecord){
+<span class="nc" id="L97">        AdminUserProduct adminUserProduct = new AdminUserProduct();</span>
+<span class="nc" id="L98">        adminUserProduct.setAdminUserId(adminUser.getId());</span>
+<span class="nc" id="L99">        adminUserProduct.setAdminUser(adminUser);</span>
+<span class="nc" id="L100">        adminUserProduct.setProductId(product.getId());</span>
+<span class="nc" id="L101">        adminUserProduct.setProduct(product);</span>
+<span class="nc" id="L102">        adminUserProduct.setProductPrice(productPrice);</span>
+<span class="nc" id="L103">        adminUserProduct.setRecordTimestamp(System.currentTimeMillis());</span>
+<span class="nc" id="L104">        adminUserProduct.setTurnOfRecord(turnOfRecord);</span>
+<span class="nc" id="L105">        adminUserProduct.setValid(true);</span>
+<span class="nc" id="L106">        return adminUserProduct;</span>
+    }
+
+    private void checkIfProductPriceShouldBeUpdate(Product product, int turnOfRecord){
+<span class="nc" id="L110">        List&lt;AdminUserProduct&gt; tempList = adminUserProductBaseService.list(new QueryWrapper&lt;AdminUserProduct&gt;()</span>
+<span class="nc" id="L111">                .eq(&quot;product_id&quot;, product.getId())</span>
+<span class="nc" id="L112">                .eq(&quot;turn_of_record&quot;, turnOfRecord)</span>
+<span class="nc" id="L113">                .eq(&quot;is_valid&quot;, true));</span>
+
+<span class="nc bnc" id="L115" title="All 2 branches missed.">        if(tempList.size() &gt;= requiredAdminUserNumForChangeAProductPrice)</span>
+        {
+<span class="nc" id="L117">            HashMap&lt;Double, Integer&gt; productNewPriceMap = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L118">            tempList.forEach(adminUserProduct-&gt;{</span>
+<span class="nc" id="L119">                productNewPriceMap.merge(adminUserProduct.getProductPrice(), 1, Integer::sum);</span>
+<span class="nc" id="L120">            });</span>
+<span class="nc" id="L121">            int size = productNewPriceMap.size();</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">            if(size == 1)</span>
+            {
+<span class="nc" id="L124">                double priceOld = product.getProductPrice();</span>
+<span class="nc" id="L125">                ProductPriceRecord productPriceRecord = new ProductPriceRecord();</span>
+<span class="nc" id="L126">                productPriceRecord.setProductId(product.getId());</span>
+<span class="nc" id="L127">                productPriceRecord.setProductPrice(priceOld);</span>
+<span class="nc" id="L128">                productPriceRecord.setRecordTimestamp(product.getProductUpdateTime());</span>
+<span class="nc" id="L129">                productPriceRecord.setTurnOfRecord(product.getCurrentTurnOfRecord());</span>
+<span class="nc" id="L130">                productPriceRecordBaseService.save(productPriceRecord);</span>
+
+<span class="nc" id="L132">                double priceNew = tempList.get(0).getProductPrice();</span>
+<span class="nc bnc" id="L133" title="All 2 branches missed.">                if(priceOld &lt; priceNew)</span>
+<span class="nc" id="L134">                    product.setPriceStatus(0);</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">                else if(priceOld &gt; priceNew)</span>
+<span class="nc" id="L136">                    product.setPriceStatus(1);</span>
+                else
+<span class="nc" id="L138">                    product.setPriceStatus(2);</span>
+<span class="nc" id="L139">                product.setProductPrice(tempList.get(0).getProductPrice());</span>
+<span class="nc" id="L140">                product.setCurrentTurnOfRecord(product.getCurrentTurnOfRecord() + 1);</span>
+<span class="nc" id="L141">                product.setProductUpdateTime(System.currentTimeMillis());</span>
+<span class="nc" id="L142">                product.setInResettingProcess(false);</span>
+<span class="nc" id="L143">                productBaseService.updateById(product);</span>
+<span class="nc" id="L144">            }</span>
+            else
+            {
+                // 找到最大值
+<span class="nc" id="L148">                int maxValue = Collections.max(productNewPriceMap.values());</span>
+
+                // 找到最大值对应的键
+<span class="nc" id="L151">                List&lt;Double&gt; maxKeys = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">                for (Map.Entry&lt;Double, Integer&gt; entry : productNewPriceMap.entrySet()) {</span>
+<span class="nc bnc" id="L153" title="All 2 branches missed.">                    if (entry.getValue() == maxValue) {</span>
+<span class="nc" id="L154">                        maxKeys.add(entry.getKey());</span>
+                    }
+<span class="nc" id="L156">                }</span>
+
+<span class="nc bnc" id="L158" title="All 2 branches missed.">                if(maxKeys.size() &gt; 1){</span>
+<span class="nc" id="L159">                    tempList.forEach(adminUserProduct -&gt; {</span>
+<span class="nc" id="L160">                        adminUserProduct.setValid(false);</span>
+<span class="nc" id="L161">                        mailSender.sentResettingPriceWarning(adminUserProduct);</span>
+<span class="nc" id="L162">                    });</span>
+<span class="nc" id="L163">                    adminUserProductBaseService.updateBatchById(tempList);</span>
+                }
+                else
+                {
+<span class="nc" id="L167">                    double priceWithWidestAgreement = maxKeys.get(0);</span>
+<span class="nc" id="L168">                    tempList.forEach(adminUserProduct -&gt; {</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">                        if(adminUserProduct.getProductPrice() != priceWithWidestAgreement) {</span>
+<span class="nc" id="L170">                            adminUserProduct.setValid(false);</span>
+<span class="nc" id="L171">                            mailSender.sentResettingPriceWarning(adminUserProduct);</span>
+<span class="nc" id="L172">                            adminUserProductBaseService.updateById(adminUserProduct);</span>
+                        }
+<span class="nc" id="L174">                    });</span>
+                }
+            }
+        }
+
+<span class="nc" id="L179">    }</span>
+
+    //TODO ADMIN的Dashboard应该要能显示（记录）当前报轮的轮数和该轮他提出过的报价（如果有)
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

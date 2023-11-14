@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NormalUser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">capstone</a> &gt; <a href="index.source.html" class="el_package">com.usyd.capstone.entity</a> &gt; <span class="el_source">NormalUser.java</span></div><h1>NormalUser.java</h1><pre class="source lang-java linenums">package com.usyd.capstone.entity;
+
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.usyd.capstone.entity.abstractEntities.NotSuperUser;
+import lombok.Data;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Set;
+
+<span class="pc bnc" id="L13" title="All 48 branches missed.">@Data</span>
+@Entity
+@TableName(&quot;normal_user&quot;)
+public class NormalUser extends NotSuperUser implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = &quot;id&quot;, nullable = false)
+    @TableId(value = &quot;id&quot;)
+<span class="fc" id="L21">    private Long id;</span>
+
+<span class="fc" id="L23">    private int gender;</span>
+
+<span class="fc" id="L25">    private String phone;</span>
+
+    @TableField(&quot;avatar_url&quot;)
+<span class="fc" id="L28">    private String avatarUrl;</span>
+
+    @OneToMany(mappedBy = &quot;owner&quot;)
+    @TableField(exist = false)
+    @com.github.dreamyoung.mprelation.OneToMany
+    @com.github.dreamyoung.mprelation.JoinColumn(name = &quot;id&quot;, referencedColumnName = &quot;owner_id&quot;)
+<span class="nc" id="L34">    private Set&lt;Product&gt; productsOwned;</span>
+
+    @OneToMany(mappedBy = &quot;buyer&quot;)
+    @TableField(exist = false)
+    @com.github.dreamyoung.mprelation.OneToMany
+    @com.github.dreamyoung.mprelation.JoinColumn(name = &quot;id&quot;, referencedColumnName = &quot;buyer_id&quot;)
+<span class="nc" id="L40">    private Set&lt;Offer&gt; offers;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

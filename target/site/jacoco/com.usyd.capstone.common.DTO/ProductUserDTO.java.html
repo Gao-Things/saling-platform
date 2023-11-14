@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductUserDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">capstone</a> &gt; <a href="index.source.html" class="el_package">com.usyd.capstone.common.DTO</a> &gt; <span class="el_source">ProductUserDTO.java</span></div><h1>ProductUserDTO.java</h1><pre class="source lang-java linenums">package com.usyd.capstone.common.DTO;
+
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.usyd.capstone.entity.Product;
+import com.usyd.capstone.entity.abstractEntities.User;
+import lombok.Data;
+
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+<span class="nc bnc" id="L14" title="All 76 branches missed.">@Data</span>
+public class ProductUserDTO {
+
+<span class="nc" id="L17">    private Long id;</span>
+
+    @TableField(&quot;product_name&quot;)
+<span class="nc" id="L20">    private String productName;</span>
+
+    @TableField(&quot;product_price&quot;)
+<span class="nc" id="L23">    private double productPrice;</span>
+
+    @TableField(&quot;product_Image&quot;)
+<span class="nc" id="L26">    private String productImage;</span>
+
+    @TableField(&quot;product_create_time&quot;)
+<span class="nc" id="L29">    private long productCreateTime;</span>
+
+    @TableField(&quot;product_update_time&quot;)
+<span class="nc" id="L32">    private long productUpdateTime;</span>
+
+    @TableField(&quot;product_description&quot;)
+<span class="nc" id="L35">    private String productDescription;</span>
+
+    @TableField(&quot;product_weight&quot;)
+<span class="nc" id="L38">    private Double productWeight;</span>
+
+    @TableField(&quot;purity&quot;)
+<span class="nc" id="L41">    private String purity;</span>
+
+    //    private String no;
+<span class="nc" id="L44">    private String name;</span>
+
+<span class="nc" id="L46">    private String email;</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

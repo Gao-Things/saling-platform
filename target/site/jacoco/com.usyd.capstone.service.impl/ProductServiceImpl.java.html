@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">capstone</a> &gt; <a href="index.source.html" class="el_package">com.usyd.capstone.service.impl</a> &gt; <span class="el_source">ProductServiceImpl.java</span></div><h1>ProductServiceImpl.java</h1><pre class="source lang-java linenums">package com.usyd.capstone.service.impl;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.usyd.capstone.common.DTO.ProductUserDTO;
+import com.usyd.capstone.common.DTO.Result;
+import com.usyd.capstone.common.DTO.StatisticsData;
+import com.usyd.capstone.common.DTO.productAdmin;
+import com.usyd.capstone.common.VO.ProductFilter;
+import com.usyd.capstone.common.utils.pageUtil;
+import com.usyd.capstone.entity.ExchangeRateUsd;
+import com.usyd.capstone.entity.Offer;
+import com.usyd.capstone.entity.Product;
+import com.usyd.capstone.entity.ProductPriceRecord;
+import com.usyd.capstone.mapper.ExchangeRateUsdMapper;
+import com.usyd.capstone.mapper.OfferMapper;
+import com.usyd.capstone.mapper.ProductMapper;
+import com.usyd.capstone.mapper.ProductPriceRecordMapper;
+import com.usyd.capstone.service.ProductService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * &lt;p&gt;
+ *  服务实现类
+ * &lt;/p&gt;
+ *
+ * @author yyf
+ * @since 2023年08月26日
+ */
+@Service
+<span class="fc" id="L40">public class ProductServiceImpl extends ServiceImpl&lt;ProductMapper, Product&gt; implements ProductService {</span>
+
+    @Autowired
+    ProductMapper productMapper;
+
+    @Autowired
+    OfferMapper offerMapper;
+
+    @Autowired
+    ExchangeRateUsdMapper exchangeRateUsdMapper;
+
+    @Autowired
+    ProductPriceRecordMapper productPriceRecordMapper;
+
+    @Override
+    public IPage getProductListByCurrency(String targetCurrency,int pageNum, int pageSize) {
+<span class="nc" id="L56">        List&lt;Product&gt; productList = productMapper.selectList(new QueryWrapper&lt;&gt;());</span>
+
+<span class="nc" id="L58">        double exchangeRate = 1;</span>
+
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        if (!targetCurrency.equals(&quot;USD&quot;)){</span>
+<span class="nc" id="L61">            QueryWrapper&lt;ExchangeRateUsd&gt; queryWrapper = new QueryWrapper&lt;&gt;();</span>
+<span class="nc" id="L62">            queryWrapper.eq(&quot;exchange_name&quot;, targetCurrency)</span>
+<span class="nc" id="L63">                    .orderByDesc(&quot;update_time&quot;)</span>
+<span class="nc" id="L64">                    .last(&quot;LIMIT 1&quot;);</span>
+<span class="nc" id="L65">            ExchangeRateUsd exchangeRateUsd = exchangeRateUsdMapper.selectOne(queryWrapper);</span>
+<span class="nc" id="L66">            exchangeRate = exchangeRateUsd.getExchangePrice();</span>
+        }
+
+<span class="nc" id="L69">        List&lt;productAdmin&gt; productListWithUpdates = new ArrayList&lt;&gt;();</span>
+        // modify the price by exchanged rate
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        for (Product pp : productList) {</span>
+<span class="nc" id="L72">            productAdmin productAdmin = new productAdmin();</span>
+
+<span class="nc" id="L74">            List&lt;Long&gt; priceUpdateTime =new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L75">            List&lt;Double&gt; priceUpdateRecord = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L76">            Long productID = pp.getId();</span>
+            // get the price record
+<span class="nc" id="L78">            List&lt;ProductPriceRecord&gt; record =  productPriceRecordMapper.selectList(new QueryWrapper&lt;ProductPriceRecord&gt;().eq(&quot;product_id&quot;, productID));</span>
+
+<span class="nc bnc" id="L80" title="All 2 branches missed.">            for (ProductPriceRecord aa : record){</span>
+<span class="nc" id="L81">                priceUpdateTime.add(aa.getRecordTimestamp());</span>
+<span class="nc" id="L82">                priceUpdateRecord.add(aa.getProductPrice());</span>
+<span class="nc" id="L83">            }</span>
+
+<span class="nc" id="L85">            double originalPrice = pp.getProductPrice();</span>
+<span class="nc" id="L86">            double exchangePrice = exchangeRate * originalPrice;</span>
+<span class="nc" id="L87">            DecimalFormat decimalFormat = new DecimalFormat(&quot;#.####&quot;);</span>
+<span class="nc" id="L88">            String formatted = decimalFormat.format(exchangePrice);</span>
+<span class="nc" id="L89">            pp.setProductExchangePrice(Double.parseDouble(formatted));</span>
+
+<span class="nc" id="L91">            productAdmin.setProduct(pp);</span>
+<span class="nc" id="L92">            productAdmin.setPriceUpdateRecord(priceUpdateRecord);</span>
+<span class="nc" id="L93">            productAdmin.setPriceUpdateTime(priceUpdateTime);</span>
+<span class="nc" id="L94">            productListWithUpdates.add(productAdmin);</span>
+<span class="nc" id="L95">        }</span>
+<span class="nc" id="L96">        IPage iPage = pageUtil.listToPage(productListWithUpdates, pageNum, pageSize);</span>
+
+<span class="nc" id="L98">        return iPage;</span>
+    }
+
+    @Override
+    public Result getProductById(Integer productID) {
+<span class="nc" id="L103">        productAdmin productAdmin = new productAdmin();</span>
+
+<span class="nc" id="L105">        List&lt;Long&gt; priceUpdateTime =new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L106">        List&lt;Double&gt; priceUpdateRecord = new ArrayList&lt;&gt;();</span>
+
+<span class="nc" id="L108">        Product pp = productMapper.selectById(productID);</span>
+        // get the price record
+<span class="nc" id="L110">        List&lt;ProductPriceRecord&gt; record =  productPriceRecordMapper.selectList(new QueryWrapper&lt;ProductPriceRecord&gt;().eq(&quot;product_id&quot;, productID));</span>
+
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        for (ProductPriceRecord aa : record){</span>
+<span class="nc" id="L113">            priceUpdateTime.add(aa.getRecordTimestamp());</span>
+<span class="nc" id="L114">            priceUpdateRecord.add(aa.getProductPrice());</span>
+<span class="nc" id="L115">        }</span>
+
+<span class="nc" id="L117">        productAdmin.setProduct(pp);</span>
+<span class="nc" id="L118">        productAdmin.setPriceUpdateTime(priceUpdateTime);</span>
+<span class="nc" id="L119">        productAdmin.setPriceUpdateRecord(priceUpdateRecord);</span>
+<span class="nc" id="L120">        return Result.suc(productAdmin);</span>
+    }
+
+    @Override
+    public List&lt;ProductUserDTO&gt; listProduct(ProductFilter productFilter) {
+<span class="nc" id="L125">        return productMapper.listProduct(productFilter);</span>
+    }
+    @Override
+    public Result getProductListAfterFiltered(String filter1, Integer value1, String filter2, String value2) {
+<span class="nc" id="L129">        List&lt;Product&gt; productListAfterFiltered = null;</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">        if(filter1 != null)</span>
+        {
+<span class="nc bnc" id="L132" title="All 2 branches missed.">            if(filter2 == null)</span>
+<span class="nc" id="L133">                productListAfterFiltered = productMapper.selectList(new QueryWrapper&lt;Product&gt;()</span>
+<span class="nc" id="L134">                        .eq(filter1, value1));</span>
+            else
+<span class="nc" id="L136">                productListAfterFiltered = productMapper.selectList(new QueryWrapper&lt;Product&gt;()</span>
+<span class="nc" id="L137">                        .eq(filter1, value1)</span>
+<span class="nc" id="L138">                        .eq(filter2, value2));</span>
+        }
+
+<span class="nc bnc" id="L141" title="All 2 branches missed.">        if (productListAfterFiltered.isEmpty())</span>
+        {
+<span class="nc" id="L143">            return Result.fail(&quot;invalid input or no product has been found&quot;);</span>
+        }
+        else
+        {
+<span class="nc" id="L147">            return Result.suc(productListAfterFiltered);</span>
+        }
+    }
+
+    @Override
+    public Result getTop10Products() {
+<span class="nc" id="L153">        List&lt;Product&gt; top10Products = productMapper.selectList(new QueryWrapper&lt;Product&gt;()</span>
+<span class="nc" id="L154">                .eq(&quot;product_status&quot;, 0)</span>
+<span class="nc" id="L155">                .orderByDesc(&quot;search_count&quot;)</span>
+<span class="nc" id="L156">                .last(&quot;LIMIT 10&quot;));</span>
+<span class="nc" id="L157">        return Result.suc(top10Products);</span>
+    }
+
+    @Override
+    public double getMinWeight() {
+
+        // 假设Product类中有一个price字段来表示价格
+        // 使用QueryWrapper来构建查询条件
+<span class="nc" id="L165">        QueryWrapper&lt;Product&gt; queryWrapper = new QueryWrapper&lt;&gt;();</span>
+<span class="nc" id="L166">        queryWrapper.orderByAsc(&quot;product_weight&quot;); // 按照价格升序排序</span>
+<span class="nc" id="L167">        queryWrapper.last(&quot;LIMIT 1&quot;); // 限制结果只有一个，即最低价格的商品</span>
+
+        // 执行查询，selectOne方法会返回查询结果中的第一个对象
+<span class="nc" id="L170">        Product product = productMapper.selectOne(queryWrapper);</span>
+
+        // 检查product是否为null，以防数据库为空或查询出错
+<span class="nc bnc" id="L173" title="All 2 branches missed.">        if (product != null) {</span>
+<span class="nc" id="L174">            return product.getProductWeight(); // 返回找到的商品的价格</span>
+        } else {
+<span class="nc" id="L176">            return 0; // 如果没有找到商品，则返回0或者抛出一个异常</span>
+        }
+    }
+
+    @Override
+    public double getMaxWeight() {
+
+        // 假设Product类中有一个price字段来表示价格
+        // 使用QueryWrapper来构建查询条件
+<span class="nc" id="L185">        QueryWrapper&lt;Product&gt; queryWrapper = new QueryWrapper&lt;&gt;();</span>
+<span class="nc" id="L186">        queryWrapper.orderByDesc(&quot;product_weight&quot;);</span>
+<span class="nc" id="L187">        queryWrapper.last(&quot;LIMIT 1&quot;); // 限制结果只有一个，即最高重量的商品</span>
+
+        // 执行查询，selectOne方法会返回查询结果中的第一个对象
+<span class="nc" id="L190">        Product product = productMapper.selectOne(queryWrapper);</span>
+
+        // 检查product是否为null，以防数据库为空或查询出错
+<span class="nc bnc" id="L193" title="All 2 branches missed.">        if (product != null) {</span>
+<span class="nc" id="L194">            return product.getProductWeight(); // 返回找到的商品的价格</span>
+        } else {
+<span class="nc" id="L196">            return 0; // 如果没有找到商品，则返回0或者抛出一个异常</span>
+        }
+    }
+
+    @Override
+    public Page&lt;Product&gt; getProductListAndOffer( Integer pageNum,
+                                                 Integer pageSize,
+                                                 String searchValue) {
+
+<span class="nc" id="L205">        Page&lt;Product&gt; page = new Page&lt;&gt;(pageNum, pageSize);</span>
+<span class="nc" id="L206">        return productMapper.selectProductsWithOffers(page, searchValue);</span>
+    }
+
+    @Override
+    public List&lt;Product&gt; getProductListByUserID(Integer userId, boolean isSelling) {
+
+<span class="nc" id="L212">        return productMapper.getProductListByUserID(userId, isSelling);</span>
+    }
+
+    @Override
+    public Page&lt;Offer&gt; getOfferListAdmin(Integer pageNum,
+                                         Integer pageSize,
+                                         Integer productId,
+                                         String searchValue) {
+
+<span class="nc" id="L221">        Page&lt;Offer&gt; page = new Page&lt;&gt;(pageNum, pageSize);</span>
+
+<span class="nc" id="L223">        return offerMapper.PageOffersByProductId(page, productId, searchValue);</span>
+    }
+
+    @Override
+    public List&lt;StatisticsData&gt; productStatistic(Integer category) {
+
+<span class="nc" id="L229">        return productMapper.productStatistic(category);</span>
+    }
+
+    @Override
+    public List&lt;StatisticsData&gt; getHotProductStatistic() {
+<span class="nc" id="L234">        return productMapper.getHotProductStatistic();</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

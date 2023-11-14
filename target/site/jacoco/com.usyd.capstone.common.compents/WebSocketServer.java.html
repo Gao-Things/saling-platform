@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WebSocketServer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">capstone</a> &gt; <a href="index.source.html" class="el_package">com.usyd.capstone.common.compents</a> &gt; <span class="el_source">WebSocketServer.java</span></div><h1>WebSocketServer.java</h1><pre class="source lang-java linenums">package com.usyd.capstone.common.compents;
+
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import com.usyd.capstone.common.DTO.MessageNotificationDTO;
+import com.usyd.capstone.entity.Message;
+import com.usyd.capstone.entity.abstractEntities.User;
+import com.usyd.capstone.mapper.MessageMapper;
+import com.usyd.capstone.mapper.NormalUserMapper;
+import com.usyd.capstone.rabbitMq.FanoutSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
+
+import javax.websocket.*;
+import javax.websocket.server.PathParam;
+import javax.websocket.server.ServerEndpoint;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
+ * @author websocket服务
+ */
+
+
+@ServerEndpoint(value = &quot;/imserver/{userId}&quot;)
+@Component
+<span class="fc" id="L34">public class WebSocketServer {</span>
+
+
+    /**
+     * 用来解决webSocket中无法注入mapper
+     */
+    private static ApplicationContext applicationContext;
+
+
+    public static void setApplicationContext(ApplicationContext applicationContext) {
+<span class="nc" id="L44">        WebSocketServer.applicationContext = applicationContext;</span>
+<span class="nc" id="L45">    }</span>
+
+<span class="fc" id="L47">    private static final Logger log = LoggerFactory.getLogger(WebSocketServer.class);</span>
+    /**
+     * 记录当前在线连接数
+     */
+<span class="fc" id="L51">    public static final Map&lt;Integer, Session&gt; sessionMap2 = new ConcurrentHashMap&lt;&gt;();</span>
+
+
+    /**
+     * 连接建立成功调用的方法
+     */
+    @OnOpen
+    public void onOpen(Session session, @PathParam(&quot;userId&quot;) Integer userId) {
+<span class="nc" id="L59">        sessionMap2.put(userId, session);</span>
+<span class="nc" id="L60">        log.info(&quot;有新用户加入，userEmail={}, 当前在线人数为：{}&quot;, userId, sessionMap2.size());</span>
+<span class="nc" id="L61">        JSONObject result = new JSONObject();</span>
+<span class="nc" id="L62">        JSONArray array = new JSONArray();</span>
+<span class="nc" id="L63">        result.put(&quot;users&quot;, array);</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        for (Object key : sessionMap2.keySet()) {</span>
+<span class="nc" id="L65">            JSONObject jsonObject = new JSONObject();</span>
+<span class="nc" id="L66">            jsonObject.put(&quot;userId&quot;, key);</span>
+            // {&quot;userEmail&quot;, &quot;zhang&quot;, &quot;userEmail&quot;: &quot;admin&quot;}
+<span class="nc" id="L68">            array.add(jsonObject);</span>
+<span class="nc" id="L69">        }</span>
+//        {&quot;users&quot;: [{&quot;userEmail&quot;: &quot;zhang&quot;},{ &quot;userEmail&quot;: &quot;admin&quot;}]}
+//        sendAllMessage(JSONUtil.toJsonStr(result));  // 后台发送消息给所有的客户端
+<span class="nc" id="L72">    }</span>
+    /**
+     * 连接关闭调用的方法
+     */
+    @OnClose
+    public void onClose(Session session, @PathParam(&quot;userId&quot;) Integer userId) {
+<span class="nc" id="L78">        sessionMap2.remove(userId);</span>
+
+<span class="nc" id="L80">        JSONObject result = new JSONObject();</span>
+<span class="nc" id="L81">        JSONArray array = new JSONArray();</span>
+<span class="nc" id="L82">        result.put(&quot;users&quot;, array);</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        for (Object key : sessionMap2.keySet()) {</span>
+<span class="nc" id="L84">            JSONObject jsonObject = new JSONObject();</span>
+<span class="nc" id="L85">            jsonObject.put(&quot;userId&quot;, key);</span>
+            // {&quot;userEmail&quot;, &quot;zhang&quot;, &quot;userEmail&quot;: &quot;admin&quot;}
+<span class="nc" id="L87">            array.add(jsonObject);</span>
+<span class="nc" id="L88">        }</span>
+
+<span class="nc" id="L90">        log.info(&quot;有一连接关闭，移除useruserEmail={}的用户session, 当前在线人数为：{}&quot;, userId, sessionMap2.size());</span>
+<span class="nc" id="L91">    }</span>
+    /**
+     * 收到客户端消息后调用的方法
+     * 后台收到客户端发送过来的消息
+     * onMessage 是一个消息的中转站
+     * 接受 浏览器端 socket.send 发送过来的 json数据
+     * @param message 客户端发送过来的消息
+     */
+    @OnMessage
+    public void onMessage(String message, Session session, @PathParam(&quot;userId&quot;) Integer userId) {
+<span class="nc" id="L101">        log.info(&quot;服务端收到用户userId={}的消息:{}&quot;, userId, message);</span>
+<span class="nc" id="L102">        JSONObject obj = JSONUtil.parseObj(message);</span>
+<span class="nc" id="L103">        Integer toUserId = obj.getInt(&quot;to&quot;); // to表示发送给哪个用户，比如 admin</span>
+<span class="nc" id="L104">        String text = obj.getStr(&quot;text&quot;); // 发送的消息文本  hello</span>
+
+        /**
+         *
+         *  userID == 0为websocket心跳包
+         */
+
+        // 注入sender到bean
+<span class="nc" id="L112">        FanoutSender fanoutSender = applicationContext.getBean(FanoutSender.class);</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">        if (Objects.equals(toUserId, userId)){</span>
+
+//            /**
+//             *  发送消息通知到rabbitMQ 通知 交换机
+//             */
+//            Map&lt;Integer, String&gt; rabbitMessageList2 = new HashMap&lt;&gt;();
+//
+//            // 心跳续约
+//            rabbitMessageList2.put(0, &quot;Pong&quot;);
+//            fanoutSender.sendMessage(rabbitMessageList2);
+
+<span class="nc" id="L124">            JSONObject jsonObject = new JSONObject();</span>
+<span class="nc" id="L125">            jsonObject.put(&quot;from&quot;, userId);  // from 是 zhang</span>
+<span class="nc" id="L126">            jsonObject.put(&quot;text&quot;, &quot;pong&quot;);  // text 同上面的text</span>
+
+<span class="nc" id="L128">            sendMessage(jsonObject.toString(), toUserId);</span>
+
+<span class="nc" id="L130">        }else{</span>
+
+            // 存入数据库
+<span class="nc" id="L133">            MessageMapper messageMapper = applicationContext.getBean(MessageMapper.class);</span>
+<span class="nc" id="L134">            Message messageDB = new Message();</span>
+<span class="nc" id="L135">            messageDB.setPostMessageContent(text);</span>
+<span class="nc" id="L136">            messageDB.setFromUserId(userId);</span>
+<span class="nc" id="L137">            messageDB.setToUserId(toUserId);</span>
+<span class="nc" id="L138">            messageDB.setPostTime(System.currentTimeMillis());</span>
+<span class="nc" id="L139">            messageMapper.insert(messageDB);</span>
+
+            // 服务器端 再把消息组装一下，组装后的消息包含发送人和发送的文本内容
+            // {&quot;from&quot;: &quot;zhang&quot;, &quot;text&quot;: &quot;hello&quot;}
+<span class="nc" id="L143">            JSONObject jsonObject = new JSONObject();</span>
+<span class="nc" id="L144">            jsonObject.put(&quot;from&quot;, userId);  // from 是 zhang</span>
+<span class="nc" id="L145">            jsonObject.put(&quot;text&quot;, text);  // text 同上面的text</span>
+
+
+            /**
+             * 发送消息到rabbitMQ聊天交换机
+             */
+
+<span class="nc" id="L152">            Map&lt;Integer, String&gt; rabbitMessageList = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L153">            rabbitMessageList.put(toUserId, jsonObject.toString());</span>
+<span class="nc" id="L154">            fanoutSender.sendChatMessage(rabbitMessageList);</span>
+
+//            this.sendMessage(jsonObject.toString(), toUserId);
+
+<span class="nc" id="L158">            log.info(&quot;发送给用户userId={}，消息：{}&quot;, toUserId, jsonObject);</span>
+
+
+            /**
+             * 发送消息弹窗提示
+             */
+            // 接受此消息用户的类型
+<span class="nc" id="L165">            NormalUserMapper normalUserMapper = applicationContext.getBean(NormalUserMapper.class);</span>
+<span class="nc" id="L166">            User localUser = normalUserMapper.selectById(userId);</span>
+
+<span class="nc" id="L168">            MessageNotificationDTO messageNotificationDTO = new MessageNotificationDTO();</span>
+
+            // 消息类型
+<span class="nc" id="L171">            messageNotificationDTO.setMessageType(999);</span>
+<span class="nc" id="L172">            messageNotificationDTO.setRemoteUser(localUser);</span>
+
+            // 为远程用户加载本地用户的信息
+<span class="nc" id="L175">            messageNotificationDTO.setNotificationContent(text);</span>
+
+<span class="nc" id="L177">            String result = com.alibaba.fastjson.JSONObject.toJSONString(messageNotificationDTO);</span>
+
+            /**
+             *  发送消息通知到rabbitMQ 通知 交换机
+             */
+<span class="nc" id="L182">            Map&lt;Integer, String&gt; rabbitMessageList2 = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L183">            rabbitMessageList2.put(toUserId, result);</span>
+<span class="nc" id="L184">            fanoutSender.sendMessage(rabbitMessageList2);</span>
+
+//            NotificationServer.sendMessage(result, toUserId);
+        }
+
+
+
+
+<span class="nc" id="L192">    }</span>
+    @OnError
+    public void onError(Session sess, Throwable e) {
+<span class="nc" id="L195">        Throwable cause = e.getCause();</span>
+        /* normal handling... */
+<span class="nc bnc" id="L197" title="All 2 branches missed.">        if (cause != null)</span>
+<span class="nc" id="L198">            System.out.println(&quot;Error-info: cause-&gt;&quot; + cause);</span>
+        try {
+            // Likely EOF (i.e. user killed session)
+            // so just Close the input stream as instructed
+<span class="nc" id="L202">            sess.close();</span>
+<span class="nc" id="L203">        } catch (IOException ex) {</span>
+<span class="nc" id="L204">            System.out.println(&quot;Handling eof, A cascading IOException was caught: &quot; + ex.getMessage());</span>
+<span class="nc" id="L205">            ex.printStackTrace();</span>
+        } finally {
+<span class="nc" id="L207">            System.out.println(&quot;Session error handled. (likely unexpected EOF) resulting in closing User Session.&quot;);</span>
+
+        }
+<span class="nc" id="L210">    }</span>
+    /**
+     * 服务端发送消息给客户端
+     */
+    public static void sendMessage(String message, Integer userId) {
+<span class="nc" id="L215">        System.out.println(&quot;开始调用sendMessage方法&quot;);</span>
+<span class="nc" id="L216">        Session session = sessionMap2.get(userId);</span>
+<span class="nc bnc" id="L217" title="All 2 branches missed.">        if (session == null) {</span>
+<span class="nc" id="L218">            log.error(&quot;未找到userId={}的session&quot;, userId);</span>
+<span class="nc" id="L219">            return;</span>
+        }
+
+<span class="nc bnc" id="L222" title="All 2 branches missed.">        if (!session.isOpen()) {</span>
+<span class="nc" id="L223">            log.error(&quot;试图发送消息到一个已关闭的session: userId={}&quot;, userId);</span>
+<span class="nc" id="L224">            return;</span>
+        }
+
+        try {
+<span class="nc" id="L228">            log.info(&quot;服务端给客户端[{}]发送消息{}&quot;, session, message);</span>
+<span class="nc" id="L229">            session.getBasicRemote().sendText(message);</span>
+<span class="nc" id="L230">        } catch (Exception e) {</span>
+<span class="nc" id="L231">            log.error(&quot;服务端发送消息给客户端失败&quot;, e);</span>
+<span class="nc" id="L232">        }</span>
+<span class="nc" id="L233">    }</span>
+
+
+//    /**
+//     * 服务端发送消息给所有客户端
+//     */
+//    private void sendAllMessage(String message) {
+//        try {
+//            for (Session session : sessionMap.values()) {
+//                log.info(&quot;服务端给客户端[{}]发送消息{}&quot;, session.getId(), message);
+//                session.getBasicRemote().sendText(message);
+//            }
+//        } catch (Exception e) {
+//            log.error(&quot;服务端发送消息给客户端失败&quot;, e);
+//        }
+//    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

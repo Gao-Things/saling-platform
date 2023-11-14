@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PublicServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">capstone</a> &gt; <a href="index.source.html" class="el_package">com.usyd.capstone.service.impl</a> &gt; <span class="el_source">PublicServiceImpl.java</span></div><h1>PublicServiceImpl.java</h1><pre class="source lang-java linenums">package com.usyd.capstone.service.impl;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.usyd.capstone.common.DTO.LoginResponse;
+import com.usyd.capstone.common.Enums.ROLE;
+import com.usyd.capstone.common.Enums.SYSTEM_SECURITY_KEY;
+import com.usyd.capstone.common.compents.JwtToken;
+import com.usyd.capstone.common.DTO.Result;
+import com.usyd.capstone.common.compents.SendEmail;
+import com.usyd.capstone.entity.AdminUser;
+import com.usyd.capstone.entity.NormalUser;
+import com.usyd.capstone.common.VO.EmailAddress;
+import com.usyd.capstone.common.VO.UpdatePasswordParameter;
+import com.usyd.capstone.common.VO.UserLogin;
+import com.usyd.capstone.entity.UserSetting;
+import com.usyd.capstone.entity.abstractEntities.NotSuperUser;
+import com.usyd.capstone.entity.abstractEntities.User;
+import com.usyd.capstone.mapper.AdminUserMapper;
+import com.usyd.capstone.mapper.NormalUserMapper;
+import com.usyd.capstone.mapper.SuperUserMapper;
+import com.usyd.capstone.mapper.UserSettingMapper;
+import com.usyd.capstone.service.PublicService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.Objects;
+
+
+@Service
+<span class="fc" id="L35">public class PublicServiceImpl extends ServiceImpl&lt;NormalUserMapper, NormalUser&gt; implements PublicService {</span>
+    @Resource
+    private NormalUserMapper normalUserMapper;
+
+    @Resource
+    private AdminUserMapper adminUserMapper;
+
+    @Resource
+    private SuperUserMapper superUserMapper;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserSettingMapper userSettingMapper;
+
+    @Autowired
+    private SendEmail sentEmail;
+
+
+//    @Override
+//    public List&lt;User&gt; listAll() {
+//        return userMapper.listAll();
+//    }
+//
+//    @Override
+//    public IPage pageC(Page&lt;User&gt; page) {
+//        return userMapper.pageC(page);
+//    }
+//
+//    @Override
+//    public IPage pageCC(Page&lt;User&gt; page, Wrapper wrapper) {
+//        return userMapper.pageCC(page, wrapper);
+//    }
+
+    @Override
+    public Result verifyLogin(UserLogin userLogin) {
+<span class="pc bpc" id="L72" title="2 of 4 branches missed.">        if (StringUtils.isEmpty(userLogin.getPassword()) || StringUtils.isEmpty(userLogin.getEmail())){</span>
+<span class="nc" id="L73">            return Result.fail(&quot;Empty Email or password&quot;);</span>
+        }
+        User user;
+        BaseMapper mapper;
+        ROLE role;
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">        if(userLogin.getUserRole() == 1)</span>
+        {
+<span class="nc" id="L80">            mapper = normalUserMapper;</span>
+<span class="nc" id="L81">            role = ROLE.ROLE_NORMAL;</span>
+        }
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">        else if (userLogin.getUserRole() == 2)</span>
+        {
+<span class="nc" id="L85">            mapper = adminUserMapper;</span>
+<span class="nc" id="L86">            role = ROLE.ROLE_ADMIN;</span>
+        }
+        else
+        {
+<span class="fc" id="L90">            mapper = superUserMapper;</span>
+<span class="fc" id="L91">            role = ROLE.ROLE_SUPER;</span>
+        }
+        // Verify user
+<span class="fc" id="L94">        user = (User) mapper.selectOne(new QueryWrapper&lt;NormalUser&gt;().eq(&quot;email&quot;, userLogin.getEmail()));</span>
+
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">        if (user == null) {</span>
+
+<span class="nc" id="L98">            return Result.fail(&quot;Wrong email or password&quot;);</span>
+        }
+
+        /**
+         * 不好验证，暂时绕行
+         */
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">        if (userLogin.getUserRole() == 3){</span>
+<span class="nc" id="L105">            System.out.println(user.getPassword());</span>
+<span class="nc" id="L106">            System.out.println(userLogin.getPassword());</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">            if (!userLogin.getPassword().equals(user.getPassword())){</span>
+<span class="nc" id="L108">                return Result.fail(&quot;wrong email or password&quot;);</span>
+            }
+<span class="nc" id="L110">            LoginResponse loginResponse = new LoginResponse();</span>
+<span class="nc" id="L111">            loginResponse.setId(user.getId());</span>
+<span class="nc" id="L112">            loginResponse.setRole(userLogin.getUserRole());</span>
+<span class="nc" id="L113">            String token = JwtToken.generateToken(user.getId(), userLogin.getEmail(), role);</span>
+<span class="nc" id="L114">            return new Result(200, &quot;Login successfully!&quot;, 0L, loginResponse, token);</span>
+        }
+
+<span class="fc" id="L117">        String machUse = userLogin.getEmail() + userLogin.getPassword() + SYSTEM_SECURITY_KEY.PASSWORD_SECRET_KEY.getValue();</span>
+
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">        if (!passwordEncoder.matches(machUse, user.getPassword())){</span>
+<span class="fc" id="L120">            return Result.fail(&quot;Wrong email or password&quot;);</span>
+        }
+
+<span class="nc bnc" id="L123" title="All 2 branches missed.">        if (!user.isActivationStatus()){</span>
+<span class="nc" id="L124">            return Result.fail(&quot;your account has not been activation&quot;);</span>
+        }
+
+<span class="nc" id="L127">        String token = JwtToken.generateToken(user.getId(), userLogin.getEmail(), role);</span>
+
+<span class="nc" id="L129">        LoginResponse loginResponse = new LoginResponse();</span>
+<span class="nc" id="L130">        loginResponse.setId(user.getId());</span>
+<span class="nc" id="L131">        loginResponse.setRole(userLogin.getUserRole());</span>
+//        loginResponse.setEmail(userLogin.getEmail());
+<span class="nc" id="L133">        return new Result(200, &quot;Login successfully!&quot;, 0L, loginResponse, token);</span>
+    }
+
+    @Override
+    //如果用户不存在-&gt;存一个新用户+发邮件+返回“已保存”
+    //如果存在-&gt;如果已激活-&gt;报错“已激活”
+    //如果存在-&gt;如果未激活-&gt;更新该用户+发邮件+返回“已更新”
+    //admin用默认密码或者空密码注册，之后可以修改密码
+    public Result registration(String email, String password, String firstname, String lastname, int userRole){
+<span class="fc" id="L142">        long registrationTimeStamp = System.currentTimeMillis();</span>
+<span class="fc" id="L143">        String passwordToken = passwordEncoder.encode(email + password + SYSTEM_SECURITY_KEY.PASSWORD_SECRET_KEY.getValue());</span>
+<span class="fc" id="L144">        String name = firstname +' '+ lastname;</span>
+        NotSuperUser notSuperUserOld;
+        BaseMapper mapper;
+        String text;
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">        if(userRole == 1)</span>
+        {
+<span class="fc" id="L150">            mapper = normalUserMapper;</span>
+<span class="fc" id="L151">            text = &quot;your&quot;;</span>
+        }
+        else
+        {
+<span class="nc" id="L155">            mapper = adminUserMapper;</span>
+<span class="nc" id="L156">            text = name + &quot;'s&quot;;</span>
+        }
+<span class="fc" id="L158">        notSuperUserOld = (NotSuperUser) mapper.selectOne(new QueryWrapper&lt;NotSuperUser&gt;().eq(&quot;email&quot;, email));</span>
+
+<span class="pc bpc" id="L160" title="1 of 2 branches missed.">        if(notSuperUserOld == null)</span>
+        {
+            NotSuperUser notSuperUserNew;
+<span class="nc bnc" id="L163" title="All 2 branches missed.">            if(userRole == 1)</span>
+            {
+<span class="nc" id="L165">                notSuperUserNew = new NormalUser();</span>
+            }
+            else
+            {
+<span class="nc" id="L169">                notSuperUserNew = new AdminUser();</span>
+            }
+<span class="nc" id="L171">            notSuperUserNew.setEmail(email);</span>
+<span class="nc" id="L172">            notSuperUserNew.setName(name);</span>
+<span class="nc" id="L173">            notSuperUserNew.setRegistrationTimestamp(registrationTimeStamp);</span>
+<span class="nc" id="L174">            notSuperUserNew.setPassword(passwordToken);</span>
+<span class="nc" id="L175">            notSuperUserNew.setActivationStatus(false);</span>
+
+<span class="nc" id="L177">            sentEmail.sentRegistrationEmail(email, registrationTimeStamp, passwordToken, userRole);</span>
+
+            // 可以直接调用mybatisplus的insert方法
+<span class="nc" id="L180">            mapper.insert(notSuperUserNew);</span>
+
+
+            /**
+             * 插入用户设置默认值
+             */
+<span class="nc" id="L186">            UserSetting userSetting = new UserSetting();</span>
+<span class="nc" id="L187">            userSetting.setUserId(Math.toIntExact(notSuperUserNew.getId()));</span>
+<span class="nc" id="L188">            userSetting.setChooseTone(&quot;elegant&quot;);</span>
+<span class="nc" id="L189">            userSetting.setMessageToneOpen(1);</span>
+<span class="nc" id="L190">            userSetting.setNotificationOpen(0);</span>
+<span class="nc" id="L191">            userSetting.setMessageReceived(1);</span>
+<span class="nc" id="L192">            userSettingMapper.insert(userSetting);</span>
+
+
+
+<span class="nc" id="L196">            return new Result(200, &quot;Registration successful! The verification link will be &quot; +</span>
+<span class="nc" id="L197">                    &quot;sent to &quot; + text + &quot; E-mail box.&quot;, 0L, null, null);</span>
+        }
+        else
+        {
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">            if(notSuperUserOld.isActivationStatus())</span>
+            {
+<span class="nc" id="L203">                return new Result(409, &quot;This email has been registered!&quot;, 0L, null, null);</span>
+            }
+            else {
+<span class="fc" id="L206">                notSuperUserOld.setRegistrationTimestamp(registrationTimeStamp);</span>
+<span class="fc" id="L207">                notSuperUserOld.setPassword(passwordToken);</span>
+<span class="fc" id="L208">                sentEmail.sentRegistrationEmail(email, registrationTimeStamp, passwordToken, userRole);</span>
+<span class="fc" id="L209">                mapper.updateById(notSuperUserOld);</span>
+<span class="fc" id="L210">                return new Result(200, &quot;Registration successful! The verification link will be &quot; +</span>
+<span class="fc" id="L211">                        &quot;sent to &quot; + text + &quot; E-mail box.&quot;, 0L, null, null);</span>
+            }
+        }
+    }
+
+
+
+    @Override
+    public Result registrationVerification(String email, long registrationTimestamp, String password, int userRole) {
+        NotSuperUser notSuperUser;
+        BaseMapper mapper;
+<span class="pc bpc" id="L222" title="1 of 2 branches missed.">        if(userRole == 1)</span>
+        {
+<span class="fc" id="L224">            mapper = normalUserMapper;</span>
+        }
+        else
+        {
+<span class="nc" id="L228">            mapper = adminUserMapper;</span>
+        }
+<span class="fc" id="L230">        notSuperUser = (NotSuperUser)mapper.selectOne(new QueryWrapper&lt;NotSuperUser&gt;().eq(&quot;email&quot;, email)</span>
+<span class="fc" id="L231">                                                                                        .eq(&quot;password&quot;, password)</span>
+<span class="fc" id="L232">                                                                                        .eq(&quot;registration_timestamp&quot;, registrationTimestamp));</span>
+<span class="pc bpc" id="L233" title="1 of 2 branches missed.">        if(notSuperUser == null)</span>
+        {
+<span class="fc" id="L235">            return new Result(404, &quot;The registration verification link is wrong!&quot;, 0L, null, null);</span>
+        }
+        else
+        {
+<span class="nc bnc" id="L239" title="All 2 branches missed.">            if(notSuperUser.isActivationStatus())</span>
+            {
+<span class="nc" id="L241">                return new Result(400, &quot;This is an active account!&quot;, 0L, null, null);</span>
+            }
+<span class="nc bnc" id="L243" title="All 2 branches missed.">            else if(System.currentTimeMillis() - registrationTimestamp &gt; 86400000L)</span>
+            {
+<span class="nc" id="L245">                return new Result(410, &quot;The registration verification link is out of date!&quot;, 0L, null, null);</span>
+            }
+            else
+            {
+<span class="nc" id="L249">                notSuperUser.setActivationStatus(true);</span>
+<span class="nc" id="L250">                mapper.updateById(notSuperUser);</span>
+<span class="nc" id="L251">                return new Result(200, &quot;Your account has been activated!&quot;, 0L, null, null);</span>
+            }
+        }
+    }
+
+    @Override
+    public Result forgetPassword(EmailAddress emailAddress) {
+
+<span class="fc" id="L259">        NormalUser normalUser = normalUserMapper.selectOne(new QueryWrapper&lt;NormalUser&gt;().eq(&quot;email&quot;, emailAddress.getEmailAddress()));</span>
+<span class="pc bpc" id="L260" title="1 of 2 branches missed.">        if (normalUser == null){</span>
+<span class="nc" id="L261">            return Result.fail(&quot;your email address is wrong&quot;);</span>
+        }
+<span class="fc" id="L263">       normalUser.setResettingPasswordTimestamp(System.currentTimeMillis());</span>
+
+<span class="pc bpc" id="L265" title="1 of 2 branches missed.">        if (!normalUser.isActivationStatus()){</span>
+<span class="nc" id="L266">            return Result.fail(&quot;your account is not active&quot;);</span>
+        }
+
+       // send verify email
+<span class="fc" id="L270">        sentEmail.sentForgetEmail( emailAddress.getEmailAddress(), normalUser.getResettingPasswordTimestamp());</span>
+<span class="fc" id="L271">        normalUserMapper.updateById(normalUser);</span>
+<span class="fc" id="L272">        return Result.suc(&quot;The verification link has been sent to your email box&quot;);</span>
+    }
+
+    @Override
+    public Result forgetPasswordVerification(String email, long resettingPasswordTimestamp) {
+
+<span class="fc" id="L278">        NormalUser normalUser = normalUserMapper.selectOne(new QueryWrapper&lt;NormalUser&gt;().eq(&quot;email&quot;, email));</span>
+<span class="pc bpc" id="L279" title="1 of 2 branches missed.">        if (normalUser == null){</span>
+<span class="fc" id="L280">            return Result.fail(&quot;invalid verification link&quot;);</span>
+        }
+<span class="nc bnc" id="L282" title="All 2 branches missed.">        if(normalUser.getResettingPasswordTimestamp() != resettingPasswordTimestamp)</span>
+        {
+<span class="nc" id="L284">            return Result.fail(&quot;invalid verification link&quot;);</span>
+        }
+<span class="nc bnc" id="L286" title="All 2 branches missed.">        if (System.currentTimeMillis() - resettingPasswordTimestamp &gt; 86400000L){</span>
+<span class="nc" id="L287">            return Result.fail(&quot;The resetting password verification link is out of date!&quot;);</span>
+        }
+<span class="nc" id="L289">        normalUser.setResettingPasswordTimestamp(System.currentTimeMillis());</span>
+<span class="nc" id="L290">        normalUser.setForgetPasswordVerity(true);</span>
+<span class="nc" id="L291">        normalUserMapper.updateById(normalUser);</span>
+<span class="nc" id="L292">        return Result.suc(&quot;The resetting password verification has been verified successfully!&quot; +</span>
+                &quot;You will have 30 minutes to set a new password&quot;);
+    }
+
+    @Override
+    public Result pollingResult(String email) {
+
+<span class="fc" id="L299">        NormalUser normalUser = normalUserMapper.selectOne(new QueryWrapper&lt;NormalUser&gt;().eq(&quot;email&quot;, email));</span>
+
+<span class="pc bpc" id="L301" title="1 of 2 branches missed.">        if (normalUser == null){</span>
+<span class="fc" id="L302">            return Result.fail(&quot;error, the user doesn't exit&quot;);</span>
+        }
+
+<span class="nc bnc" id="L305" title="All 2 branches missed.">        if (normalUser.isForgetPasswordVerity()){</span>
+<span class="nc" id="L306">           return Result.suc(&quot;Email verity successful&quot;);</span>
+        }else {
+<span class="nc" id="L308">            return Result.fail(&quot;Email still not verity&quot;);</span>
+        }
+    }
+
+    //TODO 检测两个密码是否一致的功能移到前端（？）
+    @Override
+    public Result updatePassword(UpdatePasswordParameter updatePasswordParameter) {
+
+<span class="fc" id="L316">        String email = updatePasswordParameter.getEmail();</span>
+<span class="fc" id="L317">        String password = updatePasswordParameter.getPassword();</span>
+<span class="fc" id="L318">        String passwordTwo = updatePasswordParameter.getPassword2();</span>
+
+<span class="fc" id="L320">        NormalUser normalUser = normalUserMapper.selectOne(new QueryWrapper&lt;NormalUser&gt;().eq(&quot;email&quot;, email));</span>
+<span class="pc bpc" id="L321" title="1 of 2 branches missed.">        if (normalUser == null){</span>
+<span class="fc" id="L322">            return Result.fail(&quot;error, can`t find this user&quot;);</span>
+        }
+<span class="nc bnc" id="L324" title="All 2 branches missed.">        if (!normalUser.isForgetPasswordVerity()){</span>
+<span class="nc" id="L325">            return Result.fail(&quot;your resetting password request hasn't been verity by email&quot;);</span>
+        }
+<span class="nc bnc" id="L327" title="All 2 branches missed.">        if (System.currentTimeMillis() - normalUser.getResettingPasswordTimestamp() &gt; 1800000L)</span>
+        {
+<span class="nc" id="L329">            normalUser.setForgetPasswordVerity(false);</span>
+<span class="nc" id="L330">            normalUserMapper.updateById(normalUser);</span>
+<span class="nc" id="L331">            return Result.fail(&quot;resetting password permission has been out of date.&quot;);</span>
+        }
+<span class="nc bnc" id="L333" title="All 2 branches missed.">        if (!password.equals(passwordTwo)){</span>
+<span class="nc" id="L334">            return Result.fail(&quot;your two password is not same &quot;);</span>
+        }
+        // encode password
+<span class="nc" id="L337">        String passwordToken = passwordEncoder.encode(email + password + SYSTEM_SECURITY_KEY.PASSWORD_SECRET_KEY.getValue());</span>
+<span class="nc" id="L338">        normalUser.setPassword(passwordToken);</span>
+<span class="nc" id="L339">        normalUser.setForgetPasswordVerity(false);</span>
+
+<span class="nc" id="L341">        normalUserMapper.updateById(normalUser);</span>
+
+<span class="nc" id="L343">        return Result.suc(&quot;user password has been update&quot;);</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

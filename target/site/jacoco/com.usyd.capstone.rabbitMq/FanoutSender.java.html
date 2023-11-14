@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FanoutSender.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">capstone</a> &gt; <a href="index.source.html" class="el_package">com.usyd.capstone.rabbitMq</a> &gt; <span class="el_source">FanoutSender.java</span></div><h1>FanoutSender.java</h1><pre class="source lang-java linenums">package com.usyd.capstone.rabbitMq;
+
+import com.alibaba.fastjson.JSON;
+import com.usyd.capstone.common.config.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.Map;
+
+@Component
+<span class="fc" id="L14">public class FanoutSender {</span>
+<span class="fc" id="L15">    private static Logger logger = LoggerFactory.getLogger(FanoutSender.class);</span>
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+
+    public void sendMessage(Map&lt;Integer, String&gt; rabbitMessageList) {
+<span class="nc" id="L22">        logger.info(&quot;【消息发送者】发送消息到fanout交换机，&quot;);</span>
+<span class="nc" id="L23">        System.out.println(&quot;【消息发送者】发送消息到fanout交换机，&quot;);</span>
+        // 使用 Fastjson 的 JSON 类来转换
+<span class="nc" id="L25">        String jsonStr = JSON.toJSONString(rabbitMessageList);</span>
+<span class="nc" id="L26">        rabbitTemplate.convertAndSend(Constants.FANOUT_EXCHANGE_NAME, &quot;&quot;, jsonStr);</span>
+<span class="nc" id="L27">    }</span>
+
+
+    public void sendChatMessage(Map&lt;Integer, String&gt; rabbitMessageList) {
+<span class="nc" id="L31">        logger.info(&quot;【消息发送者】发送消息到聊天室交换机，&quot;);</span>
+<span class="nc" id="L32">        System.out.println(&quot;【消息发送者】发送消息到聊天室交换机，&quot;);</span>
+        // 使用 Fastjson 的 JSON 类来转换
+<span class="nc" id="L34">        String jsonStr = JSON.toJSONString(rabbitMessageList);</span>
+<span class="nc" id="L35">        rabbitTemplate.convertAndSend(Constants.CHAT_EXCHANGE_NAME, &quot;&quot;, jsonStr);</span>
+<span class="nc" id="L36">    }</span>
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

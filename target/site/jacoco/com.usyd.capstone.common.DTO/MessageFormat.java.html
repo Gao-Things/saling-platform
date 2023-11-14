@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MessageFormat.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">capstone</a> &gt; <a href="index.source.html" class="el_package">com.usyd.capstone.common.DTO</a> &gt; <span class="el_source">MessageFormat.java</span></div><h1>MessageFormat.java</h1><pre class="source lang-java linenums">package com.usyd.capstone.common.DTO;
+
+public class MessageFormat {
+
+    /**
+     * 1. text, 2. card
+     */
+    private Integer messageType;
+
+    private String messageText;
+
+    private Integer productId;
+
+    private String cardTitle;
+
+    private String cardImageUrl;
+
+    private String cardDescription;
+
+<span class="nc" id="L20">    public MessageFormat() {</span>
+<span class="nc" id="L21">    }</span>
+
+<span class="nc" id="L23">    public MessageFormat(Integer messageType, String messageText) {</span>
+<span class="nc" id="L24">        this.messageType = messageType;</span>
+<span class="nc" id="L25">        this.messageText = messageText;</span>
+<span class="nc" id="L26">    }</span>
+
+    public MessageFormat(Integer messageType,
+                         String cardTitle,
+                         String cardImageUrl,
+                         String cardDescription,
+<span class="nc" id="L32">                         Integer productId) {</span>
+
+<span class="nc" id="L34">        this.messageType = messageType;</span>
+
+<span class="nc" id="L36">        this.cardTitle = cardTitle;</span>
+<span class="nc" id="L37">        this.cardImageUrl = cardImageUrl;</span>
+<span class="nc" id="L38">        this.cardDescription = cardDescription;</span>
+<span class="nc" id="L39">        this.productId = productId;</span>
+<span class="nc" id="L40">    }</span>
+
+    public Integer getProductId() {
+<span class="nc" id="L43">        return productId;</span>
+    }
+
+    public void setProductId(Integer productId) {
+<span class="nc" id="L47">        this.productId = productId;</span>
+<span class="nc" id="L48">    }</span>
+    public Integer getMessageType() {
+<span class="nc" id="L50">        return messageType;</span>
+    }
+
+    public void setMessageType(Integer messageType) {
+<span class="nc" id="L54">        this.messageType = messageType;</span>
+<span class="nc" id="L55">    }</span>
+
+    public String getMessageText() {
+<span class="nc" id="L58">        return messageText;</span>
+    }
+
+    public void setMessageText(String messageText) {
+<span class="nc" id="L62">        this.messageText = messageText;</span>
+<span class="nc" id="L63">    }</span>
+
+    public String getCardTitle() {
+<span class="nc" id="L66">        return cardTitle;</span>
+    }
+
+    public void setCardTitle(String cardTitle) {
+<span class="nc" id="L70">        this.cardTitle = cardTitle;</span>
+<span class="nc" id="L71">    }</span>
+
+    public String getCardImageUrl() {
+<span class="nc" id="L74">        return cardImageUrl;</span>
+    }
+
+    public void setCardImageUrl(String cardImageUrl) {
+<span class="nc" id="L78">        this.cardImageUrl = cardImageUrl;</span>
+<span class="nc" id="L79">    }</span>
+
+    public String getCardDescription() {
+<span class="nc" id="L82">        return cardDescription;</span>
+    }
+
+    public void setCardDescription(String cardDescription) {
+<span class="nc" id="L86">        this.cardDescription = cardDescription;</span>
+<span class="nc" id="L87">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

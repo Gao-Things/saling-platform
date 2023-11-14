@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.usyd.capstone.mapper.NormalUserMapper">
+
+<!--    <select id="listAll" resultType="com.usyd.capstone.entity.NormalUser">-->
+<!--        select * from normalUser;-->
+<!--    </select>-->
+<!--    <select id="pageC" resultType="com.usyd.capstone.entity.NormalUser">-->
+<!--        select * from normalUser-->
+<!--    </select>-->
+<!--    <select id="pageCC" resultType="com.usyd.capstone.entity.NormalUser">-->
+<!--        select * from normalUser ${ew.customSqlSegment}-->
+<!--    </select>-->
+    <select id="findByEmailAndRegistrationTimestampAndPassword" resultType="com.usyd.capstone.entity.NormalUser">
+        SELECT * FROM normalUser
+            WHERE 1=1 AND Email = #{email} AND registration_timestamp = #{registrationTimestamp} AND password = #{password}
+    </select>
+    <select id="getUserByUserID" resultType="com.usyd.capstone.entity.NormalUser">
+        SELECT * FROM normal_user
+            WHERE id = #{userId}
+        LIMIT 1;
+    </select>
+    <select id="getUserListAdmin" resultType="com.usyd.capstone.entity.NormalUser">
+        SELECT * FROM normal_user
+        WHERE ('' = #{searchValue} OR name LIKE CONCAT('%', #{searchValue}, '%') OR email LIKE CONCAT('%', #{searchValue}, '%'))
+    </select>
+
+</mapper>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PURITY.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">capstone</a> &gt; <a href="index.source.html" class="el_package">com.usyd.capstone.common.Enums</a> &gt; <span class="el_source">PURITY.java</span></div><h1>PURITY.java</h1><pre class="source lang-java linenums">package com.usyd.capstone.common.Enums;
+
+import lombok.Getter;
+
+import java.security.Key;
+
+<span class="fc" id="L7">@Getter</span>
+public enum PURITY {
+<span class="fc" id="L9">    GOLD_24K(0, &quot;24K&quot;),</span>
+<span class="fc" id="L10">    GOLD_22K(1, &quot;22K&quot;),</span>
+<span class="fc" id="L11">    GOLD_21K(2, &quot;21K&quot;),</span>
+<span class="fc" id="L12">    GOLD_18K(3, &quot;18K&quot;),</span>
+<span class="fc" id="L13">    GOLD_14K(4, &quot;14K&quot;),</span>
+<span class="fc" id="L14">    GOLD_12K(5, &quot;12K&quot;),</span>
+<span class="fc" id="L15">    GOLD_10K(6, &quot;10K&quot;),</span>
+<span class="fc" id="L16">    SILVER_999(7, &quot;999&quot;),</span>
+<span class="fc" id="L17">    SILVER_995(8, &quot;995&quot;),</span>
+<span class="fc" id="L18">    SILVER_925(9, &quot;925&quot;),</span>
+<span class="fc" id="L19">    SILVER_990(10, &quot;990&quot;);</span>
+
+<span class="nc" id="L21">    private int value;</span>
+<span class="nc" id="L22">    private String name;</span>
+
+<span class="fc" id="L24">    PURITY(int value, String name){</span>
+<span class="fc" id="L25">        this.value = value;</span>
+<span class="fc" id="L26">        this.name = name;</span>
+<span class="fc" id="L27">    }</span>
+    public static PURITY findByValue(int value) {
+<span class="nc bnc" id="L29" title="All 2 branches missed.">        for (PURITY purity : values()) {</span>
+<span class="nc bnc" id="L30" title="All 2 branches missed.">            if (purity.value == value) {</span>
+<span class="nc" id="L31">                return purity;</span>
+            }
+        }
+<span class="nc" id="L34">        return null;</span>
+    }
+
+    public static PURITY findByName(String name) {
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">        for (PURITY purity : values()) {</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">            if (purity.name.equals(name)) {</span>
+<span class="fc" id="L40">                return purity;</span>
+            }
+        }
+<span class="nc" id="L43">        return null;</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L48">        return name;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

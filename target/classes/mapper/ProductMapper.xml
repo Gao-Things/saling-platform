@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.usyd.capstone.mapper.ProductMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.usyd.capstone.entity.Product">
+        <id column="id" property="id" />
+        <result column="product_name" property="productName" />
+        <result column="product_price" property="productPrice" />
+        <result column="product_Imafe" property="productImage" />
+        <result column="product_create_time" property="productCreateTime" />
+        <result column="product_update_time" property="productUpdateTime" />
+        <result column="product_description" property="productDescription" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, product_name, product_price, product_Imafe, product_create_time, product_update_time, product_description
+    </sql>
+    <resultMap id="OfferProductDTO" type="com.usyd.capstone.common.DTO.ProductUserDTO">
+    </resultMap>
+    <select id="listProduct" parameterType="com.usyd.capstone.common.VO.ProductFilter" resultType="com.usyd.capstone.common.DTO.ProductUserDTO">
+        SELECT product.*,
+        normal_user.*
+        FROM product
+        LEFT JOIN normal_user
+        ON product.owner_id = normal_user.id
+        <where>
+                AND product.product_status != 3
+            <if test="category != null">
+                AND product.category = #{category}
+            </if>
+            <if test="purity != null">
+                AND product.purity = #{purity}
+            </if>
+            <if test="status != null">
+                AND product.product_status = #{status}
+            </if>
+            <if test="minPrice != 0">
+                AND product.product_weight &gt;= #{minPrice}
+            </if>
+            <if test="maxPrice != 0">
+                AND product.product_weight &lt;= #{maxPrice}
+            </if>
+        </where>
+    </select>
+
+    <resultMap id="ProductResultMap" type="com.usyd.capstone.entity.Product">
+        <id column="id" property="id" />
+        <!-- 添加其它Product属性的映射 -->
+        <collection property="offers" ofType="com.usyd.capstone.entity.Offer"
+                    select="com.usyd.capstone.mapper.OfferMapper.selectOffersByProductId"
+                    column="id" />
+    </resultMap>
+
+    <select id="selectProductsWithOffers" resultMap="ProductResultMap">
+        SELECT * FROM product
+        WHERE ('' = #{searchValue} OR product_name LIKE CONCAT('%', #{searchValue}, '%') OR product_description LIKE CONCAT('%', #{searchValue}, '%'))
+    </select>
+
+    <select id="getProductListByUserID" resultMap="ProductResultMap">
+        SELECT * FROM product
+        WHERE owner_id = #{userId} AND product_status !=3
+        <if test="isSelling">
+            AND product_status = 0
+        </if>
+        <if test="!isSelling">
+            AND product_status != 0
+        </if>
+    </select>
+
+
+</mapper>

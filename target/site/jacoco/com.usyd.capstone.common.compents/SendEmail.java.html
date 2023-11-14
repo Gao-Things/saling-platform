@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SendEmail.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">capstone</a> &gt; <a href="index.source.html" class="el_package">com.usyd.capstone.common.compents</a> &gt; <span class="el_source">SendEmail.java</span></div><h1>SendEmail.java</h1><pre class="source lang-java linenums">package com.usyd.capstone.common.compents;
+
+import com.usyd.capstone.entity.AdminUserProduct;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
+@Component
+<span class="fc" id="L16">public class SendEmail {</span>
+
+    @Autowired
+    private JavaMailSender mailSender;
+
+    @Async(&quot;taskExecutor&quot;)
+    public void sentRegistrationEmail(String email, long registrationTimestamp, String passwordToken, int userRole){
+        try {
+<span class="fc" id="L24">            MimeMessage mimeMessage = mailSender.createMimeMessage();</span>
+<span class="fc" id="L25">            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);</span>
+
+<span class="fc" id="L27">            helper.setTo(email);</span>
+<span class="fc" id="L28">            helper.setSubject(&quot;Welcome to our platform! Please verify your email&quot;);</span>
+
+<span class="fc" id="L30">            String emailContent = getRegistEmailContent(email, registrationTimestamp, passwordToken, userRole);</span>
+<span class="fc" id="L31">            helper.setText(emailContent, true); // Use true to enable HTML content</span>
+
+<span class="nc" id="L33">            mailSender.send(mimeMessage);</span>
+<span class="nc" id="L34">        } catch (MessagingException | MailException e) {</span>
+            // Handle the exception here
+<span class="nc" id="L36">            e.printStackTrace();</span>
+            // You can log the exception or take other appropriate actions
+<span class="nc" id="L38">        }</span>
+<span class="nc" id="L39">    }</span>
+
+    @Value(&quot;${base.weburl}&quot;)
+    private static String webUrl;
+    private static String getRegistEmailContent(String email, long registrationTimestamp, String passwordToken, int userRole) {
+<span class="fc" id="L44">        String url = &quot;http://comp5703-capstone-web.s3-website-us-east-1.amazonaws.com/verification?email=&quot; + email + &quot;&amp;registrationTimestamp=&quot; +</span>
+                registrationTimestamp + &quot;&amp;passwordToken=&quot; + passwordToken + &quot;&amp;userRole=&quot; + userRole;
+<span class="fc" id="L46">        String emailContent = &quot;&lt;p&gt;Dear user,&lt;/p&gt;&quot; +</span>
+                &quot;&lt;p&gt;Thank you for registering with us! To complete your registration, please click the link below to verify your email:&lt;/p&gt;&quot; +
+                &quot;&lt;P&gt;Verification Link: &lt;a href=\&quot;&quot; + url + &quot;\&quot;&gt;&quot; + url +&quot;&lt;/a&gt;&lt;/P&gt;&quot; +
+                &quot;&lt;P&gt;If you're unable to click the link, please copy and paste the link into your browser's address bar.&lt;/P&gt;&quot; +
+                &quot;&lt;P&gt;This link will be valid for the next 24 hours. If you don't verify within this time frame, your account won't be activated.&lt;/P&gt;&quot; +
+                &quot;&lt;P&gt;If you didn't register for our platform, please disregard this email.&lt;/P&gt;&quot; +
+                &quot;&lt;P&gt;Thank you!&lt;/P&gt;&quot;+
+                &quot;&lt;P&gt;Best regards,&lt;/P&gt;&quot; +
+                &quot;&lt;P&gt;[Company Name]&lt;/P&gt;&quot;;
+<span class="fc" id="L55">        return emailContent;</span>
+    }
+
+
+
+    @Async(&quot;taskExecutor&quot;)
+    public void sentForgetEmail(String email, long resettingPasswordTimestamp){
+        try {
+<span class="fc" id="L63">            MimeMessage mimeMessage = mailSender.createMimeMessage();</span>
+<span class="fc" id="L64">            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);</span>
+
+<span class="fc" id="L66">            helper.setTo(email);</span>
+<span class="fc" id="L67">            helper.setSubject(&quot;Password Reset Request&quot;);</span>
+
+<span class="fc" id="L69">            String emailContent = getForgetEmailContent(email, resettingPasswordTimestamp);</span>
+<span class="fc" id="L70">            helper.setText(emailContent, true); // Use true to enable HTML content</span>
+
+<span class="nc" id="L72">            mailSender.send(mimeMessage);</span>
+<span class="nc" id="L73">        } catch (MessagingException | MailException e) {</span>
+            // Handle the exception here
+<span class="nc" id="L75">            e.printStackTrace();</span>
+            // You can log the exception or take other appropriate actions
+<span class="nc" id="L77">        }</span>
+<span class="nc" id="L78">    }</span>
+
+    private static String getForgetEmailContent(String email, long resettingPasswordTimestamp) {
+<span class="fc" id="L81">        String url = &quot;http://comp5703-capstone-web.s3-website-us-east-1.amazonaws.com/forgetPassword?email=&quot; + email + &quot;&amp;resettingPasswordTimestamp=&quot; +</span>
+                resettingPasswordTimestamp;
+<span class="fc" id="L83">        String emailContent = &quot;&lt;p&gt;Dear user,&lt;/p&gt;&quot; +</span>
+                &quot;&lt;p&gt;We noticed that you recently requested a password reset. To ensure the security of your account, &quot; +
+                &quot;we are here to assist you in completing this process. Please click on the link below to create a new password:&lt;/p&gt;&quot; +
+                &quot;&lt;P&gt;Verification Link: &lt;a href=\&quot;&quot; + url + &quot;\&quot;&gt;&quot; + url +&quot;&lt;/a&gt;&lt;/P&gt;&quot; +
+                &quot;&lt;P&gt;Please note that this link will be valid for the next 24 hours. &quot; +
+                &quot;If you did not initiate this password reset request, you can disregard this email.&lt;/P&gt;&quot; +
+                &quot;&lt;P&gt;Thank you for your cooperation.&lt;/P&gt;&quot; +
+                &quot;&lt;P&gt;Best regards,&lt;/P&gt;&quot; +
+                &quot;&lt;P&gt;[Company Name]&lt;/P&gt;&quot;;
+
+<span class="fc" id="L93">        return emailContent;</span>
+    }
+
+    @Async(&quot;taskExecutor&quot;)
+    public void sentResettingPriceWarning(AdminUserProduct adminUserProduct){
+        try {
+<span class="nc" id="L99">            MimeMessage mimeMessage = mailSender.createMimeMessage();</span>
+<span class="nc" id="L100">            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);</span>
+
+<span class="nc" id="L102">            helper.setTo(adminUserProduct.getAdminUser().getEmail());</span>
+<span class="nc" id="L103">            helper.setSubject(&quot;Resetting Price Warning&quot;);</span>
+
+<span class="nc" id="L105">            String emailContent = getResettingPriceWarningContext(adminUserProduct);</span>
+<span class="nc" id="L106">            helper.setText(emailContent, true); // Use true to enable HTML content</span>
+
+<span class="nc" id="L108">            mailSender.send(mimeMessage);</span>
+<span class="nc" id="L109">        } catch (MessagingException | MailException e) {</span>
+            // Handle the exception here
+<span class="nc" id="L111">            e.printStackTrace();</span>
+            // You can log the exception or take other appropriate actions
+<span class="nc" id="L113">        }</span>
+<span class="nc" id="L114">    }</span>
+
+    private static String getResettingPriceWarningContext(AdminUserProduct adminUserProduct) {
+<span class="nc" id="L117">        String emailContent = &quot;&lt;p&gt;Dear &quot; + adminUserProduct.getAdminUser().getName() + &quot;,&lt;/p&gt;&quot; +</span>
+<span class="nc" id="L118">                &quot;&lt;p&gt;We noticed that you recently reset the price of &quot; + adminUserProduct.getProduct().getProductName() + &quot;.&lt;/p&gt;&quot; +</span>
+                &quot;&lt;p&gt;However, the system just found few other admin agree with your quotation, and it has just been set as an invalid price.&lt;/p&gt;&quot; +
+                &quot;&lt;P&gt;Please verify the price of the merchandise once again and then re-submit your quotation.&lt;/P&gt;&quot; +
+                &quot;&lt;P&gt;Best regards,&lt;/P&gt;&quot; +
+                &quot;&lt;P&gt;System assistant&lt;/P&gt;&quot;;
+
+<span class="nc" id="L124">        return emailContent;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

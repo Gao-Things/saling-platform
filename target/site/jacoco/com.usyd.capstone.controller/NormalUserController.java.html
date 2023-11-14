@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NormalUserController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">capstone</a> &gt; <a href="index.source.html" class="el_package">com.usyd.capstone.controller</a> &gt; <span class="el_source">NormalUserController.java</span></div><h1>NormalUserController.java</h1><pre class="source lang-java linenums">package com.usyd.capstone.controller;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.usyd.capstone.common.DTO.Result;
+import com.usyd.capstone.common.VO.*;
+import com.usyd.capstone.entity.*;
+import com.usyd.capstone.entity.abstractEntities.User;
+import com.usyd.capstone.service.NormalUserService;
+import com.usyd.capstone.service.OfferService;
+import com.usyd.capstone.service.ProductService;
+import com.usyd.capstone.service.UserSettingService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/normal&quot;)
+<span class="fc" id="L20">public class NormalUserController {</span>
+
+    @Autowired
+    private NormalUserService normalUserService;
+
+    @Autowired
+    private OfferService offerService;
+
+    @Autowired
+    private UserSettingService userSettingService;
+
+    @Autowired
+    private ProductService productService;
+
+    @GetMapping(&quot;/hello&quot;)
+    public String hello(){
+<span class="nc" id="L36">        int a = 1;</span>
+<span class="nc" id="L37">        return &quot;hello, normal user&quot;;</span>
+    }
+
+    // 获取用户所有的offer list
+    @GetMapping(&quot;/getMyOfferList&quot;)
+    public Result getMyOfferList(@ModelAttribute OfferFilter offerFilter){
+
+
+<span class="nc" id="L45">        QueryWrapper&lt;Offer&gt; queryWrapper = new QueryWrapper&lt;&gt;();</span>
+<span class="nc" id="L46">        queryWrapper.eq(&quot;buyer_id&quot;, offerFilter.getUserId());</span>
+
+<span class="nc bnc" id="L48" title="All 4 branches missed.">        if (Boolean.TRUE.equals(!offerFilter.getPending())) {</span>
+<span class="nc" id="L49">            queryWrapper.ne(&quot;offer_status&quot;, 0);</span>
+        }
+<span class="nc bnc" id="L51" title="All 4 branches missed.">        if (Boolean.TRUE.equals(!offerFilter.getAccepted())) {</span>
+<span class="nc" id="L52">            queryWrapper.ne(&quot;offer_status&quot;, 1);</span>
+        }
+<span class="nc bnc" id="L54" title="All 4 branches missed.">        if (Boolean.TRUE.equals(!offerFilter.getRejected())) {</span>
+<span class="nc" id="L55">            queryWrapper.ne(&quot;offer_status&quot;, 2);</span>
+        }
+<span class="nc bnc" id="L57" title="All 4 branches missed.">        if (Boolean.TRUE.equals(!offerFilter.getCancelled())) {</span>
+<span class="nc" id="L58">            queryWrapper.ne(&quot;offer_status&quot;, 3);</span>
+        }
+<span class="nc bnc" id="L60" title="All 4 branches missed.">        if (Boolean.TRUE.equals(!offerFilter.getExpired())) {</span>
+<span class="nc" id="L61">            queryWrapper.ne(&quot;offer_status&quot;, 4);</span>
+        }
+
+
+<span class="nc" id="L65">        List&lt;Offer&gt; userOfferList = offerService.list(queryWrapper);</span>
+
+<span class="nc" id="L67">        return Result.suc(userOfferList);</span>
+    }
+
+    // 获取用户id查所有收到的offer list
+    @GetMapping(&quot;/getReceivedOfferList&quot;)
+    public Result getReceivedOfferList(@RequestParam(&quot;userId&quot;) Integer userID){
+
+<span class="nc" id="L74">        return offerService.getOfferListBySellerId(userID);</span>
+    }
+    // 根据productId 获取product下的所有offer
+    @GetMapping(&quot;/getProductOfferList&quot;)
+    public Result getProductOfferList(@RequestParam(&quot;productId&quot;) Integer productId){
+<span class="nc" id="L79">        List&lt;Offer&gt; productOfferList = offerService.list(</span>
+<span class="nc" id="L80">                new QueryWrapper&lt;Offer&gt;().eq(&quot;product_id&quot;, productId).ne(&quot;offer_status&quot;, 3)</span>
+        );
+
+<span class="nc" id="L83">        return Result.suc(productOfferList);</span>
+    }
+
+    // 根据用户id，productId获取用户在某样商品下的最新offer
+    @GetMapping(&quot;/getOfferByUserAndProductId&quot;)
+    public Result getOfferByUserAndProductId(@RequestParam(&quot;productId&quot;) Integer productId,
+                                             @RequestParam(&quot;userId&quot;) Integer userId){
+<span class="nc" id="L90">        List&lt;Offer&gt; productOfferList = offerService.list(</span>
+                new QueryWrapper&lt;Offer&gt;()
+<span class="nc" id="L92">                        .eq(&quot;product_id&quot;, productId)</span>
+<span class="nc" id="L93">                        .ne(&quot;offer_status&quot;, 3)</span>
+<span class="nc" id="L94">                        .eq(&quot;buyer_id&quot;, userId)</span>
+<span class="nc" id="L95">                        .orderByDesc(&quot;timestamp&quot;)</span>
+<span class="nc" id="L96">                        .last(&quot;LIMIT 1&quot;)</span>
+        );
+
+<span class="nc" id="L99">        return Result.suc(productOfferList);</span>
+    }
+
+
+    @GetMapping(&quot;/getUserSetting&quot;)
+    public Result getUserSetting(@RequestParam(&quot;userId&quot;) Integer userId){
+
+<span class="nc" id="L106">      UserSetting userSetting = userSettingService.getOne(</span>
+<span class="nc" id="L107">                new QueryWrapper&lt;UserSetting&gt;().eq(&quot;userId&quot;, userId)</span>
+        );
+
+<span class="nc" id="L110">        return Result.suc(userSetting);</span>
+    }
+
+    @PostMapping(&quot;/updateUserSetting&quot;)
+    public Result updateUserSetting(@RequestBody UserSetting userSetting){
+
+<span class="nc bnc" id="L116" title="All 2 branches missed.">        if (userSetting.getUserId() == null){</span>
+<span class="nc" id="L117">            return Result.fail();</span>
+        }
+
+<span class="nc" id="L120">        Integer settingId =  userSettingService.getOne(</span>
+<span class="nc" id="L121">                new QueryWrapper&lt;UserSetting&gt;().eq(&quot;userId&quot;, userSetting.getUserId())</span>
+<span class="nc" id="L122">        ).getUserSettingId();</span>
+
+<span class="nc" id="L124">        userSetting.setUserSettingId(settingId);</span>
+<span class="nc" id="L125">        return Result.suc(userSettingService.updateById(userSetting));</span>
+    }
+
+    @GetMapping(&quot;/getUserInfo&quot;)
+    public Result getUserInfo(@RequestParam Integer userId){
+
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        if (userId == null){</span>
+<span class="nc" id="L132">            return Result.fail();</span>
+        }
+
+<span class="nc" id="L135">        return Result.suc(normalUserService.findUserInfoById(userId)) ;</span>
+    }
+    @PostMapping(&quot;/updateUserAvatar&quot;)
+    public Result updateUserAvatar(@RequestBody UpdateUserInfo updateUserInfo){
+
+<span class="nc bnc" id="L140" title="All 4 branches missed.">        if (updateUserInfo.getId() == null || updateUserInfo.getAvatarUrl() == null){</span>
+<span class="nc" id="L141">            return Result.fail();</span>
+        }
+
+<span class="nc" id="L144">        NormalUser normalUser = normalUserService.findUserInfoById(Math.toIntExact(updateUserInfo.getId()));</span>
+
+<span class="nc" id="L146">        normalUser.setAvatarUrl(updateUserInfo.getAvatarUrl());</span>
+
+<span class="nc" id="L148">        return Result.suc(normalUserService.updateUserInfo(normalUser));</span>
+    }
+
+
+    @GetMapping(&quot;/getProductListByUserID&quot;)
+    public Result getProductListByUserID(
+            @RequestParam Integer userId,
+            @RequestParam boolean isSelling) {
+
+<span class="nc" id="L157">        List&lt;Product&gt; productList = productService.getProductListByUserID(userId, isSelling);</span>
+<span class="nc" id="L158">        return Result.suc(productList);</span>
+    }
+
+
+    @GetMapping(&quot;/deleteProduct&quot;)
+    public Result adminDeleteProduct(@RequestParam Integer productID) {
+
+<span class="nc" id="L165">        Product product = productService.getById(productID);</span>
+<span class="nc" id="L166">        product.setProductStatus(3);</span>
+
+<span class="nc bnc" id="L168" title="All 2 branches missed.">        if (productService.updateById(product)){</span>
+
+<span class="nc" id="L170">            return Result.suc();</span>
+        }else {
+<span class="nc" id="L172">            return Result.fail();</span>
+        }
+
+    }
+
+
+
+
+    @PostMapping(&quot;/setPriceThreshold&quot;)
+    public Result setPriceThreshold(@RequestBody SetPriceThresholdRequest setPriceThresholdRequest) {
+<span class="nc" id="L182">        return normalUserService.setPriceThresholdSingle(setPriceThresholdRequest.getToken(),</span>
+<span class="nc" id="L183">                setPriceThresholdRequest.getProductId(),</span>
+<span class="nc" id="L184">                setPriceThresholdRequest.isMinimum(),</span>
+<span class="nc" id="L185">                setPriceThresholdRequest.getThreshold());</span>
+    }
+
+    @PostMapping(&quot;/makeOrUpdateAnOffer&quot;)
+    public Result makeAnOffer(@RequestBody MakeOrUpdateAnOfferRequest makeOrUpdateAnOfferRequest) {
+<span class="nc" id="L190">        return normalUserService.makeOrUpdateAnOffer(makeOrUpdateAnOfferRequest.getToken(),</span>
+<span class="nc" id="L191">                makeOrUpdateAnOfferRequest.getProductId(),</span>
+<span class="nc" id="L192">                makeOrUpdateAnOfferRequest.getNote(),</span>
+<span class="nc" id="L193">                makeOrUpdateAnOfferRequest.getPrice());</span>
+    }
+
+    @PostMapping(&quot;/acceptAnOffer&quot;)
+    public Result acceptAnOffer(@RequestBody AcceptOrCancelOrRejectAnOfferRequest acceptOrCancelOrRejectAnOfferRequest) {
+<span class="nc" id="L198">        return normalUserService.acceptAnOffer(acceptOrCancelOrRejectAnOfferRequest.getToken(),</span>
+<span class="nc" id="L199">                acceptOrCancelOrRejectAnOfferRequest.getOfferId());</span>
+    }
+
+    @PostMapping(&quot;/cancelAnOffer&quot;)
+    public Result cancelAnOffer(@RequestBody AcceptOrCancelOrRejectAnOfferRequest acceptOrCancelOrRejectAnOfferRequest) {
+<span class="nc" id="L204">        return normalUserService.cancelAnOffer(acceptOrCancelOrRejectAnOfferRequest.getToken(),</span>
+<span class="nc" id="L205">                acceptOrCancelOrRejectAnOfferRequest.getOfferId());</span>
+    }
+
+    @PostMapping(&quot;/rejectAnOffer&quot;)
+    public Result rejectAnOffer(@RequestBody AcceptOrCancelOrRejectAnOfferRequest acceptOrCancelOrRejectAnOfferRequest) {
+<span class="nc" id="L210">        return normalUserService.rejectAnOffer(acceptOrCancelOrRejectAnOfferRequest.getToken(),</span>
+<span class="nc" id="L211">                acceptOrCancelOrRejectAnOfferRequest.getOfferId());</span>
+    }
+
+    @PostMapping(&quot;/openOrCloseOrCancelSale&quot;)
+    public Result openOrCloseOrCancelSale(@RequestBody OpenOrCloseOrCancelSaleRequest openOrCloseOrCancelSaleRequest) {
+<span class="nc" id="L216">        return normalUserService.openOrCloseOrCancelSale(openOrCloseOrCancelSaleRequest.getToken(),</span>
+<span class="nc" id="L217">                openOrCloseOrCancelSaleRequest.getProductId(),</span>
+<span class="nc" id="L218">                openOrCloseOrCancelSaleRequest.getProductStatusNew());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
